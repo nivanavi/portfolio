@@ -1,19 +1,9 @@
-import CANNON       from "cannon";
-
-export const groundPhysicObject = (material: CANNON.Material) => {
-  const groundShape = new CANNON.Plane();
-  const groundBody = new CANNON.Body({
-    mass: 0,
-    shape: groundShape,
-    material
-  })
-  // groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI * 0.5)
-
-  return {
-    groundBody,
-    groundShape
-  }
-}
+import * as THREE             from "three";
+import CANNON                 from "cannon";
+import {objectProps}          from "../../types";
+import {wheelPhysicsMaterial} from "../../physics";
+import {copyPositions}        from "../../utils";
+import {Vector3}              from "three";
 
 export const CAR_OPTIONS = {
   // chassis
@@ -58,7 +48,7 @@ export const WHEEL_OPTIONS = {
   chassisConnectionPointLocal: new CANNON.Vec3(1, 1, 0) // Will be changed for each wheel
 }
 
-const CAR_DYNAMIC_OPTIONS = {
+export const CAR_DYNAMIC_OPTIONS = {
   steering: 0,
   accelerating: 0,
   speed: 0,
@@ -73,28 +63,34 @@ const CAR_DYNAMIC_OPTIONS = {
   right: false,
   brake: false,
   boost: false,
+  isBurnOut: false,
   upsideDownState: "watching"
 }
 
-export const carPhysicObject = (wheelMaterial: CANNON.Material) => {
+
+export const carObject = ({physicWorld, scene}: objectProps) => {
+  const chassisMaterial = new THREE.MeshStandardMaterial({
+    color: "red",
+    wireframe: true
+  });
+  const chassisGeometry = new THREE.BoxBufferGeometry(CAR_OPTIONS.chassisDepth, CAR_OPTIONS.chassisWidth, CAR_OPTIONS.chassisHeight);
+  const chassisMesh = new THREE.Mesh(chassisGeometry, chassisMaterial);
+
+  const wheelMaterial = new THREE.MeshStandardMaterial({
+    color: "blue"
+  });
+  const wheelGeometry = new THREE.CylinderBufferGeometry(WHEEL_OPTIONS.radius, WHEEL_OPTIONS.radius, WHEEL_OPTIONS.height);
+
   const chassisShape = new CANNON.Box(new CANNON.Vec3(CAR_OPTIONS.chassisDepth * 0.5, CAR_OPTIONS.chassisWidth * 0.5, CAR_OPTIONS.chassisHeight * 0.5))
   const chassisBody = new CANNON.Body({mass: CAR_OPTIONS.chassisMass});
   chassisBody.allowSleep = false;
-  chassisBody.position.set(0, 0, 2);
+  chassisBody.position.set(0, 0, 6);
   chassisBody.sleep()
   chassisBody.addShape(chassisShape, CAR_OPTIONS.chassisOffset)
 
   const vehicle = new CANNON.RaycastVehicle({
     chassisBody
   })
-
-  const jump = (toReturn = true, strength = 60) => {
-    let worldPosition = chassisBody.position
-    worldPosition = worldPosition.vadd(new CANNON.Vec3(toReturn ? 0.08 : 0, 0, 0))
-    chassisBody.applyImpulse(new CANNON.Vec3(0, 0, strength), worldPosition)
-  }
-
-  const wheels: CANNON.Body[] = [];
 
 // Front left
   vehicle.addWheel({
@@ -121,16 +117,40 @@ export const carPhysicObject = (wheelMaterial: CANNON.Material) => {
     chassisConnectionPointLocal: new CANNON.Vec3(CAR_OPTIONS.wheelBackOffsetDepth, -CAR_OPTIONS.wheelOffsetWidth, 0)
   })
 
+  vehicle.addToWorld(physicWorld);
+  scene.add(chassisMesh);
+  setTimeout(() => chassisBody.wakeUp(), 300)
+
+  const wheelsGraphic: THREE.Mesh[] = [];
+  const wheelsPhysic: CANNON.Body[] = [];
+
   vehicle.wheelInfos.forEach(wheel => {
+    const wheelMesh = new THREE.Mesh(wheelGeometry, wheelMaterial);
+
     const shape = new CANNON.Cylinder(wheel.radius || WHEEL_OPTIONS.radius, wheel.radius || WHEEL_OPTIONS.radius, WHEEL_OPTIONS.height, 20)
-    const body = new CANNON.Body({mass: CAR_OPTIONS.wheelMass, material: wheelMaterial})
+    const body = new CANNON.Body({mass: CAR_OPTIONS.wheelMass, material: wheelPhysicsMaterial})
     const quaternion = new CANNON.Quaternion()
     quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI * 0.5)
     body.addShape(shape, new CANNON.Vec3(), quaternion)
-    wheels.push(body);
+    wheelsPhysic.push(body);
+    scene.add(wheelMesh);
+    wheelsGraphic.push(wheelMesh)
   })
 
-  const callInPostStepCarPhysic = () => {
+  const jump = (toReturn = true, strength = 60) => {
+    let worldPosition = chassisBody.position
+    worldPosition = worldPosition.vadd(new CANNON.Vec3(toReturn ? 0.08 : 0, 0, 0))
+    chassisBody.applyImpulse(new CANNON.Vec3(0, 0, strength), worldPosition)
+  }
+
+  const brake = (force: number) => {
+    vehicle.setBrake(force, 0)
+    vehicle.setBrake(force, 1)
+    vehicle.setBrake(force, 2)
+    vehicle.setBrake(force, 3)
+  }
+
+  const callInPostStep = () => {
     // Update speed
     let positionDelta = new CANNON.Vec3().copy(chassisBody.position)
     positionDelta = positionDelta.vsub(CAR_DYNAMIC_OPTIONS.oldPosition)
@@ -176,9 +196,29 @@ export const carPhysicObject = (wheelMaterial: CANNON.Material) => {
         window.clearTimeout(upsideDownTimeout)
       }
     }
+
+    // update wheels
+    vehicle.wheelInfos.forEach((wheel, index) => {
+      vehicle.updateWheelTransform(index);
+      const transform = (vehicle.wheelInfos[index] as any).worldTransform;
+      wheelsPhysic[index].position.copy(transform.position)
+      wheelsPhysic[index].quaternion.copy(transform.quaternion)
+    })
   }
 
-  const callInTickCarPhysic = (delta: number) => {
+
+  let rotation = 0;
+  const callInTick = (delta: number) => {
+    // update
+    copyPositions({mesh: chassisMesh, body: chassisBody})
+    wheelsPhysic.forEach((wheel, index) => {
+      copyPositions({mesh: wheelsGraphic[index], body: wheel})
+      if (!CAR_DYNAMIC_OPTIONS.isBurnOut) return;
+      if (![WHEEL_OPTIONS.backLeft, WHEEL_OPTIONS.backRight].includes(index)) return;
+      rotation = rotation + 8;
+      wheelsGraphic[index].rotateOnAxis(new Vector3(0, 1, 0),rotation)
+    })
+
     // TODO STEERING
     const steerForce = delta * CAR_OPTIONS.steeringSpeed
     // Steer right and left
@@ -207,18 +247,24 @@ export const carPhysicObject = (wheelMaterial: CANNON.Material) => {
 
     // TODO ACCELERATE
     const accelerateForce = delta * CAR_OPTIONS.acceleratingSpeed
-    const currentMaxAcceleration: number = CAR_DYNAMIC_OPTIONS.boost ? CAR_OPTIONS.boostAccelerationMaxSpeed : CAR_OPTIONS.accelerationMaxSpeed;
+    const currentMaxSpeed: number = CAR_DYNAMIC_OPTIONS.boost ? CAR_OPTIONS.boostAccelerationMaxSpeed : CAR_OPTIONS.accelerationMaxSpeed;
     // Accelerate up
 
     if (CAR_DYNAMIC_OPTIONS.up && CAR_DYNAMIC_OPTIONS.down) {
-      console.log("burn out");
+      CAR_DYNAMIC_OPTIONS.isBurnOut = true;
+      return brake(CAR_OPTIONS.brakeForce)
     } else if (CAR_DYNAMIC_OPTIONS.up) {
-      if (CAR_DYNAMIC_OPTIONS.speed < currentMaxAcceleration || !CAR_DYNAMIC_OPTIONS.goingForward) CAR_DYNAMIC_OPTIONS.accelerating = accelerateForce
+      CAR_DYNAMIC_OPTIONS.isBurnOut = false;
+      if (CAR_DYNAMIC_OPTIONS.speed < currentMaxSpeed || !CAR_DYNAMIC_OPTIONS.goingForward) CAR_DYNAMIC_OPTIONS.accelerating = accelerateForce
       else CAR_DYNAMIC_OPTIONS.accelerating = 0
     } else if (CAR_DYNAMIC_OPTIONS.down) {
-      if (CAR_DYNAMIC_OPTIONS.speed < currentMaxAcceleration || CAR_DYNAMIC_OPTIONS.goingForward) CAR_DYNAMIC_OPTIONS.accelerating = -accelerateForce
+      CAR_DYNAMIC_OPTIONS.isBurnOut = false;
+      if (CAR_DYNAMIC_OPTIONS.speed < currentMaxSpeed || CAR_DYNAMIC_OPTIONS.goingForward) CAR_DYNAMIC_OPTIONS.accelerating = -accelerateForce
       else CAR_DYNAMIC_OPTIONS.accelerating = 0
-    } else CAR_DYNAMIC_OPTIONS.accelerating = 0
+    } else {
+      CAR_DYNAMIC_OPTIONS.isBurnOut = false;
+      CAR_DYNAMIC_OPTIONS.accelerating = 0
+    }
 
     vehicle.applyEngineForce(-CAR_DYNAMIC_OPTIONS.accelerating, WHEEL_OPTIONS.backLeft)
     vehicle.applyEngineForce(-CAR_DYNAMIC_OPTIONS.accelerating, WHEEL_OPTIONS.backRight)
@@ -229,22 +275,20 @@ export const carPhysicObject = (wheelMaterial: CANNON.Material) => {
 
     // TODO BRAKE
     if (CAR_DYNAMIC_OPTIONS.brake) {
-      vehicle.setBrake(CAR_OPTIONS.brakeForce, 0)
-      vehicle.setBrake(CAR_OPTIONS.brakeForce, 1)
-      vehicle.setBrake(CAR_OPTIONS.brakeForce, 2)
-      vehicle.setBrake(CAR_OPTIONS.brakeForce, 3)
+      brake(CAR_OPTIONS.brakeForce)
     } else {
-      vehicle.setBrake(0, 0)
-      vehicle.setBrake(0, 1)
-      vehicle.setBrake(0, 2)
-      vehicle.setBrake(0, 3)
+      brake(0)
     }
-
   }
 
+  chassisBody.addEventListener("collide", (ev: any) => {
+    // console.log(ev);
+    // if (!ev?.body?.material) return;
+    // if (ev.body.material.name === "floorMaterial") return;
+    // ev.body.quaternion.x = 0.5;
+  })
 
   const keyPressHandler = (ev: KeyboardEvent, isPressed: boolean) => {
-    CAR_DYNAMIC_OPTIONS.boost = ev.shiftKey
     switch (ev.code) {
       case "KeyW":
         return CAR_DYNAMIC_OPTIONS.up = isPressed;
@@ -256,33 +300,17 @@ export const carPhysicObject = (wheelMaterial: CANNON.Material) => {
         return CAR_DYNAMIC_OPTIONS.right = isPressed;
       case "Space":
         return CAR_DYNAMIC_OPTIONS.brake = isPressed;
+      case "ShiftLeft":
+        return CAR_DYNAMIC_OPTIONS.boost = isPressed;
       default:
         return;
     }
   }
-  window.addEventListener("keypress", ev => keyPressHandler(ev, true))
+  window.addEventListener("keydown", ev => keyPressHandler(ev, true))
   window.addEventListener("keyup", ev => keyPressHandler(ev, false))
 
   return {
-    vehicle,
-    chassisBody,
-    wheels,
-    callInTickCarPhysic,
-    callInPostStepCarPhysic
-  }
-}
-
-
-export const testSpherePhysicObject = () => {
-  const sphereShape = new CANNON.Box(new CANNON.Vec3(1, 2, 1));
-  const sphereBody = new CANNON.Body({
-    mass: 100,
-    shape: sphereShape,
-    position: new CANNON.Vec3(2, 2, 2)
-  })
-
-  return {
-    sphereBody,
-    sphereShape
+    callInTick,
+    callInPostStep
   }
 }

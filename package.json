@@ -20,7 +20,9 @@
     "dat.gui": "^0.7.7",
     "@types/dat.gui": "^0.7.7",
     "cannon": "^0.6.2",
-    "@types/cannon": "^0.1.7"
+    "@types/cannon": "^0.1.7",
+    "howler": "^2.2.3",
+    "@types/howler": "^2.2.4"
   },
   "scripts": {
     "start": "react-scripts start",

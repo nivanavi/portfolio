@@ -1,10 +1,10 @@
 import React, {useContext} from 'react';
 
-export type SceneIgniterContext = {
+export type SceneIgniterContextType = {
   canvas: HTMLCanvasElement;
 }
 
-const SceneIgniterContext = React.createContext<SceneIgniterContext>({} as SceneIgniterContext);
+const SceneIgniterContext = React.createContext<SceneIgniterContextType>({} as SceneIgniterContextType);
 export const useSceneIgniterContext = () => useContext(SceneIgniterContext);
 
 export const SceneIgniterContextProvider: React.FC = (props) => {
@@ -17,7 +17,7 @@ export const SceneIgniterContextProvider: React.FC = (props) => {
     setCanvas(refCanvas.current);
   }, [])
 
-  const contextValue: SceneIgniterContext = {
+  const contextValue: SceneIgniterContextType = {
     canvas: stateCanvas!
   };
 

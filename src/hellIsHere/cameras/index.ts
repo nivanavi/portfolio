@@ -1,6 +1,4 @@
 import * as THREE      from "three";
-import {Vector3}       from "three";
-import {WHEEL_OPTIONS} from "../physicsObjects";
 
 export type windowSizesType = {
   width: number
@@ -30,10 +28,10 @@ export const setupCameras = ({windowSizes}:setupCamerasProps) => {
   camera.position.copy(CAMERA_OPTIONS.angleOfView)
 
 
-  const callInTickCamera = () => {
-    CAMERA_OPTIONS.zoomValue += (CAMERA_OPTIONS.zoomTargetValue - CAMERA_OPTIONS.zoomValue) * CAMERA_OPTIONS.zoomEasing;
-    CAMERA_OPTIONS.zoomDistance = CAMERA_OPTIONS.zoomMinDistance + CAMERA_OPTIONS.zoomAmplitude * CAMERA_OPTIONS.zoomValue;
-  }
+  // const callInTickCamera = () => {
+  //   CAMERA_OPTIONS.zoomValue += (CAMERA_OPTIONS.zoomTargetValue - CAMERA_OPTIONS.zoomValue) * CAMERA_OPTIONS.zoomEasing;
+  //   CAMERA_OPTIONS.zoomDistance = CAMERA_OPTIONS.zoomMinDistance + CAMERA_OPTIONS.zoomAmplitude * CAMERA_OPTIONS.zoomValue;
+  // }
 
   const wheelEventHandler = (ev: WheelEvent) => {
     CAMERA_OPTIONS.zoomTargetValue = ev.deltaY * 0.001

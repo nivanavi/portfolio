@@ -1,16 +1,19 @@
-import React                                                               from 'react';
-import {SceneIgniterContextProvider, useSceneIgniterContext}               from "../lessons/lessonIgniter";
-import * as THREE                                                          from "three";
-import CANNON                                          from "cannon";
-import {CAMERA_OPTIONS, setupCameras, windowSizesType} from "./cameras";
-import {setupLights}                                   from "./lights";
+import React                                                                    from 'react';
+import {SceneIgniterContextProvider, useSceneIgniterContext}                    from "../lessons/lessonIgniter";
+import * as THREE                                                               from "three";
+import {CAMERA_OPTIONS, setupCameras, windowSizesType}                          from "./cameras";
+import {setupLights}                                                            from "./lights";
 import {setupRenderer}                                                          from "./renderer";
 import CannonDebugRenderer, {copyPositions, copyPositionType, windowResizeUtil} from "./utils";
-import {carGraphicsObject, groundGraphicsObject, testSphereGraphicsObject}        from "./graphicObjects";
-import {CAR_OPTIONS, carPhysicObject, groundPhysicObject, testSpherePhysicObject} from "./physicsObjects";
-import {setupPhysics}                                                             from "./physics";
-import dat                                                                 from 'dat.gui';
-import {OrbitControls}                                                     from "three/examples/jsm/controls/OrbitControls";
+import {setupPhysics}                                                           from "./physics";
+import dat                                                                      from 'dat.gui';
+import {OrbitControls}                                                          from "three/examples/jsm/controls/OrbitControls";
+import {recorderObject}                                                         from "./objects/recorder";
+import {treeObject}                                                             from "./objects/tree";
+import {BRICK_OPTION, wallObject}                                               from "./objects/wall";
+import CANNON                                                                   from "cannon";
+import {carObject}                                                              from "./objects/car";
+import {groundObject}                                                           from "./objects/ground";
 
 const windowSizes: windowSizesType = {
   width: window.innerWidth,
@@ -21,7 +24,7 @@ const clock = new THREE.Clock();
 const gui = new dat.GUI();
 const scene = new THREE.Scene();
 const axesHelper = new THREE.AxesHelper(5);
-const {physicsWorld, wheelPhysicsMaterial, groundPhysicsMaterial, dummyPhysicsMaterial} = setupPhysics();
+const {physicWorld} = setupPhysics();
 
 const objectsToUpdate: copyPositionType[] = [];
 
@@ -33,106 +36,72 @@ const HellIsHere = () => {
   const cameraHelper = new THREE.CameraHelper(camera);
   scene.add(ambientLight, directionalLight, axesHelper, cameraHelper);
 
-  // const orbitControl = new OrbitControls(camera, canvas);
-  // orbitControl.enableDamping = true;
+  const orbitControl = new OrbitControls(camera, canvas);
+  orbitControl.enableDamping = true;
+  const cannonDebugRenderer = new CannonDebugRenderer(scene, physicWorld)
 
-  const cannonDebugRenderer = new CannonDebugRenderer(scene, physicsWorld)
-
-  const {groundMesh} = groundGraphicsObject();
-  const {groundBody} = groundPhysicObject(groundPhysicsMaterial);
-
-  const {chassisMesh, createWheelMesh} = carGraphicsObject();
-  const {chassisBody, vehicle, wheels, callInTickCarPhysic, callInPostStepCarPhysic} = carPhysicObject(wheelPhysicsMaterial);
-
-  const {sphereBody} = testSpherePhysicObject();
-  const {sphereMesh} = testSphereGraphicsObject()
-
-  const setupTestSphere = () => {
-    physicsWorld.addBody(sphereBody);
-    scene.add(sphereMesh);
-    copyPositions({
-      body: sphereBody,
-      mesh: sphereMesh
-    });
-
-    objectsToUpdate.push({
-      mesh: sphereMesh,
-      body: sphereBody
-    })
-  }
+  // add objects start
+  const {callInTick: callInTickRecorder} = recorderObject({physicWorld, scene})
+  const {callInTick: callInTickTree} = treeObject({physicWorld, scene})
+  const {callInTick: callInTickWall, createWall} = wallObject({physicWorld, scene})
+  const {callInTick: callInTickCar, callInPostStep: callInPostStepCar} = carObject({physicWorld, scene})
+  const {callInTick: callInTickGround} = groundObject({physicWorld, scene})
+  // add objects end
 
   gui.add(CAMERA_OPTIONS.position, "x").min(-10).max(10).step(1)
   gui.add(CAMERA_OPTIONS.position, "y").min(-10).max(10).step(1)
   gui.add(CAMERA_OPTIONS.position, "z").min(-10).max(10).step(1)
 
+  createWall({
+    rows: 5,
+    brickInRows: 10,
+    position: new CANNON.Vec3(4.8 + 10 * BRICK_OPTION.width, 0.1, 0.2),
+    isYDirection: true
+  })
 
-  // gui.add(CAMERA_OPTIONS.rotation, "x").min(-10).max(10).step(0.01).name("rotation x")
-  // gui.add(CAMERA_OPTIONS.rotation, "y").min(-10).max(10).step(0.01).name("rotation y")
-  // gui.add(CAMERA_OPTIONS.rotation, "z").min(-10).max(10).step(0.01).name("rotation z")
-  // gui.add(CAMERA_OPTIONS, "rotation").min(-10).max(10).step(0.01).name("на что умнож")
+  createWall({
+    rows: 5,
+    brickInRows: 10,
+    position: new CANNON.Vec3(5, 0.1, 0.2)
+  })
 
-  const setupGround = () => {
-    physicsWorld.addBody(groundBody);
-    copyPositions({body: groundBody, mesh: groundMesh});
-    scene.add(groundMesh);
-    objectsToUpdate.push({
-      mesh: groundMesh,
-      body: groundBody
-    })
-  }
+  createWall({
+    rows: 5,
+    brickInRows: 10,
+    position: new CANNON.Vec3(4.8, 0.5, 0.2),
+    isYDirection: true,
+  })
 
-  const setupCar = () => {
-    vehicle.addToWorld(physicsWorld);
-    scene.add(chassisMesh);
-    setTimeout(() => chassisBody.wakeUp(), 300)
-
-    copyPositions({body: chassisBody, mesh: chassisMesh});
-
-    objectsToUpdate.push({
-      mesh: chassisMesh,
-      body: chassisBody,
-      positionOffset: CAR_OPTIONS.chassisOffset
-    })
-
-    wheels.forEach(wheelBody => {
-      const wheelMesh = createWheelMesh();
-      copyPositions({body: wheelBody, mesh: wheelMesh});
-      scene.add(wheelMesh);
-
-      objectsToUpdate.push({
-        mesh: wheelMesh,
-        body: wheelBody
-      })
-    })
-  }
-
-  physicsWorld.addEventListener("postStep", () => {
-    callInPostStepCarPhysic()
-    vehicle.wheelInfos.forEach((wheel, index) => {
-      vehicle.updateWheelTransform(index);
-      const transform = (vehicle.wheelInfos[index] as any).worldTransform;
-      wheels[index].position.copy(transform.position)
-      wheels[index].quaternion.copy(transform.quaternion)
-    })
+  physicWorld.addEventListener("postStep", () => {
+    callInPostStepCar()
   })
 
   let oldElapsedTime: number;
+  const minDelta: number = 1000 / 70;
   const tick = () => {
     const elapsedTime = clock.getElapsedTime();
     const deltaTime = Math.round((elapsedTime - oldElapsedTime) * 1000);
+
+    if (deltaTime < minDelta) return window.requestAnimationFrame(tick);
+
+    // call objects tick start
+    callInTickGround();
+    callInTickRecorder();
+    callInTickTree();
+    callInTickWall();
+    callInTickCar(deltaTime);
+    // call objects tick end
+
     oldElapsedTime = elapsedTime
     // update physics world
-    physicsWorld.step(1 / 60, deltaTime, 3);
 
-    callInTickCarPhysic(deltaTime);
+    physicWorld.step(1 / 60, deltaTime, 3);
 
-    camera.lookAt(chassisMesh.position)
-
-    // // update three js
+    // // update tree js
     objectsToUpdate.forEach(objects => copyPositions({...objects}));
 
     cannonDebugRenderer.update();
-    // orbitControl.update();
+    orbitControl.update();
     renderer.render(scene, camera);
     window.requestAnimationFrame(tick);
   }
@@ -148,14 +117,7 @@ const HellIsHere = () => {
     })
   }, [renderer, camera]);
 
-
   tick();
-  // for setup objects
-  React.useEffect(() => {
-    setupGround();
-    setupCar();
-    setupTestSphere();
-  }, [setupGround, setupCar, setupTestSphere])
 
   React.useEffect(() => {
     window.addEventListener("resize", windowResizeHandler)

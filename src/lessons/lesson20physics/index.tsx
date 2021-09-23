@@ -113,7 +113,7 @@ const Lesson20: React.FC = () => {
     // update physics world
     physicsWorld.step(1/60, deltaTime,3);
 
-    // update three js
+    // update tree js
     sphere.position.x = sphereBody.position.x;
     sphere.position.y = sphereBody.position.y;
     sphere.position.z = sphereBody.position.z;
