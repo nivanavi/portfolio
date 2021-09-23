@@ -1,7 +1,7 @@
 import React                                                                    from 'react';
 import {SceneIgniterContextProvider, useSceneIgniterContext}                    from "../lessons/lessonIgniter";
 import * as THREE                                                               from "three";
-import {CAMERA_OPTIONS, setupCameras, windowSizesType}                          from "./cameras";
+import {setupCameras, windowSizesType}                          from "./cameras";
 import {setupLights}                                                            from "./lights";
 import {setupRenderer}                                                          from "./renderer";
 import CannonDebugRenderer, {copyPositions, copyPositionType, windowResizeUtil} from "./utils";
@@ -47,10 +47,6 @@ const HellIsHere = () => {
   const {callInTick: callInTickCar, callInPostStep: callInPostStepCar} = carObject({physicWorld, scene})
   const {callInTick: callInTickGround} = groundObject({physicWorld, scene})
   // add objects end
-
-  gui.add(CAMERA_OPTIONS.position, "x").min(-10).max(10).step(1)
-  gui.add(CAMERA_OPTIONS.position, "y").min(-10).max(10).step(1)
-  gui.add(CAMERA_OPTIONS.position, "z").min(-10).max(10).step(1)
 
   createWall({
     rows: 5,

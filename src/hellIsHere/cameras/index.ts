@@ -33,6 +33,11 @@ export const setupCameras = ({windowSizes}:setupCamerasProps) => {
   //   CAMERA_OPTIONS.zoomDistance = CAMERA_OPTIONS.zoomMinDistance + CAMERA_OPTIONS.zoomAmplitude * CAMERA_OPTIONS.zoomValue;
   // }
 
+  const callInTickCamera = () => {
+    CAMERA_OPTIONS.zoomValue += (CAMERA_OPTIONS.zoomTargetValue - CAMERA_OPTIONS.zoomValue) * CAMERA_OPTIONS.zoomEasing;
+    CAMERA_OPTIONS.zoomDistance = CAMERA_OPTIONS.zoomMinDistance + CAMERA_OPTIONS.zoomAmplitude * CAMERA_OPTIONS.zoomValue;
+  }
+
   const wheelEventHandler = (ev: WheelEvent) => {
     CAMERA_OPTIONS.zoomTargetValue = ev.deltaY * 0.001
     CAMERA_OPTIONS.zoomTargetValue = Math.min(Math.max(CAMERA_OPTIONS.zoomTargetValue, 0), 1)

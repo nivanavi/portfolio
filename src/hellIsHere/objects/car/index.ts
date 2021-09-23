@@ -57,6 +57,8 @@ export const CAR_DYNAMIC_OPTIONS = {
   forwardSpeed: 0,
   oldPosition: new CANNON.Vec3(),
   goingForward: true,
+  lastStopBurnOut: 0,
+  stopBurnOutDelta: 200,
   up: false,
   down: false,
   left: false,
@@ -225,7 +227,6 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
     if (CAR_DYNAMIC_OPTIONS.right && CAR_DYNAMIC_OPTIONS.left) {
       if (Math.abs(CAR_DYNAMIC_OPTIONS.steering) > steerForce) CAR_DYNAMIC_OPTIONS.steering -= steerForce * Math.sign(CAR_DYNAMIC_OPTIONS.steering)
       else CAR_DYNAMIC_OPTIONS.steering = 0
-
     }
     // steer right
     else if (CAR_DYNAMIC_OPTIONS.right) CAR_DYNAMIC_OPTIONS.steering += steerForce
@@ -250,21 +251,27 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
     const currentMaxSpeed: number = CAR_DYNAMIC_OPTIONS.boost ? CAR_OPTIONS.boostAccelerationMaxSpeed : CAR_OPTIONS.accelerationMaxSpeed;
     // Accelerate up
 
-    if (CAR_DYNAMIC_OPTIONS.up && CAR_DYNAMIC_OPTIONS.down) {
+    if ((CAR_DYNAMIC_OPTIONS.up && CAR_DYNAMIC_OPTIONS.down) || (CAR_DYNAMIC_OPTIONS.up && CAR_DYNAMIC_OPTIONS.brake)) {
       CAR_DYNAMIC_OPTIONS.isBurnOut = true;
-      return brake(CAR_OPTIONS.brakeForce)
+      vehicle.setBrake(1, WHEEL_OPTIONS.backLeft)
+      vehicle.setBrake(1, WHEEL_OPTIONS.backRight)
+      return;
     } else if (CAR_DYNAMIC_OPTIONS.up) {
-      CAR_DYNAMIC_OPTIONS.isBurnOut = false;
+      // CAR_DYNAMIC_OPTIONS.isBurnOut = false;
       if (CAR_DYNAMIC_OPTIONS.speed < currentMaxSpeed || !CAR_DYNAMIC_OPTIONS.goingForward) CAR_DYNAMIC_OPTIONS.accelerating = accelerateForce
       else CAR_DYNAMIC_OPTIONS.accelerating = 0
     } else if (CAR_DYNAMIC_OPTIONS.down) {
-      CAR_DYNAMIC_OPTIONS.isBurnOut = false;
+      // CAR_DYNAMIC_OPTIONS.isBurnOut = false;
       if (CAR_DYNAMIC_OPTIONS.speed < currentMaxSpeed || CAR_DYNAMIC_OPTIONS.goingForward) CAR_DYNAMIC_OPTIONS.accelerating = -accelerateForce
       else CAR_DYNAMIC_OPTIONS.accelerating = 0
     } else {
-      CAR_DYNAMIC_OPTIONS.isBurnOut = false;
+      // CAR_DYNAMIC_OPTIONS.isBurnOut = false;
       CAR_DYNAMIC_OPTIONS.accelerating = 0
     }
+    const currentTime = Date.now();
+    if (CAR_DYNAMIC_OPTIONS.isBurnOut) CAR_DYNAMIC_OPTIONS.lastStopBurnOut = currentTime;
+    if (CAR_DYNAMIC_OPTIONS.isBurnOut) CAR_DYNAMIC_OPTIONS.isBurnOut = false;
+    if (currentTime < CAR_DYNAMIC_OPTIONS.lastStopBurnOut + CAR_DYNAMIC_OPTIONS.stopBurnOutDelta) CAR_DYNAMIC_OPTIONS.accelerating = CAR_DYNAMIC_OPTIONS.accelerating * 2;
 
     vehicle.applyEngineForce(-CAR_DYNAMIC_OPTIONS.accelerating, WHEEL_OPTIONS.backLeft)
     vehicle.applyEngineForce(-CAR_DYNAMIC_OPTIONS.accelerating, WHEEL_OPTIONS.backRight)
