@@ -251,8 +251,11 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
     const currentMaxSpeed: number = CAR_DYNAMIC_OPTIONS.boost ? CAR_OPTIONS.boostAccelerationMaxSpeed : CAR_OPTIONS.accelerationMaxSpeed;
     // Accelerate up
 
-    if ((CAR_DYNAMIC_OPTIONS.up && CAR_DYNAMIC_OPTIONS.down) || (CAR_DYNAMIC_OPTIONS.up && CAR_DYNAMIC_OPTIONS.brake)) {
+    if (CAR_DYNAMIC_OPTIONS.up && (CAR_DYNAMIC_OPTIONS.down || CAR_DYNAMIC_OPTIONS.brake)) {
       CAR_DYNAMIC_OPTIONS.isBurnOut = true;
+      CAR_DYNAMIC_OPTIONS.accelerating = 0;
+      vehicle.setBrake(0.2, WHEEL_OPTIONS.frontLeft)
+      vehicle.setBrake(0.2, WHEEL_OPTIONS.frontRight)
       vehicle.setBrake(1, WHEEL_OPTIONS.backLeft)
       vehicle.setBrake(1, WHEEL_OPTIONS.backRight)
       return;
@@ -271,6 +274,7 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
     const currentTime = Date.now();
     if (CAR_DYNAMIC_OPTIONS.isBurnOut) CAR_DYNAMIC_OPTIONS.lastStopBurnOut = currentTime;
     if (CAR_DYNAMIC_OPTIONS.isBurnOut) CAR_DYNAMIC_OPTIONS.isBurnOut = false;
+
     if (currentTime < CAR_DYNAMIC_OPTIONS.lastStopBurnOut + CAR_DYNAMIC_OPTIONS.stopBurnOutDelta) CAR_DYNAMIC_OPTIONS.accelerating = CAR_DYNAMIC_OPTIONS.accelerating * 2;
 
     vehicle.applyEngineForce(-CAR_DYNAMIC_OPTIONS.accelerating, WHEEL_OPTIONS.backLeft)
@@ -318,6 +322,7 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
 
   return {
     callInTick,
-    callInPostStep
+    callInPostStep,
+    chassisMesh
   }
 }

@@ -14,6 +14,7 @@ import {BRICK_OPTION, wallObject}                                               
 import CANNON                                                                   from "cannon";
 import {carObject}                                                              from "./objects/car";
 import {groundObject}                                                           from "./objects/ground";
+import {fireworkObject}                                                         from "./objects/firework";
 
 const windowSizes: windowSizesType = {
   width: window.innerWidth,
@@ -34,6 +35,7 @@ const HellIsHere = () => {
   const {ambientLight, directionalLight} = setupLights()
   const {renderer} = setupRenderer({canvas, windowSizes});
   const cameraHelper = new THREE.CameraHelper(camera);
+
   scene.add(ambientLight, directionalLight, axesHelper, cameraHelper);
 
   const orbitControl = new OrbitControls(camera, canvas);
@@ -44,8 +46,9 @@ const HellIsHere = () => {
   const {callInTick: callInTickRecorder} = recorderObject({physicWorld, scene})
   const {callInTick: callInTickTree} = treeObject({physicWorld, scene})
   const {callInTick: callInTickWall, createWall} = wallObject({physicWorld, scene})
-  const {callInTick: callInTickCar, callInPostStep: callInPostStepCar} = carObject({physicWorld, scene})
+  const {callInTick: callInTickCar, callInPostStep: callInPostStepCar, chassisMesh} = carObject({physicWorld, scene})
   const {callInTick: callInTickGround} = groundObject({physicWorld, scene})
+  const {callInTick: callInTickFirework} = fireworkObject({physicWorld, scene})
   // add objects end
 
   createWall({
@@ -86,6 +89,7 @@ const HellIsHere = () => {
     callInTickTree();
     callInTickWall();
     callInTickCar(deltaTime);
+    callInTickFirework(chassisMesh);
     // call objects tick end
 
     oldElapsedTime = elapsedTime
