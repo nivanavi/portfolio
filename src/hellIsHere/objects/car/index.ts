@@ -4,9 +4,14 @@ import {objectProps}          from "../../types";
 import {wheelPhysicsMaterial} from "../../physics";
 import {copyPositions}        from "../../utils";
 import {Vector3}              from "three";
+import {GLTFLoader}           from "three/examples/jsm/loaders/GLTFLoader";
 
-export const CAR_OPTIONS = {
-  // chassis
+// models
+// @ts-ignore
+import delorianModel             from "./models/delorianv2.gltf";
+
+
+const boxCar = {
   chassisWidth: 1.02,
   chassisHeight: 1.16,
   chassisDepth: 2.03,
@@ -17,6 +22,25 @@ export const CAR_OPTIONS = {
   wheelFrontOffsetDepth: 0.635,
   wheelBackOffsetDepth: -0.475,
   wheelOffsetWidth: 0.39,
+}
+
+const delorian = {
+  chassisWidth: 1.02,
+  chassisHeight: 0.58,
+  chassisDepth: 2.03,
+  chassisMass: 20,
+  chassisOffset: new CANNON.Vec3(0.15, 0, 0.16),
+
+  wheelMass: 5,
+  wheelFrontOffsetDepth: 0.735,
+  wheelBackOffsetDepth: -0.5,
+  wheelOffsetWidth: 0.425,
+}
+
+export const CAR_OPTIONS = {
+  // chassis
+
+  ...delorian,
 
   maxSteeringForce: Math.PI * 0.17,
   steeringSpeed: 0.005,
@@ -27,8 +51,9 @@ export const CAR_OPTIONS = {
 }
 
 export const WHEEL_OPTIONS = {
-  radius: 0.25,
-  height: 0.24,
+  frontRadius: 0.17,
+  backRadius: 0.17,
+  height: 0.1,
   suspensionStiffness: 25,
   suspensionRestLength: 0.1,
   frictionSlip: 5,
@@ -58,7 +83,7 @@ export const CAR_DYNAMIC_OPTIONS = {
   oldPosition: new CANNON.Vec3(),
   goingForward: true,
   lastStopBurnOut: 0,
-  stopBurnOutDelta: 200,
+  stopBurnOutDelta: 300,
   up: false,
   down: false,
   left: false,
@@ -69,19 +94,34 @@ export const CAR_DYNAMIC_OPTIONS = {
   upsideDownState: "watching"
 }
 
+const gltfLoader = new GLTFLoader();
 
 export const carObject = ({physicWorld, scene}: objectProps) => {
+  let chassisMesh: THREE.Group;
+
+  // load models
+  gltfLoader.load(
+    delorianModel,
+    model => {
+      chassisMesh = model.scene
+      chassisMesh.scale.set(0.675, 0.675, 0.675)
+      chassisMesh.quaternion.setFromAxisAngle(new Vector3(0, 0, -1), Math.PI * 0.5 )
+      scene.add(chassisMesh)
+    }
+  )
+
   const chassisMaterial = new THREE.MeshStandardMaterial({
     color: "red",
     wireframe: true
   });
   const chassisGeometry = new THREE.BoxBufferGeometry(CAR_OPTIONS.chassisDepth, CAR_OPTIONS.chassisWidth, CAR_OPTIONS.chassisHeight);
-  const chassisMesh = new THREE.Mesh(chassisGeometry, chassisMaterial);
+  // const chassisMesh = new THREE.Mesh(chassisGeometry, chassisMaterial);
 
   const wheelMaterial = new THREE.MeshStandardMaterial({
     color: "blue"
   });
-  const wheelGeometry = new THREE.CylinderBufferGeometry(WHEEL_OPTIONS.radius, WHEEL_OPTIONS.radius, WHEEL_OPTIONS.height);
+  const wheelGeometryBack = new THREE.CylinderBufferGeometry(WHEEL_OPTIONS.backRadius, WHEEL_OPTIONS.backRadius, WHEEL_OPTIONS.height, 16);
+  const wheelGeometryFront = new THREE.CylinderBufferGeometry(WHEEL_OPTIONS.frontRadius, WHEEL_OPTIONS.frontRadius, WHEEL_OPTIONS.height, 16);
 
   const chassisShape = new CANNON.Box(new CANNON.Vec3(CAR_OPTIONS.chassisDepth * 0.5, CAR_OPTIONS.chassisWidth * 0.5, CAR_OPTIONS.chassisHeight * 0.5))
   const chassisBody = new CANNON.Body({mass: CAR_OPTIONS.chassisMass});
@@ -97,12 +137,14 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
 // Front left
   vehicle.addWheel({
     ...WHEEL_OPTIONS,
+    radius: WHEEL_OPTIONS.frontRadius,
     chassisConnectionPointLocal: new CANNON.Vec3(CAR_OPTIONS.wheelFrontOffsetDepth, CAR_OPTIONS.wheelOffsetWidth, 0)
   })
 
 // Front right
   vehicle.addWheel({
     ...WHEEL_OPTIONS,
+    radius: WHEEL_OPTIONS.frontRadius,
     chassisConnectionPointLocal: new CANNON.Vec3(CAR_OPTIONS.wheelFrontOffsetDepth, -CAR_OPTIONS.wheelOffsetWidth, 0)
   })
 
@@ -110,26 +152,28 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
 // Back left
   vehicle.addWheel({
     ...WHEEL_OPTIONS,
+    radius: WHEEL_OPTIONS.backRadius,
     chassisConnectionPointLocal: new CANNON.Vec3(CAR_OPTIONS.wheelBackOffsetDepth, CAR_OPTIONS.wheelOffsetWidth, 0)
   })
 
 // Back right
   vehicle.addWheel({
     ...WHEEL_OPTIONS,
+    radius: WHEEL_OPTIONS.backRadius,
     chassisConnectionPointLocal: new CANNON.Vec3(CAR_OPTIONS.wheelBackOffsetDepth, -CAR_OPTIONS.wheelOffsetWidth, 0)
   })
 
   vehicle.addToWorld(physicWorld);
-  scene.add(chassisMesh);
+  // scene.add(chassisMesh);
   setTimeout(() => chassisBody.wakeUp(), 300)
 
   const wheelsGraphic: THREE.Mesh[] = [];
   const wheelsPhysic: CANNON.Body[] = [];
 
-  vehicle.wheelInfos.forEach(wheel => {
-    const wheelMesh = new THREE.Mesh(wheelGeometry, wheelMaterial);
+  vehicle.wheelInfos.forEach((wheel, index) => {
+    const wheelMesh = new THREE.Mesh([WHEEL_OPTIONS.frontLeft, WHEEL_OPTIONS.frontRight].includes(index) ? wheelGeometryFront : wheelGeometryBack, wheelMaterial);
 
-    const shape = new CANNON.Cylinder(wheel.radius || WHEEL_OPTIONS.radius, wheel.radius || WHEEL_OPTIONS.radius, WHEEL_OPTIONS.height, 20)
+    const shape = new CANNON.Cylinder(wheel.radius || 0, wheel.radius || 0, WHEEL_OPTIONS.height, 20)
     const body = new CANNON.Body({mass: CAR_OPTIONS.wheelMass, material: wheelPhysicsMaterial})
     const quaternion = new CANNON.Quaternion()
     quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI * 0.5)
@@ -212,13 +256,13 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
   let rotation = 0;
   const callInTick = (delta: number) => {
     // update
-    copyPositions({mesh: chassisMesh, body: chassisBody})
+    if (chassisMesh) copyPositions({mesh: chassisMesh, body: chassisBody})
     wheelsPhysic.forEach((wheel, index) => {
       copyPositions({mesh: wheelsGraphic[index], body: wheel})
       if (!CAR_DYNAMIC_OPTIONS.isBurnOut) return;
       if (![WHEEL_OPTIONS.backLeft, WHEEL_OPTIONS.backRight].includes(index)) return;
       rotation = rotation + 8;
-      wheelsGraphic[index].rotateOnAxis(new Vector3(0, 1, 0),rotation)
+      wheelsGraphic[index].rotateOnAxis(new Vector3(0, 1, 0), rotation)
     })
 
     // TODO STEERING
@@ -323,6 +367,6 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
   return {
     callInTick,
     callInPostStep,
-    chassisMesh
+    // chassisMesh: chassisMesh
   }
 }

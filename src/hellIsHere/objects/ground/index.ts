@@ -12,8 +12,6 @@ export const groundObject = ({physicWorld, scene}: objectProps) => {
     groundMaterial
   )
   groundMesh.receiveShadow = true
-  groundMesh.rotation.x = -Math.PI * 0.5
-
 
   const groundShape = new CANNON.Plane();
   const groundBody = new CANNON.Body({

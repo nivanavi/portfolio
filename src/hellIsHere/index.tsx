@@ -40,15 +40,15 @@ const HellIsHere = () => {
 
   const orbitControl = new OrbitControls(camera, canvas);
   orbitControl.enableDamping = true;
-  const cannonDebugRenderer = new CannonDebugRenderer(scene, physicWorld)
+  // const cannonDebugRenderer = new CannonDebugRenderer(scene, physicWorld)
 
   // add objects start
-  const {callInTick: callInTickRecorder} = recorderObject({physicWorld, scene})
-  const {callInTick: callInTickTree} = treeObject({physicWorld, scene})
+  // const {callInTick: callInTickRecorder} = recorderObject({physicWorld, scene})
+  // const {callInTick: callInTickTree} = treeObject({physicWorld, scene})
   const {callInTick: callInTickWall, createWall} = wallObject({physicWorld, scene})
-  const {callInTick: callInTickCar, callInPostStep: callInPostStepCar, chassisMesh} = carObject({physicWorld, scene})
+  const {callInTick: callInTickCar, callInPostStep: callInPostStepCar} = carObject({physicWorld, scene})
   const {callInTick: callInTickGround} = groundObject({physicWorld, scene})
-  const {callInTick: callInTickFirework} = fireworkObject({physicWorld, scene})
+  // const {callInTick: callInTickFirework} = fireworkObject({physicWorld, scene})
   // add objects end
 
   createWall({
@@ -57,19 +57,19 @@ const HellIsHere = () => {
     position: new CANNON.Vec3(4.8 + 10 * BRICK_OPTION.width, 0.1, 0.2),
     isYDirection: true
   })
-
-  createWall({
-    rows: 5,
-    brickInRows: 10,
-    position: new CANNON.Vec3(5, 0.1, 0.2)
-  })
-
-  createWall({
-    rows: 5,
-    brickInRows: 10,
-    position: new CANNON.Vec3(4.8, 0.5, 0.2),
-    isYDirection: true,
-  })
+  //
+  // createWall({
+  //   rows: 5,
+  //   brickInRows: 10,
+  //   position: new CANNON.Vec3(5, 0.1, 0.2)
+  // })
+  //
+  // createWall({
+  //   rows: 5,
+  //   brickInRows: 10,
+  //   position: new CANNON.Vec3(4.8, 0.5, 0.2),
+  //   isYDirection: true,
+  // })
 
   physicWorld.addEventListener("postStep", () => {
     callInPostStepCar()
@@ -85,11 +85,11 @@ const HellIsHere = () => {
 
     // call objects tick start
     callInTickGround();
-    callInTickRecorder();
-    callInTickTree();
+    // callInTickRecorder();
+    // callInTickTree();
     callInTickWall();
     callInTickCar(deltaTime);
-    callInTickFirework(chassisMesh);
+    // callInTickFirework(chassisMesh);
     // call objects tick end
 
     oldElapsedTime = elapsedTime
@@ -100,7 +100,7 @@ const HellIsHere = () => {
     // // update tree js
     objectsToUpdate.forEach(objects => copyPositions({...objects}));
 
-    cannonDebugRenderer.update();
+    // cannonDebugRenderer.update();
     orbitControl.update();
     renderer.render(scene, camera);
     window.requestAnimationFrame(tick);

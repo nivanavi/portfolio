@@ -4,7 +4,7 @@ import {windowSizesType} from "../cameras";
 
 export type copyPositionType = {
   body: CANNON.Body,
-  mesh: THREE.Mesh,
+  mesh: THREE.Mesh | THREE.Group,
   isCopyRotation?: boolean
   positionOffset?: THREE.Vector3 | CANNON.Vec3
 }

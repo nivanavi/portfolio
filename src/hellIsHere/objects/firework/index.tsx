@@ -19,8 +19,8 @@ export const FIREWORK_OPTIONS = {
   maxX: 0.5,
   maxY: 0.5,
   maxZ: 2,
-  horizontalSpeed: 0.1,
-  verticalSpeed: 0.05,
+  horizontalSpeed: 0.01,
+  verticalSpeed: 0.005,
   // width: 0.6,
   // height: 0.4,
   // depth: 0.25,
@@ -40,6 +40,7 @@ console.log(randomIntFromInterval(-6, 6));
 console.log(randomIntFromInterval(-6, 6));
 console.log(randomIntFromInterval(-6, 6));
 console.log(randomIntFromInterval(-6, 6));
+
 
 
 export const fireworkObject = ({physicWorld, scene}: objectProps) => {
@@ -66,6 +67,7 @@ export const fireworkObject = ({physicWorld, scene}: objectProps) => {
   const count = 30;
 
   const currentPositions = new Float32Array(count * 3);
+  console.log(currentPositions)
   const endPositions = new Float32Array(count * 3);
   const colors = new Float32Array(count * 3);
   Array.from({length: count}).forEach((_, index) => {
@@ -87,8 +89,6 @@ export const fireworkObject = ({physicWorld, scene}: objectProps) => {
   // particlesMaterial.blending = THREE.AdditiveBlending;
   // particlesMaterial.vertexColors = true;
   scene.add(particles)
-
-  console.log(particlesGeometry);
 
   // physic
   const fireworkShape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5));
@@ -116,10 +116,12 @@ export const fireworkObject = ({physicWorld, scene}: objectProps) => {
       const speed = isVertical ? FIREWORK_OPTIONS.verticalSpeed : FIREWORK_OPTIONS.horizontalSpeed;
 
       if (endPosition <= 0) {
+        // if (position <= endPosition) return currentPositions[index] = 0;
         if (position <= endPosition) return;
         currentPositions[index] = currentPositions[index] - speed;
       }
       if (endPosition >= 0) {
+        // if (position >= endPosition) return currentPositions[index] = 0;
         if (position >= endPosition) return;
         currentPositions[index] = currentPositions[index] + speed;
       }
