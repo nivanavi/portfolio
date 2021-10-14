@@ -16,6 +16,8 @@ import {carObject}                                                              
 import {groundObject}                                                           from "./objects/ground";
 import {fireworkObject}                                                         from "./objects/firework";
 
+export const CLEAR_COLOR = "#f5aa58";
+
 const windowSizes: windowSizesType = {
   width: window.innerWidth,
   height: window.innerHeight,
@@ -31,15 +33,16 @@ const objectsToUpdate: copyPositionType[] = [];
 
 const HellIsHere = () => {
   const {canvas} = useSceneIgniterContext();
-  const {camera} = setupCameras({windowSizes});
+  const {camera, callInTickCamera} = setupCameras({windowSizes, scene});
   const {ambientLight, directionalLight} = setupLights()
   const {renderer} = setupRenderer({canvas, windowSizes});
+  renderer.setClearColor(CLEAR_COLOR)
   const cameraHelper = new THREE.CameraHelper(camera);
 
-  scene.add(ambientLight, directionalLight, axesHelper, cameraHelper);
+  scene.add(ambientLight, directionalLight, cameraHelper);
 
-  const orbitControl = new OrbitControls(camera, canvas);
-  orbitControl.enableDamping = true;
+  // const orbitControl = new OrbitControls(camera, canvas);
+  // orbitControl.enableDamping = true;
   // const cannonDebugRenderer = new CannonDebugRenderer(scene, physicWorld)
 
   // add objects start
@@ -92,6 +95,8 @@ const HellIsHere = () => {
     // callInTickFirework(chassisMesh);
     // call objects tick end
 
+    callInTickCamera()
+
     oldElapsedTime = elapsedTime
     // update physics world
 
@@ -101,7 +106,7 @@ const HellIsHere = () => {
     objectsToUpdate.forEach(objects => copyPositions({...objects}));
 
     // cannonDebugRenderer.update();
-    orbitControl.update();
+    // orbitControl.update();
     renderer.render(scene, camera);
     window.requestAnimationFrame(tick);
   }

@@ -3,13 +3,15 @@ import * as THREE    from "three";
 import {windowSizesType} from "../cameras";
 
 export type copyPositionType = {
-  body: CANNON.Body,
-  mesh: THREE.Mesh | THREE.Group,
+  body: CANNON.Body | null | undefined,
+  mesh: THREE.Mesh | THREE.Group | null | undefined,
   isCopyRotation?: boolean
   positionOffset?: THREE.Vector3 | CANNON.Vec3
 }
 
 export const copyPositions = ({body, mesh, isCopyRotation = true, positionOffset}:copyPositionType) => {
+  if (!body || !mesh) return console.log("U try copy position of null");
+
   mesh.position.x = body.position.x + (positionOffset?.x || 0);
   mesh.position.y = body.position.y + (positionOffset?.y || 0);
   mesh.position.z = body.position.z + (positionOffset?.z || 0);
