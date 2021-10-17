@@ -27,8 +27,8 @@ export const CAMERA_OPTIONS = {
   zoomAmplitude: 15,
   zoomDistance: 5 + 15 * 0.3,
 
-  panStartValueX: 0,
-  panStartValueY: 0,
+  panStartValueX: 3,
+  panStartValueY: 2,
   panValueX: 0,
   panValueY: 0,
   panTargetValueX: 0,

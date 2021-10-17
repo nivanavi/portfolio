@@ -37,9 +37,9 @@ const HellIsHere = () => {
   const {ambientLight, directionalLight} = setupLights()
   const {renderer} = setupRenderer({canvas, windowSizes});
   renderer.setClearColor(CLEAR_COLOR)
-  const cameraHelper = new THREE.CameraHelper(camera);
 
-  scene.add(ambientLight, directionalLight, cameraHelper);
+
+  scene.add(directionalLight);
 
   // const orbitControl = new OrbitControls(camera, canvas);
   // orbitControl.enableDamping = true;
@@ -49,15 +49,41 @@ const HellIsHere = () => {
   // const {callInTick: callInTickRecorder} = recorderObject({physicWorld, scene})
   // const {callInTick: callInTickTree} = treeObject({physicWorld, scene})
   const {callInTick: callInTickWall, createWall} = wallObject({physicWorld, scene})
-  const {callInTick: callInTickCar, callInPostStep: callInPostStepCar} = carObject({physicWorld, scene})
+  const {callInTick: callInTickCar, callInPostStep: callInPostStepCar, chassisBody, chassisMesh} = carObject({physicWorld, scene})
   const {callInTick: callInTickGround} = groundObject({physicWorld, scene})
   // const {callInTick: callInTickFirework} = fireworkObject({physicWorld, scene})
   // add objects end
 
+
+  const gg = {
+    teleport: () => {
+      chassisBody.position.set(-5, 5, 0.2)
+      copyPositions({mesh: chassisMesh, body: chassisBody})
+    }
+  }
+
+  gui.add(gg, "teleport");
+
+
+
   createWall({
     rows: 5,
     brickInRows: 10,
-    position: new CANNON.Vec3(4.8 + 10 * BRICK_OPTION.width, 0.1, 0.2),
+    position: new CANNON.Vec3(5, 0, 0.1),
+    isYDirection: true
+  })
+
+  createWall({
+    rows: 5,
+    brickInRows: 10,
+    position: new CANNON.Vec3(10, 0, 0.1),
+    isYDirection: true
+  })
+
+  createWall({
+    rows: 3,
+    brickInRows: 5,
+    position: new CANNON.Vec3(15, 0, 0.1),
     isYDirection: true
   })
   //

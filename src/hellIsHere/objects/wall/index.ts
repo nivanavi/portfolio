@@ -23,9 +23,9 @@ const brickPlayer = new Howl({
 });
 
 export const BRICK_OPTION = {
-  width: 0.7,
-  height: 0.36,
-  depth: 0.36,
+  width: 0.56,
+  height: 0.25,
+  depth: 0.25,
   mass: 0.5,
   lastPlaySound: 0,
   soundDelta: 100

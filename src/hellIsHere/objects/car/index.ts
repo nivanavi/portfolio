@@ -102,7 +102,7 @@ const wheelsGraphic: THREE.Group[] = [];
 const wheelsPhysic: CANNON.Body[] = [];
 
 export const carObject = ({physicWorld, scene}: objectProps) => {
-  let chassisMesh: THREE.Group | null = null;
+  let chassisMesh: THREE.Group = new THREE.Group();
 
   // load models
   gltfLoader.load(
@@ -263,9 +263,6 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
   let rotation = 0;
   const callInTick = (delta: number) => {
     // update
-
-    console.log(wheelsPhysic)
-
     if (chassisMesh) copyPositions({mesh: chassisMesh, body: chassisBody})
 
     wheelsPhysic.forEach((wheel, index) => {
@@ -378,6 +375,7 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
   return {
     callInTick,
     callInPostStep,
+    chassisBody,
     chassisMesh
   }
 }
