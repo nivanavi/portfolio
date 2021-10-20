@@ -1876,6 +1876,11 @@
   dependencies:
     "@types/jest" "*"
 
+"@types/three@^0.127.1":
+  version "0.127.1"
+  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.127.1.tgz#0978054e5daa6485946a3f1518a76412186ae81f"
+  integrity sha512-e90iYq3zde3axANg7BPZY0fKrez1AzveamIIFk23PMh9WtCx91geokDy+yEAIymdIldgUpvezAP6+zCV3oekXw==
+
 "@types/three@^0.131.0":
   version "0.131.0"
   resolved "https://registry.yarnpkg.com/@types/three/-/three-0.131.0.tgz#98f59887b05f71e665cf2fbdf04e0e4ceb9f89b6"
@@ -10535,6 +10540,13 @@ text-table@0.2.0, text-table@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha1-f17oI66AUgfACvLfSoTsP8+lcLQ=
+
+three-to-cannon@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/three-to-cannon/-/three-to-cannon-4.0.2.tgz#5123d897d3dee6bc37e4c48a71dc3e7fe2d87266"
+  integrity sha512-JhhR3+cljNrdwkzgRrENLVFvusojq5YWUmvsngKeLp9tOI8k7+GCjFyE/M2mRpyBz+dtzDxCXBfCs+blEi9uBg==
+  dependencies:
+    "@types/three" "^0.127.1"
 
 three@^0.132.2:
   version "0.132.2"

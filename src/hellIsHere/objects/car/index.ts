@@ -8,23 +8,10 @@ import {GLTFLoader}           from "three/examples/jsm/loaders/GLTFLoader";
 
 // models
 // @ts-ignore
-import delorianModel             from "./models/delorianv2.gltf";
+import delorianModel          from "./models/delorianv2.gltf";
 // @ts-ignore
 import wheelModel             from "./models/wheel.gltf";
 
-
-const boxCar = {
-  chassisWidth: 1.02,
-  chassisHeight: 1.16,
-  chassisDepth: 2.03,
-  chassisMass: 20,
-  chassisOffset: new CANNON.Vec3(0, 0, 0.41),
-
-  wheelMass: 5,
-  wheelFrontOffsetDepth: 0.635,
-  wheelBackOffsetDepth: -0.475,
-  wheelOffsetWidth: 0.39,
-}
 
 const delorian = {
   chassisWidth: 1.02,
@@ -40,10 +27,7 @@ const delorian = {
 }
 
 export const CAR_OPTIONS = {
-  // chassis
-
   ...delorian,
-
   maxSteeringForce: Math.PI * 0.17,
   steeringSpeed: 0.005,
   accelerationMaxSpeed: 0.055,
@@ -102,17 +86,17 @@ const wheelsGraphic: THREE.Group[] = [];
 const wheelsPhysic: CANNON.Body[] = [];
 
 export const carObject = ({physicWorld, scene}: objectProps) => {
-  let chassisMesh: THREE.Group = new THREE.Group();
+  const chassisMesh: THREE.Group = new THREE.Group();
+  chassisMesh.name = "car"
 
   // load models
   gltfLoader.load(
     delorianModel,
     model => {
-      chassisMesh = model.scene
-      chassisMesh.scale.set(0.675, 0.675, 0.675)
-      chassisMesh.quaternion.setFromAxisAngle(new Vector3(0, 0, -1), Math.PI * 0.5 )
-      chassisMesh.receiveShadow = true;
-      scene.add(chassisMesh)
+      const carModel = model.scene;
+      carModel.scale.set(0.675, 0.675, 0.675)
+      carModel.receiveShadow = true;
+      chassisMesh.add(model.scene)
     }
   )
 
@@ -121,25 +105,23 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
     model => {
       Array.from({length: 4}).forEach(() => {
         const wheelMesh = model.scene.clone();
-        wheelMesh.quaternion.setFromAxisAngle(new Vector3(0, -1, 0), Math.PI * 0.5 )
-        wheelMesh.scale.set(0.1, 0.1,0.1)
+        wheelMesh.name = "wheel";
+        wheelMesh.quaternion.setFromAxisAngle(new Vector3(0, -1, 0), Math.PI * 0.5)
+        wheelMesh.scale.set(0.1, 0.1, 0.1)
         scene.add(wheelMesh);
         wheelsGraphic.push(wheelMesh)
       })
     }
   )
 
-  const chassisMaterial = new THREE.MeshStandardMaterial({
+  const carContainerMaterial = new THREE.MeshStandardMaterial({
     color: "red",
     wireframe: true
   });
-  const chassisGeometry = new THREE.BoxBufferGeometry(CAR_OPTIONS.chassisDepth, CAR_OPTIONS.chassisWidth, CAR_OPTIONS.chassisHeight);
-  // const chassisMesh = new THREE.Mesh(chassisGeometry, chassisMaterial);
+  const carContainerGeometry = new THREE.BoxBufferGeometry(CAR_OPTIONS.chassisDepth, CAR_OPTIONS.chassisWidth, CAR_OPTIONS.chassisHeight);
+  const carContainer = new THREE.Mesh(carContainerGeometry, carContainerMaterial);
+  carContainer.position.set(CAR_OPTIONS.chassisOffset.x, CAR_OPTIONS.chassisOffset.y, CAR_OPTIONS.chassisOffset.z)
 
-  const wheelMaterial = new THREE.MeshStandardMaterial({
-    color: "blue"
-  });
-  const wheelGeometry = new THREE.CylinderBufferGeometry(WHEEL_OPTIONS.radius, WHEEL_OPTIONS.radius, WHEEL_OPTIONS.height, 16);
 
   const chassisShape = new CANNON.Box(new CANNON.Vec3(CAR_OPTIONS.chassisDepth * 0.5, CAR_OPTIONS.chassisWidth * 0.5, CAR_OPTIONS.chassisHeight * 0.5))
   const chassisBody = new CANNON.Body({mass: CAR_OPTIONS.chassisMass});
@@ -178,7 +160,9 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
   })
 
   vehicle.addToWorld(physicWorld);
-  // scene.add(chassisMesh);
+  chassisMesh.add(carContainer)
+  scene.add(chassisMesh);
+
   setTimeout(() => chassisBody.wakeUp(), 300)
 
   vehicle.wheelInfos.forEach(wheel => {
@@ -190,7 +174,7 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
     wheelsPhysic.push(body);
   })
 
-  const jump = (toReturn = true, strength = 60) => {
+  const jump = (toReturn = true, strength = 45) => {
     let worldPosition = chassisBody.position
     worldPosition = worldPosition.vadd(new CANNON.Vec3(toReturn ? 0.08 : 0, 0, 0))
     chassisBody.applyImpulse(new CANNON.Vec3(0, 0, strength), worldPosition)
@@ -240,8 +224,8 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
           jump()
           upsideDownTimeout = window.setTimeout(() => {
             CAR_DYNAMIC_OPTIONS.upsideDownState = "watching"
-          }, 1000)
-        }, 1000)
+          }, 2000)
+        }, 2000)
       }
     } else {
       if (CAR_DYNAMIC_OPTIONS.upsideDownState === "pending") {
@@ -263,7 +247,8 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
   let rotation = 0;
   const callInTick = (delta: number) => {
     // update
-    if (chassisMesh) copyPositions({mesh: chassisMesh, body: chassisBody})
+    copyPositions({mesh: chassisMesh, body: chassisBody})
+    // copyPositions({mesh: carContainer, body: chassisBody})
 
     wheelsPhysic.forEach((wheel, index) => {
       copyPositions({mesh: wheelsGraphic[index], body: wheel})
@@ -376,6 +361,7 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
     callInTick,
     callInPostStep,
     chassisBody,
-    chassisMesh
+    chassisMesh,
+    carContainer
   }
 }

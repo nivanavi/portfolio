@@ -5,16 +5,18 @@ import {setupCameras, windowSizesType}                          from "./cameras"
 import {setupLights}                                                            from "./lights";
 import {setupRenderer}                                                          from "./renderer";
 import CannonDebugRenderer, {copyPositions, copyPositionType, windowResizeUtil} from "./utils";
-import {setupPhysics}                                                           from "./physics";
-import dat                                                                      from 'dat.gui';
-import {OrbitControls}                                                          from "three/examples/jsm/controls/OrbitControls";
-import {recorderObject}                                                         from "./objects/recorder";
-import {treeObject}                                                             from "./objects/tree";
-import {BRICK_OPTION, wallObject}                                               from "./objects/wall";
-import CANNON                                                                   from "cannon";
-import {carObject}                                                              from "./objects/car";
-import {groundObject}                                                           from "./objects/ground";
-import {fireworkObject}                                                         from "./objects/firework";
+import {setupPhysics}             from "./physics";
+import dat                        from 'dat.gui';
+import {OrbitControls}            from "three/examples/jsm/controls/OrbitControls";
+import {recorderObject}           from "./objects/recorder";
+import {treeObject}               from "./objects/tree";
+import {BRICK_OPTION, wallObject} from "./objects/wall";
+import CANNON                     from "cannon";
+import {carObject}                from "./objects/car";
+import {groundObject}             from "./objects/ground";
+import {fireworkObject}           from "./objects/firework";
+import {teleportObject}           from "./objects/teleport";
+import {lampPostObject}           from "./objects/lampPost";
 
 export const CLEAR_COLOR = "#f5aa58";
 
@@ -43,27 +45,33 @@ const HellIsHere = () => {
 
   // const orbitControl = new OrbitControls(camera, canvas);
   // orbitControl.enableDamping = true;
-  // const cannonDebugRenderer = new CannonDebugRenderer(scene, physicWorld)
+  const cannonDebugRenderer = new CannonDebugRenderer(scene, physicWorld)
 
   // add objects start
   // const {callInTick: callInTickRecorder} = recorderObject({physicWorld, scene})
   // const {callInTick: callInTickTree} = treeObject({physicWorld, scene})
   const {callInTick: callInTickWall, createWall} = wallObject({physicWorld, scene})
-  const {callInTick: callInTickCar, callInPostStep: callInPostStepCar, chassisBody, chassisMesh} = carObject({physicWorld, scene})
+  const {callInTick: callInTickCar, callInPostStep: callInPostStepCar, chassisBody, carContainer} = carObject({physicWorld, scene})
   const {callInTick: callInTickGround} = groundObject({physicWorld, scene})
+  const {callInTick: callInTickTeleport} = teleportObject({physicWorld, scene, enterPosition: new THREE.Vector3(4, 4, 0.1), exitPosition: new THREE.Vector3(4, 9, 0.1)})
+  const {callInTick: callInTickLampPost} = lampPostObject({physicWorld, scene})
+  const {} = lampPostObject({physicWorld, scene})
+  const {} = lampPostObject({physicWorld, scene})
+  const {} = lampPostObject({physicWorld, scene})
+  const {} = lampPostObject({physicWorld, scene})
+  const {} = lampPostObject({physicWorld, scene})
   // const {callInTick: callInTickFirework} = fireworkObject({physicWorld, scene})
   // add objects end
 
 
   const gg = {
     teleport: () => {
-      chassisBody.position.set(-5, 5, 0.2)
-      copyPositions({mesh: chassisMesh, body: chassisBody})
+      chassisBody.position.set(2, 2, 0.1)
+      chassisBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 0, -1), Math.PI)
     }
   }
 
   gui.add(gg, "teleport");
-
 
 
   createWall({
@@ -86,12 +94,12 @@ const HellIsHere = () => {
     position: new CANNON.Vec3(15, 0, 0.1),
     isYDirection: true
   })
-  //
-  // createWall({
-  //   rows: 5,
-  //   brickInRows: 10,
-  //   position: new CANNON.Vec3(5, 0.1, 0.2)
-  // })
+
+  createWall({
+    rows: 5,
+    brickInRows: 10,
+    position: new CANNON.Vec3(5, 0.1, 0.2)
+  })
   //
   // createWall({
   //   rows: 5,
@@ -118,6 +126,8 @@ const HellIsHere = () => {
     // callInTickTree();
     callInTickWall();
     callInTickCar(deltaTime);
+    callInTickTeleport({mesh: carContainer, body: chassisBody});
+
     // callInTickFirework(chassisMesh);
     // call objects tick end
 
@@ -131,7 +141,7 @@ const HellIsHere = () => {
     // // update tree js
     objectsToUpdate.forEach(objects => copyPositions({...objects}));
 
-    // cannonDebugRenderer.update();
+    cannonDebugRenderer.update();
     // orbitControl.update();
     renderer.render(scene, camera);
     window.requestAnimationFrame(tick);

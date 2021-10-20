@@ -11,7 +11,6 @@ const groundWheelContactMaterial = new CANNON.ContactMaterial(groundPhysicsMater
 export const setupPhysics = () => {
   const physicWorld = new CANNON.World();
   physicWorld.gravity.set(0, 0, - 2.7)
-  physicWorld.broadphase = new CANNON.SAPBroadphase(physicWorld)
   physicWorld.allowSleep = true;
   physicWorld.defaultContactMaterial.friction = 0
   physicWorld.defaultContactMaterial.restitution = 0.2
@@ -21,6 +20,7 @@ export const setupPhysics = () => {
   physicWorld.addContactMaterial(dummyDummyContactMaterial)
 
   physicWorld.addContactMaterial(groundWheelContactMaterial)
+
 
   return {
     physicWorld,
