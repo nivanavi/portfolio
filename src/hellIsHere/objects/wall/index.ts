@@ -51,7 +51,7 @@ export const wallObject = ({physicWorld, scene}: objectProps) => {
       brickGeometry,
       brickMaterial
     )
-    mesh.receiveShadow = true;
+    mesh.castShadow = true;
 
     physicWorld.addBody(body)
     scene.add(mesh)

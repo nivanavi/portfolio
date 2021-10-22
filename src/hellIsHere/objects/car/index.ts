@@ -94,6 +94,7 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
     delorianModel,
     model => {
       const carModel = model.scene;
+      carModel.children[0].children.forEach(child => child.castShadow = true);
       carModel.scale.set(0.675, 0.675, 0.675)
       carModel.receiveShadow = true;
       chassisMesh.add(model.scene)
@@ -105,6 +106,7 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
     model => {
       Array.from({length: 4}).forEach(() => {
         const wheelMesh = model.scene.clone();
+        wheelMesh.children[0].children.forEach(child => child.castShadow = true);
         wheelMesh.name = "wheel";
         wheelMesh.quaternion.setFromAxisAngle(new Vector3(0, -1, 0), Math.PI * 0.5)
         wheelMesh.scale.set(0.1, 0.1, 0.1)
@@ -114,10 +116,8 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
     }
   )
 
-  const carContainerMaterial = new THREE.MeshStandardMaterial({
-    color: "red",
-    wireframe: true
-  });
+  const carContainerMaterial = new THREE.MeshStandardMaterial();
+  carContainerMaterial.visible = false;
   const carContainerGeometry = new THREE.BoxBufferGeometry(CAR_OPTIONS.chassisDepth, CAR_OPTIONS.chassisWidth, CAR_OPTIONS.chassisHeight);
   const carContainer = new THREE.Mesh(carContainerGeometry, carContainerMaterial);
   carContainer.position.set(CAR_OPTIONS.chassisOffset.x, CAR_OPTIONS.chassisOffset.y, CAR_OPTIONS.chassisOffset.z)

@@ -1,13 +1,16 @@
-import * as THREE from "three";
+import * as THREE    from "three";
+import {objectProps} from "../types";
 
-export const setupLights = () => {
+export const setupLights = ({scene}: objectProps) => {
   const ambientLight = new THREE.AmbientLight("#ffffff", 0.1);
 
-  const directionalLight = new THREE.DirectionalLight("#ffffff", 1)
-  directionalLight.position.set(3, 2, 5);
+  const pointLight = new THREE.PointLight("#ffffff", 0.5)
+  pointLight.position.set(0, 0, 7);
+
+  scene.add(ambientLight, pointLight)
 
   return {
     ambientLight,
-    directionalLight
+    pointLight
   }
 }

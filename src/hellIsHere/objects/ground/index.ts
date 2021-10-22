@@ -3,16 +3,15 @@ import CANNON                  from "cannon";
 import {groundPhysicsMaterial} from "../../physics";
 import * as THREE              from "three";
 import {copyPositions}         from "../../utils";
-import {CLEAR_COLOR}           from "../../index";
 
 export const groundObject = ({physicWorld, scene}: objectProps) => {
-  const groundMaterial = new THREE.MeshStandardMaterial({color: CLEAR_COLOR});
+  const groundMaterial = new THREE.MeshStandardMaterial();
   const groundGeometry = new THREE.PlaneBufferGeometry(20, 20);
   const groundMesh = new THREE.Mesh(
     groundGeometry,
     groundMaterial
   )
-  groundMesh.receiveShadow = true
+  groundMesh.receiveShadow = true;
 
   const groundShape = new CANNON.Plane();
   const groundBody = new CANNON.Body({

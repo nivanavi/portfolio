@@ -56,33 +56,33 @@ export const setupCameras = ({windowSizes, scene}: setupCamerasProps) => {
 
   const callInTickCamera = () => {
     // update position for zoom
-    CAMERA_OPTIONS.positionEased.x += (CAMERA_OPTIONS.positionTarget.x - CAMERA_OPTIONS.positionEased.x) * CAMERA_OPTIONS.easing
-    CAMERA_OPTIONS.positionEased.y += (CAMERA_OPTIONS.positionTarget.y - CAMERA_OPTIONS.positionEased.y) * CAMERA_OPTIONS.easing
-    CAMERA_OPTIONS.positionEased.z += (CAMERA_OPTIONS.positionTarget.z - CAMERA_OPTIONS.positionEased.z) * CAMERA_OPTIONS.easing
-    // Apply zoom
-    camera.position.copy(CAMERA_OPTIONS.positionEased).add(CAMERA_OPTIONS.angleOfView.clone().normalize().multiplyScalar(CAMERA_OPTIONS.zoomDistance))
-
-    CAMERA_OPTIONS.zoomValue += (CAMERA_OPTIONS.zoomTargetValue - CAMERA_OPTIONS.zoomValue) * CAMERA_OPTIONS.zoomEasing;
-    CAMERA_OPTIONS.zoomDistance = CAMERA_OPTIONS.zoomMinDistance + CAMERA_OPTIONS.zoomAmplitude * CAMERA_OPTIONS.zoomValue;
-
-    // update camera pan
-    camera.position.x -= CAMERA_OPTIONS.panValueX
-    camera.position.y -= CAMERA_OPTIONS.panValueY
-
-    // update position for pan
-    CAMERA_OPTIONS.panRaycaster.setFromCamera(new THREE.Vector2(), camera);
-    const intersects = CAMERA_OPTIONS.panRaycaster.intersectObjects([hitMesh])
-
-    if(intersects.length) {
-      CAMERA_OPTIONS.panTargetValueX = - (intersects[0].point.x - CAMERA_OPTIONS.panStartValueX)
-      CAMERA_OPTIONS.panTargetValueY = - (intersects[0].point.y - CAMERA_OPTIONS.panStartValueY)
-    }
-
-    CAMERA_OPTIONS.panValueX += (CAMERA_OPTIONS.panTargetValueX - CAMERA_OPTIONS.panValueX) * CAMERA_OPTIONS.panEasing
-    CAMERA_OPTIONS.panValueY += (CAMERA_OPTIONS.panTargetValueY - CAMERA_OPTIONS.panValueY) * CAMERA_OPTIONS.panEasing
-
-    const currentWatchPosition = new THREE.Vector3(CAR_DYNAMIC_OPTIONS.oldPosition.x, CAR_DYNAMIC_OPTIONS.oldPosition.y, CAR_DYNAMIC_OPTIONS.oldPosition.z)
-    camera.lookAt(currentWatchPosition);
+    // CAMERA_OPTIONS.positionEased.x += (CAMERA_OPTIONS.positionTarget.x - CAMERA_OPTIONS.positionEased.x) * CAMERA_OPTIONS.easing
+    // CAMERA_OPTIONS.positionEased.y += (CAMERA_OPTIONS.positionTarget.y - CAMERA_OPTIONS.positionEased.y) * CAMERA_OPTIONS.easing
+    // CAMERA_OPTIONS.positionEased.z += (CAMERA_OPTIONS.positionTarget.z - CAMERA_OPTIONS.positionEased.z) * CAMERA_OPTIONS.easing
+    // // Apply zoom
+    // camera.position.copy(CAMERA_OPTIONS.positionEased).add(CAMERA_OPTIONS.angleOfView.clone().normalize().multiplyScalar(CAMERA_OPTIONS.zoomDistance))
+    //
+    // CAMERA_OPTIONS.zoomValue += (CAMERA_OPTIONS.zoomTargetValue - CAMERA_OPTIONS.zoomValue) * CAMERA_OPTIONS.zoomEasing;
+    // CAMERA_OPTIONS.zoomDistance = CAMERA_OPTIONS.zoomMinDistance + CAMERA_OPTIONS.zoomAmplitude * CAMERA_OPTIONS.zoomValue;
+    //
+    // // update camera pan
+    // camera.position.x -= CAMERA_OPTIONS.panValueX
+    // camera.position.y -= CAMERA_OPTIONS.panValueY
+    //
+    // // update position for pan
+    // CAMERA_OPTIONS.panRaycaster.setFromCamera(new THREE.Vector2(), camera);
+    // const intersects = CAMERA_OPTIONS.panRaycaster.intersectObjects([hitMesh])
+    //
+    // if(intersects.length) {
+    //   CAMERA_OPTIONS.panTargetValueX = - (intersects[0].point.x - CAMERA_OPTIONS.panStartValueX)
+    //   CAMERA_OPTIONS.panTargetValueY = - (intersects[0].point.y - CAMERA_OPTIONS.panStartValueY)
+    // }
+    //
+    // CAMERA_OPTIONS.panValueX += (CAMERA_OPTIONS.panTargetValueX - CAMERA_OPTIONS.panValueX) * CAMERA_OPTIONS.panEasing
+    // CAMERA_OPTIONS.panValueY += (CAMERA_OPTIONS.panTargetValueY - CAMERA_OPTIONS.panValueY) * CAMERA_OPTIONS.panEasing
+    //
+    // const currentWatchPosition = new THREE.Vector3(CAR_DYNAMIC_OPTIONS.oldPosition.x, CAR_DYNAMIC_OPTIONS.oldPosition.y, CAR_DYNAMIC_OPTIONS.oldPosition.z)
+    // camera.lookAt(currentWatchPosition);
   }
 
   const wheelEventHandler = (ev: WheelEvent) => {

@@ -78,19 +78,23 @@ const teleport = ({enterPosition, exitPosition, physicWorld, scene, teleportCall
   physicWorld.addBody(teleportRightBody);
   scene.add(teleportLeftMesh, teleportRightMesh);
 
-  const raycaster = new THREE.Raycaster();
-  const rayOrigin = new THREE.Vector3(enterPosition.x, enterPosition.y, enterPosition.z + 0.4);
-  const rayDirection = new THREE.Vector3(0, 1, 0);
-  raycaster.far = 2.6;
-  raycaster.set(rayOrigin, rayDirection)
+
+  const ray = new CANNON.Ray(new CANNON.Vec3(enterPosition.x, enterPosition.y, enterPosition.z + 0.2), new CANNON.Vec3(enterPosition.x, enterPosition.y + 2, enterPosition.z + 0.2));
+
+  // const raycaster = new THREE.Raycaster();
+  // const rayOrigin = new THREE.Vector3(enterPosition.x, enterPosition.y, enterPosition.z + 0.4);
+  // const rayDirection = new THREE.Vector3(0, 1, 0);
+  // raycaster.far = 2.6;
+  // raycaster.set(rayOrigin, rayDirection)
 
   const callInTick = ({body, mesh}: callInTickTeleport) => {
-    const intersects = raycaster.intersectObject(mesh);
-    if (intersects.length) {
-      console.log("body before teleport", body)
-      body.position.set(exitPosition.x, exitPosition.y, exitPosition.z)
-      teleportCallback();
-    }
+
+    // const intersects = raycaster.intersectObject(mesh);
+    // if (intersects.length) {
+    //   console.log("body before teleport", body)
+    //   body.position.set(exitPosition.x, exitPosition.y, exitPosition.z)
+    //   teleportCallback();
+    // }
   }
 
   return {
@@ -110,7 +114,6 @@ export const teleportObject = ({physicWorld, scene, enterPosition, exitPosition}
   const {callInTick: callInTickExit} = teleport({physicWorld, scene, enterPosition: exitPosition, exitPosition: enterPosition, teleportCallback})
 
   const callInTick = (props: callInTickTeleport) => {
-    console.log("body", props.body)
     const currentTime = Date.now();
     if (currentTime < TELEPORT_OPTIONS.lastTeleport + TELEPORT_OPTIONS.teleportDelta) return;
 

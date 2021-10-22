@@ -17,6 +17,8 @@ import {groundObject}             from "./objects/ground";
 import {fireworkObject}           from "./objects/firework";
 import {teleportObject}           from "./objects/teleport";
 import {lampPostObject}           from "./objects/lampPost";
+import {triTable}                 from "three/examples/jsm/objects/MarchingCubes";
+import {poolObject}               from "./objects/waterpool";
 
 export const CLEAR_COLOR = "#f5aa58";
 
@@ -36,16 +38,13 @@ const objectsToUpdate: copyPositionType[] = [];
 const HellIsHere = () => {
   const {canvas} = useSceneIgniterContext();
   const {camera, callInTickCamera} = setupCameras({windowSizes, scene});
-  const {ambientLight, directionalLight} = setupLights()
+  const {} = setupLights({scene, physicWorld})
   const {renderer} = setupRenderer({canvas, windowSizes});
-  renderer.setClearColor(CLEAR_COLOR)
+  renderer.shadowMap.enabled = true;
 
-
-  scene.add(directionalLight);
-
-  // const orbitControl = new OrbitControls(camera, canvas);
+  const orbitControl = new OrbitControls(camera, canvas);
   // orbitControl.enableDamping = true;
-  const cannonDebugRenderer = new CannonDebugRenderer(scene, physicWorld)
+  // const cannonDebugRenderer = new CannonDebugRenderer(scene, physicWorld)
 
   // add objects start
   // const {callInTick: callInTickRecorder} = recorderObject({physicWorld, scene})
@@ -53,13 +52,12 @@ const HellIsHere = () => {
   const {callInTick: callInTickWall, createWall} = wallObject({physicWorld, scene})
   const {callInTick: callInTickCar, callInPostStep: callInPostStepCar, chassisBody, carContainer} = carObject({physicWorld, scene})
   const {callInTick: callInTickGround} = groundObject({physicWorld, scene})
-  const {callInTick: callInTickTeleport} = teleportObject({physicWorld, scene, enterPosition: new THREE.Vector3(4, 4, 0.1), exitPosition: new THREE.Vector3(4, 9, 0.1)})
-  const {callInTick: callInTickLampPost} = lampPostObject({physicWorld, scene})
-  const {} = lampPostObject({physicWorld, scene})
-  const {} = lampPostObject({physicWorld, scene})
-  const {} = lampPostObject({physicWorld, scene})
-  const {} = lampPostObject({physicWorld, scene})
-  const {} = lampPostObject({physicWorld, scene})
+  // const {callInTick: callInTickTeleport} = teleportObject({physicWorld, scene, enterPosition: new THREE.Vector3(4, 4, 0.1), exitPosition: new THREE.Vector3(4, 9, 0.1)})
+  const {} = lampPostObject({physicWorld, scene, position: new THREE.Vector3(-2, -2, 0)})
+  const {} = lampPostObject({physicWorld, scene, position: new THREE.Vector3(-2, 2, 0)})
+  const {} = lampPostObject({physicWorld, scene, position: new THREE.Vector3(-2, 6, 0)})
+  const {callInTick: callInTickPool} = poolObject({physicWorld, scene, position: new THREE.Vector3(5, 2, 0)})
+
   // const {callInTick: callInTickFirework} = fireworkObject({physicWorld, scene})
   // add objects end
 
@@ -73,33 +71,33 @@ const HellIsHere = () => {
 
   gui.add(gg, "teleport");
 
-
-  createWall({
-    rows: 5,
-    brickInRows: 10,
-    position: new CANNON.Vec3(5, 0, 0.1),
-    isYDirection: true
-  })
-
-  createWall({
-    rows: 5,
-    brickInRows: 10,
-    position: new CANNON.Vec3(10, 0, 0.1),
-    isYDirection: true
-  })
-
-  createWall({
-    rows: 3,
-    brickInRows: 5,
-    position: new CANNON.Vec3(15, 0, 0.1),
-    isYDirection: true
-  })
-
-  createWall({
-    rows: 5,
-    brickInRows: 10,
-    position: new CANNON.Vec3(5, 0.1, 0.2)
-  })
+  //
+  // createWall({
+  //   rows: 1,
+  //   brickInRows: 1,
+  //   position: new CANNON.Vec3(0, -2, 0.1),
+  //   isYDirection: true
+  // })
+  //
+  // createWall({
+  //   rows: 5,
+  //   brickInRows: 10,
+  //   position: new CANNON.Vec3(10, 0, 0.1),
+  //   isYDirection: true
+  // })
+  //
+  // createWall({
+  //   rows: 3,
+  //   brickInRows: 5,
+  //   position: new CANNON.Vec3(15, 0, 0.1),
+  //   isYDirection: true
+  // })
+  //
+  // createWall({
+  //   rows: 5,
+  //   brickInRows: 10,
+  //   position: new CANNON.Vec3(5, 0.1, 0.2)
+  // })
   //
   // createWall({
   //   rows: 5,
@@ -116,17 +114,19 @@ const HellIsHere = () => {
   const minDelta: number = 1000 / 70;
   const tick = () => {
     const elapsedTime = clock.getElapsedTime();
-    const deltaTime = Math.round((elapsedTime - oldElapsedTime) * 1000);
+    const physicsDeltaTime = Math.round((elapsedTime - oldElapsedTime) * 1000);
+    const graphicsDeltaTime = elapsedTime - oldElapsedTime;
 
-    if (deltaTime < minDelta) return window.requestAnimationFrame(tick);
+    if (physicsDeltaTime < minDelta) return window.requestAnimationFrame(tick);
 
     // call objects tick start
     callInTickGround();
     // callInTickRecorder();
     // callInTickTree();
     callInTickWall();
-    callInTickCar(deltaTime);
-    callInTickTeleport({mesh: carContainer, body: chassisBody});
+    callInTickCar(physicsDeltaTime);
+    callInTickPool(graphicsDeltaTime);
+    // callInTickTeleport({mesh: carContainer, body: chassisBody});
 
     // callInTickFirework(chassisMesh);
     // call objects tick end
@@ -136,13 +136,13 @@ const HellIsHere = () => {
     oldElapsedTime = elapsedTime
     // update physics world
 
-    physicWorld.step(1 / 60, deltaTime, 3);
+    physicWorld.step(1 / 60, physicsDeltaTime, 3);
 
     // // update tree js
     objectsToUpdate.forEach(objects => copyPositions({...objects}));
 
-    cannonDebugRenderer.update();
-    // orbitControl.update();
+    // cannonDebugRenderer.update();
+    orbitControl.update();
     renderer.render(scene, camera);
     window.requestAnimationFrame(tick);
   }

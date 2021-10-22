@@ -3,6 +3,32 @@
         "generator" : "Khronos glTF Blender I/O v1.6.16",
         "version" : "2.0"
     },
+    "extensionsUsed" : [
+        "KHR_lights_punctual"
+    ],
+    "extensionsRequired" : [
+        "KHR_lights_punctual"
+    ],
+    "extensions" : {
+        "KHR_lights_punctual" : {
+            "lights" : [
+                {
+                    "color" : [
+                        1,
+                        0.961720883846283,
+                        0.7792515158653259
+                    ],
+                    "intensity" : 0.5,
+                    "spot" : {
+                        "innerConeAngle" : 0.7312057251384303,
+                        "outerConeAngle" : 1.0445796251296997
+                    },
+                    "type" : "spot",
+                    "name" : "Spot.001"
+                }
+            ]
+        }
+    },
     "scene" : 0,
     "scenes" : [
         {
@@ -15,22 +41,21 @@
     ],
     "nodes" : [
         {
-            "name" : "Light",
-            "rotation" : [
-                0.16907575726509094,
-                0.27217137813568115,
-                0.7558803558349609,
-                0.570947527885437
-            ],
-            "translation" : [
-                -0.0004882887005805969,
-                0.008668363094329834,
-                8.467024803161621
-            ]
-        },
-        {
             "mesh" : 0,
             "name" : "Cylinder"
+        },
+        {
+            "extensions" : {
+                "KHR_lights_punctual" : {
+                    "light" : 0
+                }
+            },
+            "name" : "Spot",
+            "translation" : [
+                0,
+                0,
+                9.15049934387207
+            ]
         }
     ],
     "materials" : [
