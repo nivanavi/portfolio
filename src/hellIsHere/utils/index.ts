@@ -1,6 +1,6 @@
-import CANNON        from "cannon";
-import * as THREE    from "three";
-import {windowSizesType} from "../cameras";
+import CANNON            from "cannon";
+import * as THREE        from "three";
+import {windowSizesType} from "../index";
 
 export type copyPositionType = {
   body: CANNON.Body | null | undefined,

@@ -1,15 +1,5 @@
-import * as THREE            from "three";
-import {CAR_DYNAMIC_OPTIONS} from "../objects/car";
-
-export type windowSizesType = {
-  width: number
-  height: number
-}
-
-export type setupCamerasProps = {
-  windowSizes: windowSizesType,
-  scene: THREE.Scene
-}
+import * as THREE                            from "three";
+import {calInTickProps, MOST_IMPORTANT_DATA} from "../index";
 
 export const CAMERA_OPTIONS = {
   position: new THREE.Vector3(0, -5, 10),
@@ -38,7 +28,9 @@ export const CAMERA_OPTIONS = {
   panRaycaster: new THREE.Raycaster()
 }
 
-export const setupCameras = ({windowSizes, scene}: setupCamerasProps) => {
+export const setupCameras = () => {
+  const {windowSizes, scene, addToCallInTickStack} = MOST_IMPORTANT_DATA;
+
   const camera = new THREE.PerspectiveCamera(50, windowSizes.width / windowSizes.height, 1, 80);
   camera.up.set(0, 0, 1);
   camera.position.copy(CAMERA_OPTIONS.angleOfView)
@@ -49,12 +41,7 @@ export const setupCameras = ({windowSizes, scene}: setupCamerasProps) => {
   );
   scene.add(hitMesh)
 
-  // const callInTickCamera = () => {
-  //   CAMERA_OPTIONS.zoomValue += (CAMERA_OPTIONS.zoomTargetValue - CAMERA_OPTIONS.zoomValue) * CAMERA_OPTIONS.zoomEasing;
-  //   CAMERA_OPTIONS.zoomDistance = CAMERA_OPTIONS.zoomMinDistance + CAMERA_OPTIONS.zoomAmplitude * CAMERA_OPTIONS.zoomValue;
-  // }
-
-  const callInTickCamera = () => {
+  const callInTickCamera: (props: calInTickProps) => void = () => {
     // update position for zoom
     // CAMERA_OPTIONS.positionEased.x += (CAMERA_OPTIONS.positionTarget.x - CAMERA_OPTIONS.positionEased.x) * CAMERA_OPTIONS.easing
     // CAMERA_OPTIONS.positionEased.y += (CAMERA_OPTIONS.positionTarget.y - CAMERA_OPTIONS.positionEased.y) * CAMERA_OPTIONS.easing
@@ -84,6 +71,7 @@ export const setupCameras = ({windowSizes, scene}: setupCamerasProps) => {
     // const currentWatchPosition = new THREE.Vector3(CAR_DYNAMIC_OPTIONS.oldPosition.x, CAR_DYNAMIC_OPTIONS.oldPosition.y, CAR_DYNAMIC_OPTIONS.oldPosition.z)
     // camera.lookAt(currentWatchPosition);
   }
+  addToCallInTickStack(callInTickCamera)
 
   const wheelEventHandler = (ev: WheelEvent) => {
     CAMERA_OPTIONS.zoomTargetValue += ev.deltaY * 0.001
@@ -93,7 +81,6 @@ export const setupCameras = ({windowSizes, scene}: setupCamerasProps) => {
   window.addEventListener("wheel", wheelEventHandler)
 
   return {
-    camera,
-    callInTickCamera
+    camera
   }
 }

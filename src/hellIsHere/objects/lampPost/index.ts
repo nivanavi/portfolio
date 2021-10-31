@@ -7,9 +7,10 @@ import {dummyPhysicsMaterial} from "../../physics";
 import {GLTFLoader}           from "three/examples/jsm/loaders/GLTFLoader";
 
 // @ts-ignore
-import lampPostModelGltf from "./models/lampPost.gltf";
+import lampPostModelGltf     from "./models/lampPost.gltf";
 // @ts-ignore
-import lampBrokenSong    from "./sounds/lampBroken.mp3";
+import lampBrokenSong        from "./sounds/lampBroken.mp3";
+import {MOST_IMPORTANT_DATA} from "../../index";
 
 const recorderPlayer = new Howl({
   src: [lampBrokenSong],
@@ -18,13 +19,11 @@ const recorderPlayer = new Howl({
   loop: false
 });
 
-interface lampPostProps extends objectProps {
-  position: THREE.Vector3
-}
-
 const gltfLoader = new GLTFLoader();
 
-export const lampPostObject = ({physicWorld, scene, position}: lampPostProps) => {
+export const lampPostObject = ({position}: objectProps) => {
+  const {scene, physicWorld} = MOST_IMPORTANT_DATA;
+
   const LAMP_POST_OPTIONS = {
     isAlreadyBroken: false
   }
@@ -84,13 +83,4 @@ export const lampPostObject = ({physicWorld, scene, position}: lampPostProps) =>
   })
   physicWorld.addBody(lampPostBody);
   scene.add(lampPostContainer)
-
-
-  const callInTick = () => {
-
-  }
-
-  return {
-    callInTick
-  }
 }

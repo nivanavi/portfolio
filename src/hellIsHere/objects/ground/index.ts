@@ -1,10 +1,12 @@
-import {objectProps}           from "../../types";
 import CANNON                  from "cannon";
 import {groundPhysicsMaterial} from "../../physics";
 import * as THREE              from "three";
-import {copyPositions}         from "../../utils";
+import {copyPositions}                       from "../../utils";
+import {calInTickProps, MOST_IMPORTANT_DATA} from "../../index";
 
-export const groundObject = ({physicWorld, scene}: objectProps) => {
+export const groundObject = () => {
+  const {scene, physicWorld, addToCallInTickStack} = MOST_IMPORTANT_DATA;
+
   const groundMaterial = new THREE.MeshStandardMaterial();
   const groundGeometry = new THREE.PlaneBufferGeometry(20, 20);
   const groundMesh = new THREE.Mesh(
@@ -25,9 +27,6 @@ export const groundObject = ({physicWorld, scene}: objectProps) => {
   physicWorld.addBody(groundBody);
   scene.add(groundMesh);
 
-  const callInTick = () => copyPositions({mesh: groundMesh, body: groundBody})
-
-  return {
-    callInTick
-  }
+  const callInTick: (props: calInTickProps) => void = () => copyPositions({mesh: groundMesh, body: groundBody})
+  addToCallInTickStack(callInTick);
 }

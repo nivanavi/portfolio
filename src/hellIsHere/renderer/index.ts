@@ -1,12 +1,13 @@
-import * as THREE    from "three";
-import {windowSizesType} from "../cameras";
+import * as THREE            from "three";
+import {MOST_IMPORTANT_DATA} from "../index";
 
 export type setupRendererProps = {
   canvas: HTMLCanvasElement
-  windowSizes: windowSizesType
 }
 
-export const setupRenderer = ({canvas, windowSizes}: setupRendererProps) => {
+export const setupRenderer = ({canvas}: setupRendererProps) => {
+  const {windowSizes} = MOST_IMPORTANT_DATA;
+
   const renderer = new THREE.WebGLRenderer({canvas});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
   renderer.setSize(windowSizes.width, windowSizes.height)

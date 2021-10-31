@@ -1,4 +1,3 @@
-import {objectProps}                     from "../../types";
 import * as THREE                        from "three";
 import CANNON                            from "cannon";
 import {copyPositions, copyPositionType} from "../../utils";
@@ -6,7 +5,8 @@ import {dummyPhysicsMaterial}            from "../../physics";
 import {Howl}          from "howler";
 
 // @ts-ignore
-import recorderSongUrl    from "./sounds/brickSound.mp3"
+import recorderSongUrl                       from "./sounds/brickSound.mp3"
+import {calInTickProps, MOST_IMPORTANT_DATA} from "../../index";
 
 
 type createWallProps = {
@@ -31,7 +31,9 @@ export const BRICK_OPTION = {
   soundDelta: 100
 }
 
-export const wallObject = ({physicWorld, scene}: objectProps) => {
+export const wallObject = () => {
+  const {scene, physicWorld, addToCallInTickStack} = MOST_IMPORTANT_DATA;
+
   const brickMaterial = new THREE.MeshStandardMaterial();
   const brickGeometry = new THREE.BoxBufferGeometry(BRICK_OPTION.width, BRICK_OPTION.height, BRICK_OPTION.depth);
   const brickShape = new CANNON.Box(new CANNON.Vec3(BRICK_OPTION.width * 0.5, BRICK_OPTION.height * 0.5, BRICK_OPTION.depth * 0.5));
@@ -66,17 +68,7 @@ export const wallObject = ({physicWorld, scene}: objectProps) => {
       const currentTime = Date.now();
       if (currentTime < (BRICK_OPTION.lastPlaySound + BRICK_OPTION.soundDelta) || force < 0.7) return;
       BRICK_OPTION.lastPlaySound = currentTime;
-
-      //           minDelta: 100,
-      //                 velocityMin: 1,
-      //                 velocityMultiplier: 0.75,
-      //                 volumeMin: 0.2,
-      //                 volumeMax: 0.85,
-      //                 rateMin: 0.5,
-      //                 rateMax: 0.75
-
-      let volume = Math.min(Math.max((force - 0.7) * 0.75, 0.2), 0.85)
-      volume = Math.pow(volume, 2)
+      const volume = Math.pow(Math.min(Math.max((force - 0.7) * 0.75, 0.2), 0.85), 2)
       brickPlayer.volume(volume)
       brickPlayer.play();
     })
@@ -97,10 +89,10 @@ export const wallObject = ({physicWorld, scene}: objectProps) => {
     })
   }
 
-  const callInTick = () => bricks.forEach(brick => copyPositions(brick));
+  const callInTick: (props: calInTickProps) => void = () => bricks.forEach(brick => copyPositions(brick));
+  addToCallInTickStack(callInTick)
 
   return {
-    createWall,
-    callInTick
+    createWall
   }
 }

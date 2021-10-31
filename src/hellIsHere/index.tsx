@@ -1,75 +1,86 @@
-import React                                                                    from 'react';
-import {SceneIgniterContextProvider, useSceneIgniterContext}                    from "../lessons/lessonIgniter";
-import * as THREE                                                               from "three";
-import {setupCameras, windowSizesType}                          from "./cameras";
-import {setupLights}                                                            from "./lights";
-import {setupRenderer}                                                          from "./renderer";
-import CannonDebugRenderer, {copyPositions, copyPositionType, windowResizeUtil} from "./utils";
-import {setupPhysics}             from "./physics";
-import dat                        from 'dat.gui';
-import {OrbitControls}            from "three/examples/jsm/controls/OrbitControls";
-import {recorderObject}           from "./objects/recorder";
-import {treeObject}               from "./objects/tree";
-import {BRICK_OPTION, wallObject} from "./objects/wall";
-import CANNON                     from "cannon";
-import {carObject}                from "./objects/car";
-import {groundObject}             from "./objects/ground";
-import {fireworkObject}           from "./objects/firework";
-import {teleportObject}           from "./objects/teleport";
-import {lampPostObject}           from "./objects/lampPost";
-import {triTable}                 from "three/examples/jsm/objects/MarchingCubes";
-import {poolObject}               from "./objects/waterpool";
+import React                                                 from 'react';
+import {SceneIgniterContextProvider, useSceneIgniterContext} from "../lessons/lessonIgniter";
+import * as THREE                                            from "three";
+import {setupCameras}                                        from "./cameras";
+import {setupLights}                                         from "./lights";
+import {setupRenderer}                                       from "./renderer";
+import CannonDebugRenderer, {windowResizeUtil}               from "./utils";
+import {setupPhysics}                                        from "./physics";
+import dat                                                   from 'dat.gui';
+import {OrbitControls}                                       from "three/examples/jsm/controls/OrbitControls";
+import {wallObject}                                          from "./objects/wall";
+import CANNON                                                from "cannon";
+import {carObject}                                           from "./objects/car";
+import {groundObject}                                        from "./objects/ground";
+import {lampPostObject}                                      from "./objects/lampPost";
+import {poolObject}                                          from "./objects/waterpool";
+import {benchObject}                                         from "./objects/bench";
 
-export const CLEAR_COLOR = "#f5aa58";
-
-const windowSizes: windowSizesType = {
-  width: window.innerWidth,
-  height: window.innerHeight,
+export type windowSizesType = {
+  width: number
+  height: number
 }
 
-const clock = new THREE.Clock();
-const gui = new dat.GUI();
-const scene = new THREE.Scene();
-const axesHelper = new THREE.AxesHelper(5);
-const {physicWorld} = setupPhysics();
+export type calInTickProps = {
+  physicDelta: number
+  graphicDelta: number
+}
+type callInTick = (props: calInTickProps) => void;
+type callInPostStep = () => void;
 
-const objectsToUpdate: copyPositionType[] = [];
+type mostImportantData = {
+  scene: THREE.Scene
+  physicWorld: CANNON.World
+  gui: dat.GUI
+  windowSizes: windowSizesType
+  clock: THREE.Clock
+  addToCallInTickStack: (callInTick: callInTick) => void
+  addToCallInPostStepStack: (callInTick: callInPostStep) => void
+}
+
+const callInTickStack: callInTick[] = [];
+const callInPostStepStack: callInPostStep[] = [];
+export const MOST_IMPORTANT_DATA: mostImportantData = {
+  scene: new THREE.Scene(),
+  physicWorld: setupPhysics().physicWorld,
+  gui: new dat.GUI(),
+  windowSizes: {
+    width: window.innerWidth,
+    height: window.innerHeight,
+  },
+  clock: new THREE.Clock(),
+  addToCallInTickStack: (callInTick: callInTick) => callInTickStack.push(callInTick),
+  addToCallInPostStepStack: (callInPostStep: callInPostStep) => callInPostStepStack.push(callInPostStep)
+}
+
+const {scene, physicWorld, windowSizes, clock} = MOST_IMPORTANT_DATA;
 
 const HellIsHere = () => {
   const {canvas} = useSceneIgniterContext();
-  const {camera, callInTickCamera} = setupCameras({windowSizes, scene});
-  const {} = setupLights({scene, physicWorld})
-  const {renderer} = setupRenderer({canvas, windowSizes});
+  const {camera} = setupCameras();
+  setupLights()
+  const {renderer} = setupRenderer({canvas});
   renderer.shadowMap.enabled = true;
 
   const orbitControl = new OrbitControls(camera, canvas);
   // orbitControl.enableDamping = true;
-  // const cannonDebugRenderer = new CannonDebugRenderer(scene, physicWorld)
+  const cannonDebugRenderer = new CannonDebugRenderer(scene, physicWorld)
 
   // add objects start
   // const {callInTick: callInTickRecorder} = recorderObject({physicWorld, scene})
   // const {callInTick: callInTickTree} = treeObject({physicWorld, scene})
-  const {callInTick: callInTickWall, createWall} = wallObject({physicWorld, scene})
-  const {callInTick: callInTickCar, callInPostStep: callInPostStepCar, chassisBody, carContainer} = carObject({physicWorld, scene})
-  const {callInTick: callInTickGround} = groundObject({physicWorld, scene})
+  const {createWall} = wallObject()
+  carObject()
+  groundObject()
   // const {callInTick: callInTickTeleport} = teleportObject({physicWorld, scene, enterPosition: new THREE.Vector3(4, 4, 0.1), exitPosition: new THREE.Vector3(4, 9, 0.1)})
-  const {} = lampPostObject({physicWorld, scene, position: new THREE.Vector3(-2, -2, 0)})
-  const {} = lampPostObject({physicWorld, scene, position: new THREE.Vector3(-2, 2, 0)})
-  const {} = lampPostObject({physicWorld, scene, position: new THREE.Vector3(-2, 6, 0)})
-  const {callInTick: callInTickPool} = poolObject({physicWorld, scene, position: new THREE.Vector3(5, 2, 0)})
+  lampPostObject({position: new THREE.Vector3(-2, -2, 0)})
+  lampPostObject({position: new THREE.Vector3(-2, 2, 0)})
+  lampPostObject({position: new THREE.Vector3(-2, 6, 0)})
+  poolObject({position: new THREE.Vector3(5, 2, 0)})
+  benchObject({position: new THREE.Vector3(10, 2, 5)})
 
   // const {callInTick: callInTickFirework} = fireworkObject({physicWorld, scene})
   // add objects end
-
-
-  const gg = {
-    teleport: () => {
-      chassisBody.position.set(2, 2, 0.1)
-      chassisBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 0, -1), Math.PI)
-    }
-  }
-
-  gui.add(gg, "teleport");
 
   //
   // createWall({
@@ -106,46 +117,33 @@ const HellIsHere = () => {
   //   isYDirection: true,
   // })
 
-  physicWorld.addEventListener("postStep", () => {
-    callInPostStepCar()
-  })
+  physicWorld.addEventListener("postStep", () => callInPostStepStack.forEach(call => call()))
 
   let oldElapsedTime: number;
   const minDelta: number = 1000 / 70;
   const tick = () => {
     const elapsedTime = clock.getElapsedTime();
-    const physicsDeltaTime = Math.round((elapsedTime - oldElapsedTime) * 1000);
-    const graphicsDeltaTime = elapsedTime - oldElapsedTime;
+    const physicDelta = Math.round((elapsedTime - oldElapsedTime) * 1000);
+    const graphicDelta = elapsedTime - oldElapsedTime;
+    if (physicDelta < minDelta) return window.requestAnimationFrame(tick);
 
-    if (physicsDeltaTime < minDelta) return window.requestAnimationFrame(tick);
+    // update call in tick stack
+    callInTickStack.forEach(call => call({physicDelta, graphicDelta}))
 
-    // call objects tick start
-    callInTickGround();
-    // callInTickRecorder();
-    // callInTickTree();
-    callInTickWall();
-    callInTickCar(physicsDeltaTime);
-    callInTickPool(graphicsDeltaTime);
-    // callInTickTeleport({mesh: carContainer, body: chassisBody});
+    // update physic step
+    physicWorld.step(1 / 60, physicDelta, 3);
 
-    // callInTickFirework(chassisMesh);
-    // call objects tick end
-
-    callInTickCamera()
-
-    oldElapsedTime = elapsedTime
-    // update physics world
-
-    physicWorld.step(1 / 60, physicsDeltaTime, 3);
-
-    // // update tree js
-    objectsToUpdate.forEach(objects => copyPositions({...objects}));
-
-    // cannonDebugRenderer.update();
+    // update other stuff
+    cannonDebugRenderer.update();
     orbitControl.update();
     renderer.render(scene, camera);
+
+    // update old elapsed time
+    oldElapsedTime = elapsedTime
+
     window.requestAnimationFrame(tick);
   }
+  tick();
 
   const windowResizeHandler = React.useCallback(() => {
     windowResizeUtil({
@@ -157,8 +155,6 @@ const HellIsHere = () => {
       }
     })
   }, [renderer, camera]);
-
-  tick();
 
   React.useEffect(() => {
     window.addEventListener("resize", windowResizeHandler)

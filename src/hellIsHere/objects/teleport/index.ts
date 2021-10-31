@@ -1,11 +1,10 @@
 import CANNON                            from "cannon";
 import * as THREE                        from "three";
 import {objectProps}                     from "../../types";
-import {copyPositions, copyPositionType} from "../../utils";
+import {copyPositions} from "../../utils";
 import {Howl}                            from "howler";
 import {dummyPhysicsMaterial}            from "../../physics";
-import {Object3D}                        from "three";
-import {CAR_DYNAMIC_OPTIONS}             from "../car";
+
 
 // @ts-ignore
 // import recorderSongUrl        from "./sounds/recorderSong.mp3"

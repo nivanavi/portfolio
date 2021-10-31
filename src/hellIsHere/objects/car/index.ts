@@ -1,6 +1,5 @@
 import * as THREE             from "three";
 import CANNON                 from "cannon";
-import {objectProps}          from "../../types";
 import {wheelPhysicsMaterial} from "../../physics";
 import {copyPositions}        from "../../utils";
 import {Vector3}              from "three";
@@ -10,7 +9,8 @@ import {GLTFLoader}           from "three/examples/jsm/loaders/GLTFLoader";
 // @ts-ignore
 import delorianModel          from "./models/delorianv2.gltf";
 // @ts-ignore
-import wheelModel             from "./models/wheel.gltf";
+import wheelModel                            from "./models/wheel.gltf";
+import {calInTickProps, MOST_IMPORTANT_DATA} from "../../index";
 
 
 const delorian = {
@@ -85,7 +85,10 @@ const wheelsGraphic: THREE.Group[] = [];
 
 const wheelsPhysic: CANNON.Body[] = [];
 
-export const carObject = ({physicWorld, scene}: objectProps) => {
+export const carObject = () => {
+  const {scene, physicWorld, addToCallInTickStack, addToCallInPostStepStack} = MOST_IMPORTANT_DATA;
+
+
   const chassisMesh: THREE.Group = new THREE.Group();
   chassisMesh.name = "car"
 
@@ -187,7 +190,7 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
     vehicle.setBrake(force, 3)
   }
 
-  const callInPostStep = () => {
+  const callInPostStep: () => void = () => {
     // Update speed
     let positionDelta = new CANNON.Vec3().copy(chassisBody.position)
     positionDelta = positionDelta.vsub(CAR_DYNAMIC_OPTIONS.oldPosition)
@@ -242,10 +245,10 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
       wheelsPhysic[index].quaternion.copy(transform.quaternion)
     })
   }
-
+  addToCallInPostStepStack(callInPostStep)
 
   let rotation = 0;
-  const callInTick = (delta: number) => {
+  const callInTick: (props: calInTickProps) => void = ({physicDelta}) => {
     // update
     copyPositions({mesh: chassisMesh, body: chassisBody})
     // copyPositions({mesh: carContainer, body: chassisBody})
@@ -259,7 +262,7 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
     })
 
     // TODO STEERING
-    const steerForce = delta * CAR_OPTIONS.steeringSpeed
+    const steerForce = physicDelta * CAR_OPTIONS.steeringSpeed
     // Steer right and left
     if (CAR_DYNAMIC_OPTIONS.right && CAR_DYNAMIC_OPTIONS.left) {
       if (Math.abs(CAR_DYNAMIC_OPTIONS.steering) > steerForce) CAR_DYNAMIC_OPTIONS.steering -= steerForce * Math.sign(CAR_DYNAMIC_OPTIONS.steering)
@@ -284,7 +287,7 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
     vehicle.setSteeringValue(-CAR_DYNAMIC_OPTIONS.steering, WHEEL_OPTIONS.frontRight)
 
     // TODO ACCELERATE
-    const accelerateForce = delta * CAR_OPTIONS.acceleratingSpeed
+    const accelerateForce = physicDelta * CAR_OPTIONS.acceleratingSpeed
     const currentMaxSpeed: number = CAR_DYNAMIC_OPTIONS.boost ? CAR_OPTIONS.boostAccelerationMaxSpeed : CAR_OPTIONS.accelerationMaxSpeed;
     // Accelerate up
 
@@ -321,13 +324,13 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
     // vehicle.applyEngineForce(-CAR_DYNAMIC_OPTIONS.accelerating, WHEEL_OPTIONS.frontLeft)
     // vehicle.applyEngineForce(-CAR_DYNAMIC_OPTIONS.accelerating, WHEEL_OPTIONS.frontRight)
 
-    // TODO BRAKE
     if (CAR_DYNAMIC_OPTIONS.brake) {
       brake(CAR_OPTIONS.brakeForce)
     } else {
       brake(0)
     }
   }
+  addToCallInTickStack(callInTick)
 
   chassisBody.addEventListener("collide", (ev: any) => {
     // console.log(ev);
@@ -358,8 +361,6 @@ export const carObject = ({physicWorld, scene}: objectProps) => {
   window.addEventListener("keyup", ev => keyPressHandler(ev, false))
 
   return {
-    callInTick,
-    callInPostStep,
     chassisBody,
     chassisMesh,
     carContainer
