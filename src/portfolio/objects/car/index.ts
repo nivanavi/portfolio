@@ -199,12 +199,7 @@ export const carObject = () => {
     CAR_DYNAMIC_OPTIONS.goingForward = CAR_DYNAMIC_OPTIONS.forwardSpeed > 0
 
     // slow stop
-    if (!CAR_DYNAMIC_OPTIONS.up && !CAR_DYNAMIC_OPTIONS.down) {
-      let slowDownForce = CAR_DYNAMIC_OPTIONS.worldForward.clone();
-      if (CAR_DYNAMIC_OPTIONS.goingForward) slowDownForce = slowDownForce.negate()
-      slowDownForce = slowDownForce.scale(chassisBody.velocity.length() * 0.1)
-      chassisBody.applyImpulse(slowDownForce, chassisBody.position)
-    }
+    if (!CAR_DYNAMIC_OPTIONS.up && !CAR_DYNAMIC_OPTIONS.down) brake(0.2)
 
     // TODO upside down
     let upsideDownTimeout;
