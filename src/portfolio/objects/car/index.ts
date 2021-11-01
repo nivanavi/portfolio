@@ -63,7 +63,6 @@ export const CAR_DYNAMIC_OPTIONS = {
   accelerating: 0,
   speed: 0,
   worldForward: new CANNON.Vec3(),
-  angle: 0,
   forwardSpeed: 0,
   oldPosition: new CANNON.Vec3(),
   goingForward: true,
@@ -174,7 +173,6 @@ export const carObject = () => {
   })
 
   const jump = (toReturn = true, strength = 45) => {
-    return;
     let worldPosition = chassisBody.position
     worldPosition = worldPosition.vadd(new CANNON.Vec3(toReturn ? 0.08 : 0, 0, 0))
     chassisBody.applyImpulse(new CANNON.Vec3(0, strength, 0), worldPosition)
@@ -197,8 +195,6 @@ export const carObject = () => {
     // Update forward
     const localForward = new CANNON.Vec3(1, 0, 0)
     chassisBody.vectorToWorldFrame(localForward, CAR_DYNAMIC_OPTIONS.worldForward)
-    CAR_DYNAMIC_OPTIONS.angle = Math.atan2(CAR_DYNAMIC_OPTIONS.worldForward.y, CAR_DYNAMIC_OPTIONS.worldForward.x)
-
     CAR_DYNAMIC_OPTIONS.forwardSpeed = CAR_DYNAMIC_OPTIONS.worldForward.dot(positionDelta)
     CAR_DYNAMIC_OPTIONS.goingForward = CAR_DYNAMIC_OPTIONS.forwardSpeed > 0
 
@@ -206,13 +202,13 @@ export const carObject = () => {
     if (!CAR_DYNAMIC_OPTIONS.up && !CAR_DYNAMIC_OPTIONS.down) {
       let slowDownForce = CAR_DYNAMIC_OPTIONS.worldForward.clone();
       if (CAR_DYNAMIC_OPTIONS.goingForward) slowDownForce = slowDownForce.negate()
-      slowDownForce = slowDownForce.scale((chassisBody.velocity as any).length() * 0.1)
+      slowDownForce = slowDownForce.scale(chassisBody.velocity.length() * 0.1)
       chassisBody.applyImpulse(slowDownForce, chassisBody.position)
     }
 
     // TODO upside down
     let upsideDownTimeout;
-    const localUp = new CANNON.Vec3(0, 0, 1);
+    const localUp = new CANNON.Vec3(0, 1, 0);
     const worldUp = new CANNON.Vec3();
     chassisBody.vectorToWorldFrame(localUp, worldUp);
 
