@@ -266,9 +266,9 @@ export const carObject = () => {
       else CAR_DYNAMIC_OPTIONS.steering = 0
     }
     // steer right
-    else if (CAR_DYNAMIC_OPTIONS.right) CAR_DYNAMIC_OPTIONS.steering += steerForce
+    else if (CAR_DYNAMIC_OPTIONS.right) CAR_DYNAMIC_OPTIONS.steering -= steerForce
     // steer left
-    else if (CAR_DYNAMIC_OPTIONS.left) CAR_DYNAMIC_OPTIONS.steering -= steerForce
+    else if (CAR_DYNAMIC_OPTIONS.left) CAR_DYNAMIC_OPTIONS.steering += steerForce
 
     // Steer center
     else {
@@ -280,8 +280,9 @@ export const carObject = () => {
     if (Math.abs(CAR_DYNAMIC_OPTIONS.steering) > CAR_OPTIONS.maxSteeringForce) CAR_DYNAMIC_OPTIONS.steering = Math.sign(CAR_DYNAMIC_OPTIONS.steering) * CAR_OPTIONS.maxSteeringForce
 
     // Update wheels steering
-    vehicle.setSteeringValue(-CAR_DYNAMIC_OPTIONS.steering, WHEEL_OPTIONS.frontLeft)
-    vehicle.setSteeringValue(-CAR_DYNAMIC_OPTIONS.steering, WHEEL_OPTIONS.frontRight)
+
+    vehicle.setSteeringValue(CAR_DYNAMIC_OPTIONS.steering, WHEEL_OPTIONS.frontLeft)
+    vehicle.setSteeringValue(CAR_DYNAMIC_OPTIONS.steering, WHEEL_OPTIONS.frontRight)
 
     // TODO ACCELERATE
     const accelerateForce = physicDelta * CAR_OPTIONS.acceleratingSpeed
@@ -297,15 +298,12 @@ export const carObject = () => {
       vehicle.setBrake(1, WHEEL_OPTIONS.backRight)
       return;
     } else if (CAR_DYNAMIC_OPTIONS.up) {
-      // CAR_DYNAMIC_OPTIONS.isBurnOut = false;
       if (CAR_DYNAMIC_OPTIONS.speed < currentMaxSpeed || !CAR_DYNAMIC_OPTIONS.goingForward) CAR_DYNAMIC_OPTIONS.accelerating = accelerateForce
       else CAR_DYNAMIC_OPTIONS.accelerating = 0
     } else if (CAR_DYNAMIC_OPTIONS.down) {
-      // CAR_DYNAMIC_OPTIONS.isBurnOut = false;
       if (CAR_DYNAMIC_OPTIONS.speed < currentMaxSpeed || CAR_DYNAMIC_OPTIONS.goingForward) CAR_DYNAMIC_OPTIONS.accelerating = -accelerateForce
       else CAR_DYNAMIC_OPTIONS.accelerating = 0
     } else {
-      // CAR_DYNAMIC_OPTIONS.isBurnOut = false;
       CAR_DYNAMIC_OPTIONS.accelerating = 0
     }
     const currentTime = Date.now();
