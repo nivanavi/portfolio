@@ -1,9 +1,9 @@
 import React               from 'react';
-import {HellIsHereIgniter} from "./hellIsHere";
+import {PortfolioIgniter}  from "./portfolio";
 
 function App() {
   return (
-    <HellIsHereIgniter/>
+    <PortfolioIgniter/>
   );
 }
 

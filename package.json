@@ -19,8 +19,7 @@
     "@types/three": "^0.131.0",
     "dat.gui": "^0.7.7",
     "@types/dat.gui": "^0.7.7",
-    "cannon": "^0.6.2",
-    "@types/cannon": "^0.1.7",
+    "cannon-es": "^0.18.0",
     "howler": "^2.2.3",
     "@types/howler": "^2.2.4",
     "three-to-cannon": "^4.0.2"

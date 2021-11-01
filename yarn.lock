@@ -1688,11 +1688,6 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
-"@types/cannon@^0.1.7":
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/@types/cannon/-/cannon-0.1.7.tgz#207054af280bcb6c14febd8f8c886c51b89fb5b2"
-  integrity sha512-D2BpUjnKI6B8+VkUHXWHqDziR6V3nllRwKsSCYajJusWOfGxuaF9s7gqrYnSAX7G2ykbZ+YWyOCOz1Gk3RRVrw==
-
 "@types/dat.gui@^0.7.7":
   version "0.7.7"
   resolved "https://registry.yarnpkg.com/@types/dat.gui/-/dat.gui-0.7.7.tgz#2125aedfaa190364c5a50b0447858a7e159aea2e"
@@ -3163,10 +3158,10 @@ caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30001109, can
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001191.tgz#bacb432b6701f690c8c5f7c680166b9a9f0843d9"
   integrity sha512-xJJqzyd+7GCJXkcoBiQ1GuxEiOBCLQ0aVW9HMekifZsAVGdj5eJ4mFB9fEhSHipq9IOk/QXFJUiIr9lZT+EsGw==
 
-cannon@^0.6.2:
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/cannon/-/cannon-0.6.2.tgz#1e7bc72dd5841982f3c104c2bc578bfa4fb1c572"
-  integrity sha1-HnvHLdWEGYLzwQTCvFeL+k+xxXI=
+cannon-es@^0.18.0:
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/cannon-es/-/cannon-es-0.18.0.tgz#ae831ff9df2352d5faabb269c11ea0f10bc35c7e"
+  integrity sha512-GiQ1bd0etZsMVSnUhNc+p+FEh0R/cULpp8uRSAhEK4Kax+y/31Au03m6h1h1xdDivAMnFg8YDwevHgzLynOHlw==
 
 capture-exit@^2.0.0:
   version "2.0.0"

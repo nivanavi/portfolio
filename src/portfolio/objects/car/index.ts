@@ -1,5 +1,5 @@
 import * as THREE             from "three";
-import * as CANNON from 'cannon-es'
+import * as CANNON            from 'cannon-es'
 import {wheelPhysicsMaterial} from "../../physics";
 import {copyPositions}        from "../../utils";
 import {Vector3}              from "three";
@@ -17,13 +17,13 @@ const delorian = {
   chassisWidth: 1.02,
   chassisHeight: 0.58,
   chassisDepth: 2.03,
-  chassisMass: 0,
-  chassisOffset: new CANNON.Vec3(0.15, 0, 0.16),
+  chassisMass: 20,
+  chassisOffset: new CANNON.Vec3(0.15, 0.16, 0),
 
   wheelMass: 5,
   wheelFrontOffsetDepth: 0.735,
   wheelBackOffsetDepth: -0.5,
-  wheelOffsetWidth: 0.725,
+  wheelOffsetWidth: 0.425,
 }
 
 export const CAR_OPTIONS = {
@@ -49,8 +49,8 @@ export const WHEEL_OPTIONS = {
   maxSuspensionTravel: 0.3,
   customSlidingRotationalSpeed: -30,
   useCustomSlidingRotationalSpeed: true,
-  directionLocal: new CANNON.Vec3(0, 0, -1),
-  axleLocal: new CANNON.Vec3(1, 0, 0),
+  directionLocal: new CANNON.Vec3(0, -1, 0),
+  axleLocal: new CANNON.Vec3(0, 0, 1),
   frontLeft: 0,
   frontRight: 1,
   backLeft: 2,
@@ -88,7 +88,6 @@ const wheelsPhysic: CANNON.Body[] = [];
 export const carObject = () => {
   const {scene, physicWorld, addToCallInTickStack, addToCallInPostStepStack} = MOST_IMPORTANT_DATA;
 
-
   const chassisMesh: THREE.Group = new THREE.Group();
   chassisMesh.name = "car"
 
@@ -100,6 +99,7 @@ export const carObject = () => {
       carModel.children[0].children.forEach(child => child.castShadow = true);
       carModel.scale.set(0.675, 0.675, 0.675)
       carModel.receiveShadow = true;
+      carModel.position.set(0, 0, 0.005)
       chassisMesh.add(model.scene)
     }
   )
@@ -121,16 +121,15 @@ export const carObject = () => {
 
   const carContainerMaterial = new THREE.MeshStandardMaterial();
   carContainerMaterial.visible = false;
-  const carContainerGeometry = new THREE.BoxBufferGeometry(CAR_OPTIONS.chassisDepth, CAR_OPTIONS.chassisWidth, CAR_OPTIONS.chassisHeight);
+  const carContainerGeometry = new THREE.BoxBufferGeometry(CAR_OPTIONS.chassisDepth, CAR_OPTIONS.chassisHeight, CAR_OPTIONS.chassisWidth);
   const carContainer = new THREE.Mesh(carContainerGeometry, carContainerMaterial);
   carContainer.position.set(CAR_OPTIONS.chassisOffset.x, CAR_OPTIONS.chassisOffset.y, CAR_OPTIONS.chassisOffset.z)
 
 
-  const chassisShape = new CANNON.Box(new CANNON.Vec3(CAR_OPTIONS.chassisDepth * 0.5, CAR_OPTIONS.chassisWidth * 0.5, CAR_OPTIONS.chassisHeight * 0.5))
+  const chassisShape = new CANNON.Box(new CANNON.Vec3(CAR_OPTIONS.chassisDepth * 0.5, CAR_OPTIONS.chassisHeight * 0.5, CAR_OPTIONS.chassisWidth * 0.5))
   const chassisBody = new CANNON.Body({mass: CAR_OPTIONS.chassisMass});
   chassisBody.allowSleep = false;
-  chassisBody.position.set(0, 0, 1);
-  chassisBody.sleep()
+  chassisBody.position.set(0, 2, 0);
   chassisBody.addShape(chassisShape, CAR_OPTIONS.chassisOffset)
 
   const vehicle = new CANNON.RaycastVehicle({
@@ -140,33 +139,30 @@ export const carObject = () => {
 // Front left
   vehicle.addWheel({
     ...WHEEL_OPTIONS,
-    chassisConnectionPointLocal: new CANNON.Vec3(CAR_OPTIONS.wheelFrontOffsetDepth, CAR_OPTIONS.wheelOffsetWidth, 0)
+    chassisConnectionPointLocal: new CANNON.Vec3(CAR_OPTIONS.wheelFrontOffsetDepth, 0, CAR_OPTIONS.wheelOffsetWidth)
   })
 
 // Front right
   vehicle.addWheel({
     ...WHEEL_OPTIONS,
-    chassisConnectionPointLocal: new CANNON.Vec3(CAR_OPTIONS.wheelFrontOffsetDepth, -CAR_OPTIONS.wheelOffsetWidth, 0)
+    chassisConnectionPointLocal: new CANNON.Vec3(CAR_OPTIONS.wheelFrontOffsetDepth, 0, -CAR_OPTIONS.wheelOffsetWidth)
   })
-
 
 // Back left
   vehicle.addWheel({
     ...WHEEL_OPTIONS,
-    chassisConnectionPointLocal: new CANNON.Vec3(CAR_OPTIONS.wheelBackOffsetDepth, CAR_OPTIONS.wheelOffsetWidth, 0)
+    chassisConnectionPointLocal: new CANNON.Vec3(CAR_OPTIONS.wheelBackOffsetDepth, 0, CAR_OPTIONS.wheelOffsetWidth)
   })
 
 // Back right
   vehicle.addWheel({
     ...WHEEL_OPTIONS,
-    chassisConnectionPointLocal: new CANNON.Vec3(CAR_OPTIONS.wheelBackOffsetDepth, -CAR_OPTIONS.wheelOffsetWidth, 0)
+    chassisConnectionPointLocal: new CANNON.Vec3(CAR_OPTIONS.wheelBackOffsetDepth, 0, -CAR_OPTIONS.wheelOffsetWidth)
   })
 
   vehicle.addToWorld(physicWorld);
   chassisMesh.add(carContainer)
   scene.add(chassisMesh);
-
-  setTimeout(() => chassisBody.wakeUp(), 300)
 
   vehicle.wheelInfos.forEach(wheel => {
     const shape = new CANNON.Cylinder(wheel.radius || 0, wheel.radius || 0, WHEEL_OPTIONS.height, 20)
@@ -175,14 +171,13 @@ export const carObject = () => {
     quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI * 0.5)
     body.addShape(shape, new CANNON.Vec3(), quaternion)
     wheelsPhysic.push(body);
-
-    physicWorld.addBody(body)
   })
 
   const jump = (toReturn = true, strength = 45) => {
+    return;
     let worldPosition = chassisBody.position
     worldPosition = worldPosition.vadd(new CANNON.Vec3(toReturn ? 0.08 : 0, 0, 0))
-    chassisBody.applyImpulse(new CANNON.Vec3(0, 0, strength), worldPosition)
+    chassisBody.applyImpulse(new CANNON.Vec3(0, strength, 0), worldPosition)
   }
 
   const brake = (force: number) => {
@@ -260,7 +255,7 @@ export const carObject = () => {
       if (!CAR_DYNAMIC_OPTIONS.isBurnOut) return;
       if (![WHEEL_OPTIONS.backLeft, WHEEL_OPTIONS.backRight].includes(index)) return;
       rotation = rotation + 8;
-      wheelsGraphic[index].rotateOnAxis(new Vector3(0, 1, 0), rotation)
+      wheelsGraphic[index].rotateOnAxis(new Vector3(0, 0, 1), rotation)
     })
 
     // TODO STEERING
@@ -319,12 +314,12 @@ export const carObject = () => {
 
     if (currentTime < CAR_DYNAMIC_OPTIONS.lastStopBurnOut + CAR_DYNAMIC_OPTIONS.stopBurnOutDelta) CAR_DYNAMIC_OPTIONS.accelerating = CAR_DYNAMIC_OPTIONS.accelerating * 2;
 
-    vehicle.applyEngineForce(-CAR_DYNAMIC_OPTIONS.accelerating, WHEEL_OPTIONS.backLeft)
-    vehicle.applyEngineForce(-CAR_DYNAMIC_OPTIONS.accelerating, WHEEL_OPTIONS.backRight)
+    vehicle.applyEngineForce(CAR_DYNAMIC_OPTIONS.accelerating, WHEEL_OPTIONS.backLeft)
+    vehicle.applyEngineForce(CAR_DYNAMIC_OPTIONS.accelerating, WHEEL_OPTIONS.backRight)
 
     // uncomment it for 4x4
-    // vehicle.applyEngineForce(-CAR_DYNAMIC_OPTIONS.accelerating, WHEEL_OPTIONS.frontLeft)
-    // vehicle.applyEngineForce(-CAR_DYNAMIC_OPTIONS.accelerating, WHEEL_OPTIONS.frontRight)
+    // vehicle.applyEngineForce(CAR_DYNAMIC_OPTIONS.accelerating, WHEEL_OPTIONS.frontLeft)
+    // vehicle.applyEngineForce(CAR_DYNAMIC_OPTIONS.accelerating, WHEEL_OPTIONS.frontRight)
 
     if (CAR_DYNAMIC_OPTIONS.brake) {
       brake(CAR_OPTIONS.brakeForce)

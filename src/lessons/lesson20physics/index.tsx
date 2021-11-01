@@ -3,7 +3,7 @@ import {SceneIgniterContextProvider, useSceneIgniterContext} from "../lessonIgni
 import * as THREE                                            from "three";
 import {OrbitControls}                                       from "three/examples/jsm/controls/OrbitControls";
 import * as dat       from "dat.gui";
-import CANNON, {Vec3} from "cannon";
+import * as CANNON from 'cannon-es'
 
 const clock = new THREE.Clock();
 

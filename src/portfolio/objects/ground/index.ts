@@ -18,10 +18,10 @@ export const groundObject = () => {
   const groundShape = new CANNON.Plane();
   const groundBody = new CANNON.Body({
     mass: 0,
-    shape: groundShape,
     material: groundPhysicsMaterial
   })
-
+  groundBody.addShape(groundShape)
+  groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI * 0.5)
   // scene.fog = new THREE.Fog(CLEAR_COLOR, 10, 15);
 
   physicWorld.addBody(groundBody);

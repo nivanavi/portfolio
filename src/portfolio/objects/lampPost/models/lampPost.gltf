@@ -1,0 +1,182 @@
+{
+    "asset" : {
+        "generator" : "Khronos glTF Blender I/O v1.6.16",
+        "version" : "2.0"
+    },
+    "extensionsUsed" : [
+        "KHR_lights_punctual"
+    ],
+    "extensionsRequired" : [
+        "KHR_lights_punctual"
+    ],
+    "extensions" : {
+        "KHR_lights_punctual" : {
+            "lights" : [
+                {
+                    "color" : [
+                        1,
+                        0.961720883846283,
+                        0.7792515158653259
+                    ],
+                    "intensity" : 0.5,
+                    "spot" : {
+                        "innerConeAngle" : 0.7312057251384303,
+                        "outerConeAngle" : 1.0445796251296997
+                    },
+                    "type" : "spot",
+                    "name" : "Spot.001"
+                }
+            ]
+        }
+    },
+    "scene" : 0,
+    "scenes" : [
+        {
+            "name" : "Scene",
+            "nodes" : [
+                0,
+                1
+            ]
+        }
+    ],
+    "nodes" : [
+        {
+            "mesh" : 0,
+            "name" : "Cylinder"
+        },
+        {
+            "extensions" : {
+                "KHR_lights_punctual" : {
+                    "light" : 0
+                }
+            },
+            "name" : "Spot",
+            "translation" : [
+                0,
+                0,
+                9.15049934387207
+            ]
+        }
+    ],
+    "materials" : [
+        {
+            "doubleSided" : true,
+            "name" : "mainMaterial",
+            "pbrMetallicRoughness" : {
+                "baseColorFactor" : [
+                    0.003642031690105796,
+                    0.003642031690105796,
+                    0.003642031690105796,
+                    1
+                ],
+                "metallicFactor" : 0.8999999761581421,
+                "roughnessFactor" : 0.48522165417671204
+            }
+        },
+        {
+            "doubleSided" : true,
+            "emissiveFactor" : [
+                1,
+                1,
+                0.9449420124292374
+            ],
+            "name" : "glass",
+            "pbrMetallicRoughness" : {}
+        }
+    ],
+    "meshes" : [
+        {
+            "name" : "Cylinder",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 0
+                    },
+                    "indices" : 1,
+                    "material" : 0
+                },
+                {
+                    "attributes" : {
+                        "POSITION" : 2
+                    },
+                    "indices" : 3,
+                    "material" : 1
+                }
+            ]
+        }
+    ],
+    "accessors" : [
+        {
+            "bufferView" : 0,
+            "componentType" : 5126,
+            "count" : 94,
+            "max" : [
+                0.8530861735343933,
+                0.8694220781326294,
+                9.368767738342285
+            ],
+            "min" : [
+                -0.851421058177948,
+                -0.8694220781326294,
+                -0.12882420420646667
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 1,
+            "componentType" : 5123,
+            "count" : 516,
+            "type" : "SCALAR"
+        },
+        {
+            "bufferView" : 2,
+            "componentType" : 5126,
+            "count" : 16,
+            "max" : [
+                0.7351713180541992,
+                0.7550645470619202,
+                9.125983238220215
+            ],
+            "min" : [
+                -0.761379063129425,
+                -0.7595270872116089,
+                7.707040786743164
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 3,
+            "componentType" : 5123,
+            "count" : 24,
+            "type" : "SCALAR"
+        }
+    ],
+    "bufferViews" : [
+        {
+            "buffer" : 0,
+            "byteLength" : 1128,
+            "byteOffset" : 0
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 1032,
+            "byteOffset" : 1128
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 192,
+            "byteOffset" : 2160
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 48,
+            "byteOffset" : 2352
+        }
+    ],
+    "buffers" : [
+        {
+            "byteLength" : 2400,
+            "uri" : "data:application/octet-stream;base64,aLD+sHKSXj9+6gO+K8QLMhtEFD/56SU/ycBAP3GS3j5+6gO+9GYAPxpElD756SU/yMBAP3SS3r5+6gO+82YAPxxElL756SU/NTSns3KSXr9+6gO+wbRNsxpEFL/56SU/ycBAv2+S3r5+6gO+9GYAvxhElL756SU/ycBAv2+S3j5+6gO+9GYAvxhElD756SU/ycBAP3GS3j6uVMc+aLD+sHKSXj+uVMc+yMBAP3SS3r6uVMc+NTSns3KSXr+uVMc+ycBAv2+S3r6uVMc+ycBAv2+S3j6uVMc+9GYAPxpElD756SU/K8QLMhtEFD/56SU/82YAPxxElL756SU/wbRNsxpEFL/56SU/9GYAvxhElL756SU/9GYAvxhElD756SU/9GYAPxpElD756SU/K8QLMhtEFD/56SU/82YAPxxElL756SU/wbRNsxpEFL/56SU/9GYAvxhElL756SU/9GYAvxhElD756SU/tRPDPmZBYT60mB5AwxFeMmZB4T60mB5AsxPDPmdBYb60mB5AjvoPs2RB4b60mB5AtRPDvmJBYb60mB5AtRPDvmJBYT60mB5A9GYAPxpElD4mKRNAK8QLMhtEFD8mKRNA82YAPxxElL4mKRNAwbRNsxpEFL8mKRNA9GYAvxhElL4mKRNA9GYAvxhElD4mKRNAdOIyPnjmMD4bR+5AdOIyPnjmMD4KTxtAdOIyPu4pM74bR+5AdOIyPu4pM74KTxtA9C0xvnjmMD4bR+5A9C0xvnjmMD4KTxtA9C0xvu4pM74bR+5A9C0xvu4pM74KTxtAfRcAP2mbGr8lPPZAJ/cZv2M3AL90SvZAV5j/PuTbGT+7UPZAJ/cZv6qP/z50SvZADqU6PwOWVb/dtxFBSDxVvxEYPL8SvxFBk946P48aVT8ZtxFBSDxVvwgKPD/lthFBu1T/vmmbGr/GSfZA8uz/vuTbGT9FR/ZA4F05vwOWVb+uvhFBc9Q5v48aVT/pwBFBtDwVv9QqFT89b/NAQoMaP3zW/z4ORvZAu/ZZv9zkWT9SHhNBAb9VP9MDPD9gvBFBQoMaP2UwAL8ORvZAtDwVv7K7Fb89b/NAAb9VP/pIPL8bwRFBu/ZZv7p1Wr9SHhNB1KkVP9QqFT89b/NA1KkVP7K7Fb89b/NA22NaP9zkWT9SHhNB22NaP7p1Wr9SHhNBg8soP2LdKL955hVBY14ov2LdKL955hVBg8soP4RMKD955hVBY14ov4RMKD955hVBnKQHv8Q2AL+fqvZAnKQHv+iQ/z6fqvZAvelCv3IXPL8o7xFBvelCv6cKPD/75hFBkxgAP8R1B78UoPZAkFL/vsR1B7+0rfZAJKY6P15wQr/V6RFBylw5v15wQr+l8BFBcfgAP3zX/z7ly/ZAcfgAP+UvAL/ly/ZAMDQ8P1MEPD9L/xFBMDQ8P3pIPL8HBBJBG+z/vj4NBj8ur/ZALpn/Pj4NBj+kuPZAB9Q5v+lLQT/d9BFB/946P+lLQT8N6xFBAAANAAwAAAAMAAIAAgAMAA4AAgAOAAQABAAOAA8ABAAPAAYABgAPABAABgAQAAgACwAJABYACwAWABcACAAQABEACAARAAoACgARAA0ACgANAAAACgAAAAIAAgAEAAYABgAIAAoAAgAGAAoAAQADAAwAAQAMAA0AAwAFAA4AAwAOAAwABQAHAA8ABQAPAA4ABwAJABAABwAQAA8ACQALABEACQARABAACwABAA0ACwANABEAFgAVABsAFgAbABwABwAFABQABwAUABUAAwABABMAAwATABIAAQALABcAAQAXABMACQAHABUACQAVABYABQADABIABQASABQAGwAaACYAGwAmACcAFAASABgAFAAYABoAFwAWABwAFwAcAB0AFQAUABoAFQAaABsAEgATABkAEgAZABgAEwAXAB0AEwAdABkAIAAeAB8AHwAjACIAIgAhACAAHwAiACAAGAAZACUAGAAlACQAGQAdACkAGQApACUAHAAbACcAHAAnACgAGgAYACQAGgAkACYAHQAcACgAHQAoACkAHwAeACQAHwAkACUAHgAgACYAHgAmACQAIAAhACcAIAAnACYAIQAiACgAIQAoACcAIgAjACkAIgApACgAIwAfACUAIwAlACkALAAqAEYALABGAEcALwArAC0ALwAtADEALQAsADAALQAwADEAKwAqACwAKwAsAC0ALwAuACoALwAqACsAMQAwAC4AMQAuAC8AOwA9AFwAOwBcAFoAKgAuAD4AKgA+AEYAMAAsAEcAMABHAEMALgAwAEMALgBDAD4AQABFAEsAQABLAE0APAA6AFMAPABTAFUANwA5AFEANwBRAFAARABCAFcARABXAFkAMwA1AD4AMwA+AEMAOQA3AEUAOQBFAEAANQA5AEAANQBAAD4ANwAzAEMANwBDAEUAOwA0AEYAOwBGAD4AOAA9AEAAOABAAEgAPQA7AD4APQA+AEAANAA4AEgANABIAEYAMgA6AEMAMgBDAEcAPAA2AEkAPABJAEUANgAyAEcANgBHAEkAOgA8AEUAOgBFAEMAPwBCAEcAPwBHAEYARABBAEgARABIAEkAQQA/AEYAQQBGAEgAQgBEAEkAQgBJAEcATABNAEsATABLAEoASQBIAEwASQBMAEoASABAAE0ASABNAEwARQBJAEoARQBKAEsAOQA1AE8AOQBPAFEANQAzAE4ANQBOAE8AMwA3AFAAMwBQAE4ANgA8AFUANgBVAFQAMgA2AFQAMgBUAFIAOgAyAFIAOgBSAFMAQQBEAFkAQQBZAFgAPwBBAFgAPwBYAFYAQgA/AFYAQgBWAFcANAA7AFoANABaAFsAOAA0AFsAOABbAF0APQA4AF0APQBdAFwAnKQHv8Q2AL+fqvZAnKQHv+iQ/z6fqvZAvelCv3IXPL8o7xFBvelCv6cKPD/75hFBkxgAP8R1B78UoPZAkFL/vsR1B7+0rfZAJKY6P15wQr/V6RFBylw5v15wQr+l8BFBcfgAP3zX/z7ly/ZAcfgAP+UvAL/ly/ZAMDQ8P1MEPD9L/xFBMDQ8P3pIPL8HBBJBG+z/vj4NBj8ur/ZALpn/Pj4NBj+kuPZAB9Q5v+lLQT/d9BFB/946P+lLQT8N6xFBAQAAAAIAAQACAAMABQAEAAYABQAGAAcACQAIAAoACQAKAAsADQAMAA4ADQAOAA8A"
+        }
+    ]
+}
