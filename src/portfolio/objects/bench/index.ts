@@ -1,13 +1,12 @@
 import * as CANNON from 'cannon-es'
 import * as THREE             from "three";
-import {objectProps}          from "../../types";
 import {copyPositions}        from "../../utils";
 import {dummyPhysicsMaterial} from "../../physics";
 import {GLTFLoader}           from "three/examples/jsm/loaders/GLTFLoader";
 
 // @ts-ignore
-import benchModelGltf                        from "./models/bench.gltf";
-import {calInTickProps, MOST_IMPORTANT_DATA} from "../../index";
+import benchModelGltf                                     from "./models/bench.gltf";
+import {calInTickProps, MOST_IMPORTANT_DATA, objectProps} from "../../index";
 
 
 // const recorderPlayer = new Howl({
@@ -17,13 +16,10 @@ import {calInTickProps, MOST_IMPORTANT_DATA} from "../../index";
 //   loop: false
 // });
 
-interface benchProps extends objectProps {
-  position: THREE.Vector3
-}
-
 const gltfLoader = new GLTFLoader();
 
-export const benchObject = ({position}: benchProps) => {
+export const benchObject = (props?: objectProps) => {
+  const {position = new THREE.Vector3(), quaternion} = props || {};
   const {scene, physicWorld, addToCallInTickStack} = MOST_IMPORTANT_DATA;
 
   const benchContainer: THREE.Group = new THREE.Group();
@@ -36,22 +32,20 @@ export const benchObject = ({position}: benchProps) => {
     model => {
       const benchModel = model.scene;
       benchModel.scale.set(0.27, 0.27, 0.27);
-      benchModel.position.set(0, 0, -0.3)
+      benchModel.position.set(0, 0, 0)
       benchContainer.add(benchModel);
     }
   )
 
   // physic
-  const benchShape = new CANNON.Box(new CANNON.Vec3(0.46, 0.3, 0.26));
+  const benchShape = new CANNON.Box(new CANNON.Vec3(0.46, 0.28, 0.3));
   const benchBody = new CANNON.Body({
     mass: 5,
-    shape: benchShape,
     material: dummyPhysicsMaterial
   })
-  benchBody.allowSleep = true;
-  // benchBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0, -1, 0),  Math.PI * 0.5);
-  benchBody.position.set(position.x, position.y, position.z + 0.2)
-  benchBody.allowSleep = true;
+  benchBody.addShape(benchShape)
+  if (position) benchBody.position.set(position.x, position.y + 0.14, position.z)
+  if (quaternion) benchBody.quaternion = quaternion
 
   copyPositions({
     mesh: benchContainer,

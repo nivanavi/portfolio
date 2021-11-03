@@ -1,6 +1,5 @@
 import * as CANNON from 'cannon-es'
 import * as THREE             from "three";
-import {objectProps}          from "../../types";
 import {dummyPhysicsMaterial} from "../../physics";
 import {GLTFLoader}           from "three/examples/jsm/loaders/GLTFLoader";
 
@@ -16,9 +15,6 @@ import ferrisWheelModelGltf from "./models/fontain.gltf";
 //   loop: false
 // });
 
-interface ferrisWheelProps extends objectProps {
-  position: THREE.Vector3
-}
 
 const gltfLoader = new GLTFLoader();
 

@@ -1,6 +1,5 @@
 import * as CANNON from 'cannon-es'
 import * as THREE             from "three";
-import {objectProps}          from "../../types";
 import {copyPositions}        from "../../utils";
 import {Howl}                 from "howler";
 import {dummyPhysicsMaterial} from "../../physics";
@@ -9,8 +8,8 @@ import {GLTFLoader}           from "three/examples/jsm/loaders/GLTFLoader";
 // @ts-ignore
 import lampPostModelGltf     from "./models/lampPost.gltf";
 // @ts-ignore
-import lampBrokenSong        from "./sounds/lampBroken.mp3";
-import {MOST_IMPORTANT_DATA} from "../../index";
+import lampBrokenSong                     from "./sounds/lampBroken.mp3";
+import {MOST_IMPORTANT_DATA, objectProps} from "../../index";
 
 const recorderPlayer = new Howl({
   src: [lampBrokenSong],
@@ -21,7 +20,8 @@ const recorderPlayer = new Howl({
 
 const gltfLoader = new GLTFLoader();
 
-export const lampPostObject = ({position}: objectProps) => {
+export const lampPostObject = (props: objectProps) => {
+  const {position = new THREE.Vector3()} = props;
   const {scene, physicWorld} = MOST_IMPORTANT_DATA;
 
   const LAMP_POST_OPTIONS = {
@@ -37,25 +37,27 @@ export const lampPostObject = ({position}: objectProps) => {
     lampPostModelGltf,
     model => {
       const lampPostModel = model.scene;
-      lampPostModel.children.forEach(child => child.type === "SpotLight" ? child.castShadow = true : undefined)
-      lampPostModel.children.forEach(child => child.type === "SpotLight" ? lampLight = child : undefined)
+      console.log(lampPostModel.children)
+      lampPostModel.children.forEach(child => child.name === "lampPostLight" ? child.children[0].castShadow = true : undefined)
+      lampPostModel.children.forEach(child => child.name === "lampPostLight" ? lampLight = child.children[0] : undefined)
       lampPostModel.scale.set(0.18, 0.18, 0.18);
-      lampPostModel.position.set(0, 0, -0.7)
+      lampPostModel.position.set(0, -0.7, 0)
       lampPostContainer.add(lampPostModel);
     }
   )
 
   // physic
-  const lampPostShape = new CANNON.Box(new CANNON.Vec3(0.1, 0.1, 0.7));
+  const lampPostShape = new CANNON.Box(new CANNON.Vec3(0.1, 0.7, 0.1));
   const lampPostBody = new CANNON.Body({
     mass: 0,
     shape: lampPostShape,
     material: dummyPhysicsMaterial
   })
   lampPostBody.allowSleep = true;
-  lampPostBody.position.set(position.x, position.y, position.z + 0.7)
+  lampPostBody.position.set(position.x, position.y + 0.7, position.z)
 
   lampPostBody.addEventListener("collide", (ev: any) => {
+    console.log(lampLight)
     if (ev.contact.getImpactVelocityAlongNormal() < 1.2 || LAMP_POST_OPTIONS.isAlreadyBroken) return;
     LAMP_POST_OPTIONS.isAlreadyBroken = true;
     recorderPlayer.play();

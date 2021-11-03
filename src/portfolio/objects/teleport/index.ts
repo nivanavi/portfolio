@@ -1,9 +1,10 @@
-import * as CANNON from 'cannon-es'
-import * as THREE                        from "three";
-import {objectProps}                     from "../../types";
-import {copyPositions} from "../../utils";
-import {Howl}                            from "howler";
-import {dummyPhysicsMaterial}            from "../../physics";
+import * as CANNON            from 'cannon-es'
+import * as THREE             from "three";
+import {copyPositions}        from "../../utils";
+import {Howl}                 from "howler";
+import {dummyPhysicsMaterial} from "../../physics";
+import {MOST_IMPORTANT_DATA}  from "../../index";
+import {CAR_DYNAMIC_OPTIONS}  from "../car";
 
 
 // @ts-ignore
@@ -31,11 +32,13 @@ const teleportPlayer = new Howl({
   loop: false
 });
 
-const teleport = ({enterPosition, exitPosition, physicWorld, scene, teleportCallback}: oneTeleportProps) => {
+const teleport = ({enterPosition, exitPosition, teleportCallback}: oneTeleportProps) => {
+  const {physicWorld, scene} = MOST_IMPORTANT_DATA;
+
   const teleportMaterial = new THREE.MeshStandardMaterial({
     color: "yellow"
   });
-  const teleportGeometry = new THREE.BoxBufferGeometry(0.4, 0.4, 4);
+  const teleportGeometry = new THREE.BoxBufferGeometry(0.4, 4, 0.4);
 
   const teleportLeftMesh = new THREE.Mesh(
     teleportGeometry,
@@ -49,7 +52,7 @@ const teleport = ({enterPosition, exitPosition, physicWorld, scene, teleportCall
   teleportRightMesh.receiveShadow = true
 
   // physic
-  const teleportShape = new CANNON.Box(new CANNON.Vec3(0.2, 0.2, 2));
+  const teleportShape = new CANNON.Box(new CANNON.Vec3(0.2, 2, 0.2));
   const teleportLeftBody = new CANNON.Body({
     mass: 0,
     shape: teleportShape,
@@ -62,7 +65,7 @@ const teleport = ({enterPosition, exitPosition, physicWorld, scene, teleportCall
   })
 
   teleportLeftBody.position.set(enterPosition.x, enterPosition.y, enterPosition.z);
-  teleportRightBody.position.set(enterPosition.x, enterPosition.y + 3, enterPosition.z);
+  teleportRightBody.position.set(enterPosition.x + 3, enterPosition.y, enterPosition.z);
 
   copyPositions({
     body: teleportLeftBody,
@@ -78,22 +81,20 @@ const teleport = ({enterPosition, exitPosition, physicWorld, scene, teleportCall
   scene.add(teleportLeftMesh, teleportRightMesh);
 
 
-  const ray = new CANNON.Ray(new CANNON.Vec3(enterPosition.x, enterPosition.y, enterPosition.z + 0.2), new CANNON.Vec3(enterPosition.x, enterPosition.y + 2, enterPosition.z + 0.2));
-
-  // const raycaster = new THREE.Raycaster();
-  // const rayOrigin = new THREE.Vector3(enterPosition.x, enterPosition.y, enterPosition.z + 0.4);
-  // const rayDirection = new THREE.Vector3(0, 1, 0);
-  // raycaster.far = 2.6;
-  // raycaster.set(rayOrigin, rayDirection)
+  const raycaster = new THREE.Raycaster();
+  const rayOrigin = new THREE.Vector3(enterPosition.x, enterPosition.y + 0.3, enterPosition.z);
+  const rayDirection = new THREE.Vector3(1, 0, 0);
+  raycaster.far = 2.6;
+  raycaster.set(rayOrigin, rayDirection)
 
   const callInTick = ({body, mesh}: callInTickTeleport) => {
 
-    // const intersects = raycaster.intersectObject(mesh);
-    // if (intersects.length) {
-    //   console.log("body before teleport", body)
-    //   body.position.set(exitPosition.x, exitPosition.y, exitPosition.z)
-    //   teleportCallback();
-    // }
+    const intersects = raycaster.intersectObject(mesh);
+    if (intersects.length) {
+      console.log("body before teleport", body)
+      teleportCallback();
+      body.position.set(exitPosition.x+ 2, exitPosition.y + 0.1, exitPosition.z)
+    }
   }
 
   return {
@@ -101,7 +102,8 @@ const teleport = ({enterPosition, exitPosition, physicWorld, scene, teleportCall
   }
 }
 
-export const teleportObject = ({physicWorld, scene, enterPosition, exitPosition}: teleportProps) => {
+export const teleportObject = ({enterPosition, exitPosition}: teleportProps) => {
+  const {addToCallInTickStack} = MOST_IMPORTANT_DATA;
   const TELEPORT_OPTIONS = {
     lastTeleport: 0,
     teleportDelta: 500
@@ -109,8 +111,8 @@ export const teleportObject = ({physicWorld, scene, enterPosition, exitPosition}
 
   const teleportCallback = () => TELEPORT_OPTIONS.lastTeleport = Date.now();
 
-  const {callInTick: callInTickEnter} = teleport({physicWorld, scene, enterPosition, exitPosition, teleportCallback})
-  const {callInTick: callInTickExit} = teleport({physicWorld, scene, enterPosition: exitPosition, exitPosition: enterPosition, teleportCallback})
+  const {callInTick: callInTickEnter} = teleport({enterPosition, exitPosition, teleportCallback})
+  const {callInTick: callInTickExit} = teleport({enterPosition: exitPosition, exitPosition: enterPosition, teleportCallback})
 
   const callInTick = (props: callInTickTeleport) => {
     const currentTime = Date.now();

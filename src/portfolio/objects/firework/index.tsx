@@ -1,9 +1,9 @@
-import * as CANNON from 'cannon-es'
+import * as CANNON            from 'cannon-es'
 import * as THREE             from "three";
-import {objectProps}          from "../../types";
 import {copyPositions}        from "../../utils";
 import {Howl}                 from "howler";
 import {dummyPhysicsMaterial} from "../../physics";
+import {objectProps}          from "../../index";
 
 // @ts-ignore
 // import recorderSongUrl        from "./sounds/recorderSong.mp3"
@@ -43,7 +43,7 @@ console.log(randomIntFromInterval(-6, 6));
 
 
 
-export const fireworkObject = ({physicWorld, scene}: objectProps) => {
+export const fireworkObject = () => {
   // graphic
   const fireworkMaterial = new THREE.MeshStandardMaterial({
     color: "purple"

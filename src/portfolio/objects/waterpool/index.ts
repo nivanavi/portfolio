@@ -1,14 +1,13 @@
 import * as CANNON from 'cannon-es'
 import * as THREE             from "three";
-import {objectProps}          from "../../types";
 import {copyPositions}        from "../../utils";
 import {dummyPhysicsMaterial} from "../../physics";
 import {GLTFLoader}           from "three/examples/jsm/loaders/GLTFLoader";
 
 // @ts-ignore
 import poolModelGltf         from "./models/fontain.gltf";
-import {DRACOLoader}                         from "three/examples/jsm/loaders/DRACOLoader";
-import {calInTickProps, MOST_IMPORTANT_DATA} from "../../index";
+import {DRACOLoader}                                      from "three/examples/jsm/loaders/DRACOLoader";
+import {calInTickProps, MOST_IMPORTANT_DATA, objectProps} from "../../index";
 // @ts-ignore
 
 // const recorderPlayer = new Howl({
@@ -18,17 +17,14 @@ import {calInTickProps, MOST_IMPORTANT_DATA} from "../../index";
 //   loop: false
 // });
 
-interface poolProps extends objectProps {
-  position: THREE.Vector3
-}
-
 const gltfLoader = new GLTFLoader();
 
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath( '/draco/' );
 gltfLoader.setDRACOLoader( dracoLoader );
 
-export const poolObject = ({position}: poolProps) => {
+export const poolObject = (props?: objectProps) => {
+  const {position = new THREE.Vector3()} = props || {};
   const {scene, physicWorld, addToCallInTickStack} = MOST_IMPORTANT_DATA;
 
   const POOL_OPTIONS = {
@@ -52,7 +48,7 @@ export const poolObject = ({position}: poolProps) => {
       dolphinAnimation.repetitions = 1;
       dolphinAnimation.play();
       poolModel.scale.set(0.35, 0.35, 0.35);
-      poolModel.position.set(0, 0, -0.15)
+      poolModel.position.set(0, -0.15, 0)
       poolContainer.add(poolModel);
     }
   )
@@ -65,8 +61,8 @@ export const poolObject = ({position}: poolProps) => {
     material: dummyPhysicsMaterial
   })
   poolBody.allowSleep = true;
-  poolBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 0, -1),  Math.PI * 0.5);
-  poolBody.position.set(position.x, position.y, position.z + 0.15)
+  poolBody.position.set(position.x, position.y + 0.15, position.z)
+
 
   // todo sounds and play only once
   poolBody.addEventListener("collide", (ev: any) => {

@@ -1,6 +1,5 @@
 import * as CANNON from 'cannon-es'
 import * as THREE            from "three";
-import {objectProps}         from "../../types";
 import {copyPositions}       from "../../utils";
 import {Howl}                from "howler";
 
@@ -8,6 +7,7 @@ import {Howl}                from "howler";
 import recorderSongUrl        from "./sounds/recorderSong.mp3"
 import {dummyPhysicsMaterial} from "../../physics";
 import {CAR_DYNAMIC_OPTIONS}  from "../car";
+import {objectProps}          from "../../index";
 
 const recorderPlayer = new Howl({
   src: [recorderSongUrl],
@@ -31,7 +31,7 @@ export const RECORDER_OPTIONS = {
 
 const getVolumeByDistance = (distance: number) => RECORDER_OPTIONS.maxVolume / distance;
 
-export const recorderObject = ({physicWorld, scene}: objectProps) => {
+export const recorderObject = () => {
   // graphic
   const recorderMaterial = new THREE.MeshStandardMaterial({
     color: "red"

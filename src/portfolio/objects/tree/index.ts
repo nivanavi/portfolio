@@ -1,10 +1,9 @@
 import * as THREE             from "three";
-import * as CANNON from 'cannon-es'
-import {objectProps}          from "../../types";
+import * as CANNON            from 'cannon-es'
 import {copyPositions}        from "../../utils";
 import {dummyPhysicsMaterial} from "../../physics";
 
-export const treeObject = ({physicWorld, scene}: objectProps) => {
+export const treeObject = () => {
   const treeMaterial = new THREE.MeshStandardMaterial();
   const treeGeometry = new THREE.BoxBufferGeometry(0.2, 3, 0.2);
   const treeMesh = new THREE.Mesh(

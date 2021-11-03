@@ -7,7 +7,7 @@ import {calInTickProps, MOST_IMPORTANT_DATA} from "../../index";
 export const groundObject = () => {
   const {scene, physicWorld, addToCallInTickStack} = MOST_IMPORTANT_DATA;
 
-  const groundMaterial = new THREE.MeshStandardMaterial();
+  const groundMaterial = new THREE.MeshStandardMaterial({color: "grey"});
   const groundGeometry = new THREE.PlaneBufferGeometry(20, 20);
   const groundMesh = new THREE.Mesh(
     groundGeometry,

@@ -1,7 +1,7 @@
 import * as THREE             from "three";
-import * as CANNON            from 'cannon-es'
-import {wheelPhysicsMaterial} from "../../physics";
-import {copyPositions}        from "../../utils";
+import * as CANNON                                from 'cannon-es'
+import {carPhysicsMaterial, wheelPhysicsMaterial} from "../../physics";
+import {copyPositions}                            from "../../utils";
 import {Vector3}              from "three";
 import {GLTFLoader}           from "three/examples/jsm/loaders/GLTFLoader";
 
@@ -111,7 +111,7 @@ export const carObject = () => {
         wheelMesh.children[0].children.forEach(child => child.castShadow = true);
         wheelMesh.name = "wheel";
         wheelMesh.quaternion.setFromAxisAngle(new Vector3(0, -1, 0), Math.PI * 0.5)
-        wheelMesh.scale.set(0.1, 0.1, 0.1)
+        wheelMesh.scale.set(0.17, 0.17, 0.17)
         scene.add(wheelMesh);
         wheelsGraphic.push(wheelMesh)
       })
@@ -126,9 +126,9 @@ export const carObject = () => {
 
 
   const chassisShape = new CANNON.Box(new CANNON.Vec3(CAR_OPTIONS.chassisDepth * 0.5, CAR_OPTIONS.chassisHeight * 0.5, CAR_OPTIONS.chassisWidth * 0.5))
-  const chassisBody = new CANNON.Body({mass: CAR_OPTIONS.chassisMass});
+  const chassisBody = new CANNON.Body({mass: CAR_OPTIONS.chassisMass, material: carPhysicsMaterial});
   chassisBody.allowSleep = false;
-  chassisBody.position.set(0, 2, 0);
+  chassisBody.position.set(4, 2, 0);
   chassisBody.addShape(chassisShape, CAR_OPTIONS.chassisOffset)
 
   const vehicle = new CANNON.RaycastVehicle({
@@ -172,10 +172,10 @@ export const carObject = () => {
     wheelsPhysic.push(body);
   })
 
-  const jump = (toReturn = true, strength = 45) => {
+  const jump = (toReturn = true, strength = 15) => {
     let worldPosition = chassisBody.position
     worldPosition = worldPosition.vadd(new CANNON.Vec3(toReturn ? 0.08 : 0, 0, 0))
-    chassisBody.applyImpulse(new CANNON.Vec3(0, strength, 0), worldPosition)
+    chassisBody.applyImpulse(new CANNON.Vec3(0, strength, 2), worldPosition)
   }
 
   const brake = (force: number) => {
@@ -199,21 +199,21 @@ export const carObject = () => {
     CAR_DYNAMIC_OPTIONS.goingForward = CAR_DYNAMIC_OPTIONS.forwardSpeed > 0
 
     // slow stop
-    if (!CAR_DYNAMIC_OPTIONS.up && !CAR_DYNAMIC_OPTIONS.down) brake(0.2)
+    if (!CAR_DYNAMIC_OPTIONS.up && !CAR_DYNAMIC_OPTIONS.down) brake(0.15)
 
     // TODO upside down
-    let upsideDownTimeout;
+    let upsideDownTimeout: ReturnType<typeof setTimeout>;
     const localUp = new CANNON.Vec3(0, 1, 0);
     const worldUp = new CANNON.Vec3();
     chassisBody.vectorToWorldFrame(localUp, worldUp);
 
-    if (worldUp.dot(localUp) < 0.5) {
+    if (worldUp.dot(localUp) < 0.05) {
       if (CAR_DYNAMIC_OPTIONS.upsideDownState === "watching") {
         CAR_DYNAMIC_OPTIONS.upsideDownState = "pending"
-        upsideDownTimeout = window.setTimeout(() => {
+        upsideDownTimeout = setTimeout(() => {
           CAR_DYNAMIC_OPTIONS.upsideDownState = "turning"
           jump()
-          upsideDownTimeout = window.setTimeout(() => {
+          upsideDownTimeout = setTimeout(() => {
             CAR_DYNAMIC_OPTIONS.upsideDownState = "watching"
           }, 2000)
         }, 2000)
@@ -221,7 +221,7 @@ export const carObject = () => {
     } else {
       if (CAR_DYNAMIC_OPTIONS.upsideDownState === "pending") {
         CAR_DYNAMIC_OPTIONS.upsideDownState = "watching"
-        window.clearTimeout(upsideDownTimeout)
+        clearTimeout(upsideDownTimeout!)
       }
     }
 
@@ -343,8 +343,19 @@ export const carObject = () => {
         return;
     }
   }
+
+  const windowBlurHandler = () => {
+        CAR_DYNAMIC_OPTIONS.up = false;
+        CAR_DYNAMIC_OPTIONS.left = false;
+        CAR_DYNAMIC_OPTIONS.down = false;
+        CAR_DYNAMIC_OPTIONS.right = false;
+        CAR_DYNAMIC_OPTIONS.brake = false;
+        CAR_DYNAMIC_OPTIONS.boost = false;
+  }
+
   window.addEventListener("keydown", ev => keyPressHandler(ev, true))
   window.addEventListener("keyup", ev => keyPressHandler(ev, false))
+  window.addEventListener("blur", windowBlurHandler)
 
   return {
     chassisBody,

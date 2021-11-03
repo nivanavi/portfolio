@@ -1,16 +1,26 @@
 import React                                                 from "react";
 import {SceneIgniterContextProvider, useSceneIgniterContext} from "../lessons/lessonIgniter";
-import * as THREE                                            from "three";
-import * as CANNON                                           from "cannon-es";
-import dat                                                   from "dat.gui";
-import {setupRenderer}                                       from "./renderer";
-import {OrbitControls}                                       from "three/examples/jsm/controls/OrbitControls";
-import {setupCameras}                                        from "./cameras";
-import CannonDebugRenderer, {windowResizeUtil}               from "../hellIsHere/utils";
-import {setupPhysics}                                        from "./physics";
-import {groundObject}                                        from "./objects/ground";
-import {setupLights}                                         from "./lights";
-import {carObject}                                           from "./objects/car";
+import * as THREE          from "three";
+import * as CANNON         from "cannon-es";
+import dat                 from "dat.gui";
+import {setupRenderer}     from "./renderer";
+import {OrbitControls}     from "three/examples/jsm/controls/OrbitControls";
+import {setupCameras}      from "./cameras";
+import {setupPhysics}      from "./physics";
+import {groundObject}      from "./objects/ground";
+import {setupLights}       from "./lights";
+import {carObject}         from "./objects/car";
+import CannonDebugRenderer from "../libs/cannonDebug";
+import {windowResizeUtil}  from "./utils";
+import {poolObject}        from "./objects/waterpool";
+import {benchObject}       from "./objects/bench";
+import {lampPostObject}    from "./objects/lampPost";
+import {teleportObject}    from "./objects/teleport";
+
+export type objectProps = {
+  position?: THREE.Vector3
+  quaternion?: CANNON.Quaternion
+}
 
 export type windowSizesType = {
   width: number
@@ -66,7 +76,12 @@ export const Portfolio = () => {
 
   // add objects
   groundObject();
-  carObject()
+  const {chassisBody, carContainer} = carObject();
+  poolObject();
+  benchObject({position: new THREE.Vector3(-4, 0.2, 0)})
+  lampPostObject({position: new THREE.Vector3(0, 0, -4)})
+
+  const {callInTick} = teleportObject({exitPosition: new THREE.Vector3(18, 0, 8), enterPosition: new THREE.Vector3(8, 0, 8)})
 
   physicWorld.addEventListener("postStep", () => callInPostStepStack.forEach(call => call()))
 
@@ -81,6 +96,8 @@ export const Portfolio = () => {
 
     // update call in tick stack
     callInTickStack.forEach(call => call({physicDelta, graphicDelta}))
+
+    callInTick({body: chassisBody, mesh: carContainer})
 
     // update physic step
     if (!oldElapsedTime) physicWorld.step(timeStep)
