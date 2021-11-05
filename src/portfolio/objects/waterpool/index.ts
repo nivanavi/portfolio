@@ -6,9 +6,8 @@ import {GLTFLoader}           from "three/examples/jsm/loaders/GLTFLoader";
 
 // @ts-ignore
 import poolModelGltf         from "./models/fontain.gltf";
-import {DRACOLoader}                                      from "three/examples/jsm/loaders/DRACOLoader";
-import {calInTickProps, MOST_IMPORTANT_DATA, objectProps} from "../../index";
-// @ts-ignore
+import {DRACOLoader}                                                                            from "three/examples/jsm/loaders/DRACOLoader";
+import {calInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps} from "../../index";
 
 // const recorderPlayer = new Howl({
 //   src: [lampBrokenSong],
@@ -24,7 +23,7 @@ dracoLoader.setDecoderPath( '/draco/' );
 gltfLoader.setDRACOLoader( dracoLoader );
 
 export const poolObject = (props?: objectProps) => {
-  const {position = new THREE.Vector3()} = props || {};
+  const {position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION} = props || {};
   const {scene, physicWorld, addToCallInTickStack} = MOST_IMPORTANT_DATA;
 
   const POOL_OPTIONS = {
@@ -62,6 +61,7 @@ export const poolObject = (props?: objectProps) => {
   })
   poolBody.allowSleep = true;
   poolBody.position.set(position.x, position.y + 0.15, position.z)
+  poolBody.quaternion.setFromAxisAngle(quaternion.vector, quaternion.angle)
 
 
   // todo sounds and play only once

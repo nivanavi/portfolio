@@ -8,8 +8,8 @@ import {GLTFLoader}           from "three/examples/jsm/loaders/GLTFLoader";
 // @ts-ignore
 import lampPostModelGltf     from "./models/lampPost.gltf";
 // @ts-ignore
-import lampBrokenSong                     from "./sounds/lampBroken.mp3";
-import {MOST_IMPORTANT_DATA, objectProps} from "../../index";
+import lampBrokenSong                                       from "./sounds/lampBroken.mp3";
+import {DEFAULT_POSITION, MOST_IMPORTANT_DATA, objectProps} from "../../index";
 
 const recorderPlayer = new Howl({
   src: [lampBrokenSong],
@@ -21,7 +21,7 @@ const recorderPlayer = new Howl({
 const gltfLoader = new GLTFLoader();
 
 export const lampPostObject = (props: objectProps) => {
-  const {position = new THREE.Vector3()} = props;
+  const {position = DEFAULT_POSITION} = props;
   const {scene, physicWorld} = MOST_IMPORTANT_DATA;
 
   const LAMP_POST_OPTIONS = {

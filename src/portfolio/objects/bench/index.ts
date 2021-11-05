@@ -5,8 +5,8 @@ import {dummyPhysicsMaterial} from "../../physics";
 import {GLTFLoader}           from "three/examples/jsm/loaders/GLTFLoader";
 
 // @ts-ignore
-import benchModelGltf                                     from "./models/bench.gltf";
-import {calInTickProps, MOST_IMPORTANT_DATA, objectProps} from "../../index";
+import benchModelGltf                                                                           from "./models/bench.gltf";
+import {calInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps} from "../../index";
 
 
 // const recorderPlayer = new Howl({
@@ -19,7 +19,7 @@ import {calInTickProps, MOST_IMPORTANT_DATA, objectProps} from "../../index";
 const gltfLoader = new GLTFLoader();
 
 export const benchObject = (props?: objectProps) => {
-  const {position = new THREE.Vector3(), quaternion} = props || {};
+  const {position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION} = props || {};
   const {scene, physicWorld, addToCallInTickStack} = MOST_IMPORTANT_DATA;
 
   const benchContainer: THREE.Group = new THREE.Group();
@@ -44,8 +44,8 @@ export const benchObject = (props?: objectProps) => {
     material: dummyPhysicsMaterial
   })
   benchBody.addShape(benchShape)
-  if (position) benchBody.position.set(position.x, position.y + 0.14, position.z)
-  if (quaternion) benchBody.quaternion = quaternion
+  benchBody.position.set(position.x, position.y + 0.14, position.z)
+  benchBody.quaternion.setFromAxisAngle(quaternion.vector, quaternion.angle)
 
   copyPositions({
     mesh: benchContainer,

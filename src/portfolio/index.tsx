@@ -1,10 +1,10 @@
 import React                                                 from "react";
 import {SceneIgniterContextProvider, useSceneIgniterContext} from "../lessons/lessonIgniter";
-import * as THREE          from "three";
-import * as CANNON         from "cannon-es";
-import dat                 from "dat.gui";
-import {setupRenderer}     from "./renderer";
-import {OrbitControls}     from "three/examples/jsm/controls/OrbitControls";
+import * as THREE                                            from "three";
+import * as CANNON                                           from "cannon-es";
+import dat                                                   from "dat.gui";
+import {setupRenderer}                                       from "./renderer";
+import {OrbitControls}                                       from "three/examples/jsm/controls/OrbitControls";
 import {setupCameras}      from "./cameras";
 import {setupPhysics}      from "./physics";
 import {groundObject}      from "./objects/ground";
@@ -14,12 +14,18 @@ import CannonDebugRenderer from "../libs/cannonDebug";
 import {windowResizeUtil}  from "./utils";
 import {poolObject}        from "./objects/waterpool";
 import {benchObject}       from "./objects/bench";
-import {lampPostObject}    from "./objects/lampPost";
 import {teleportObject}    from "./objects/teleport";
+import {treeObject}        from "./objects/tree";
+import {lampPostObject}    from "./objects/lampPost";
+
+export type quaternionType = {
+  vector: CANNON.Vec3,
+  angle: number
+}
 
 export type objectProps = {
   position?: THREE.Vector3
-  quaternion?: CANNON.Quaternion
+  quaternion?: quaternionType
 }
 
 export type windowSizesType = {
@@ -43,6 +49,13 @@ type mostImportantData = {
   addToCallInTickStack: (callInTick: callInTick) => void
   addToCallInPostStepStack: (callInTick: callInPostStep) => void
 }
+
+export const DEFAULT_POSITION: THREE.Vector3 = new THREE.Vector3();
+export const DEFAULT_QUATERNION: quaternionType = {
+  vector: new CANNON.Vec3(),
+  angle: 0
+}
+
 
 const callInTickStack: callInTick[] = [];
 const callInPostStepStack: callInPostStep[] = [];
@@ -79,7 +92,12 @@ export const Portfolio = () => {
   const {chassisBody, carContainer} = carObject();
   poolObject();
   benchObject({position: new THREE.Vector3(-4, 0.2, 0)})
-  lampPostObject({position: new THREE.Vector3(0, 0, -4)})
+  lampPostObject({position: new THREE.Vector3(0, 0, 4)})
+  treeObject({position: new THREE.Vector3(10, 0, 0)}, "bush")
+  treeObject({position: new THREE.Vector3(10, 0, -4)}, "treeAutumn")
+  treeObject({position: new THREE.Vector3(10, 0, -16), quaternion: {vector: new CANNON.Vec3(0, -1, 0), angle: Math.PI * 0.5}}, "treeAutumn")
+  treeObject({position: new THREE.Vector3(10, 0, -8)}, "treeSummer")
+  treeObject({position: new THREE.Vector3(10, 0, -12)}, "pine")
 
   const {callInTick} = teleportObject({exitPosition: new THREE.Vector3(18, 0, 8), enterPosition: new THREE.Vector3(8, 0, 8)})
 

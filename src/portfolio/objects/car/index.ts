@@ -7,7 +7,7 @@ import {GLTFLoader}           from "three/examples/jsm/loaders/GLTFLoader";
 
 // models
 // @ts-ignore
-import delorianModel          from "./models/delorianv2.gltf";
+import delorianModel          from "./models/delorian.gltf";
 // @ts-ignore
 import wheelModel                            from "./models/wheel.gltf";
 import {calInTickProps, MOST_IMPORTANT_DATA} from "../../index";
@@ -111,7 +111,7 @@ export const carObject = () => {
         wheelMesh.children[0].children.forEach(child => child.castShadow = true);
         wheelMesh.name = "wheel";
         wheelMesh.quaternion.setFromAxisAngle(new Vector3(0, -1, 0), Math.PI * 0.5)
-        wheelMesh.scale.set(0.17, 0.17, 0.17)
+        wheelMesh.scale.set(0.1, 0.1, 0.1)
         scene.add(wheelMesh);
         wheelsGraphic.push(wheelMesh)
       })
