@@ -1,6 +1,6 @@
-import * as CANNON from 'cannon-es'
-import {groundPhysicsMaterial} from "../../physics";
-import * as THREE              from "three";
+import * as CANNON                           from 'cannon-es'
+import {groundPhysicsMaterial}               from "../../physics";
+import * as THREE                            from "three";
 import {copyPositions}                       from "../../utils";
 import {calInTickProps, MOST_IMPORTANT_DATA} from "../../index";
 

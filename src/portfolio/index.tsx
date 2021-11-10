@@ -17,6 +17,11 @@ import {benchObject}       from "./objects/bench";
 import {teleportObject}    from "./objects/teleport";
 import {treeObject}        from "./objects/tree";
 import {lampPostObject}    from "./objects/lampPost";
+import {GLTFLoader}        from "three/examples/jsm/loaders/GLTFLoader";
+import {DRACOLoader}       from "three/examples/jsm/loaders/DRACOLoader";
+import {recorderObject}    from "./objects/recorder";
+import {logBenchObject} from "./objects/logBench";
+import {fireObject}     from "./objects/fire";
 
 export type quaternionType = {
   vector: CANNON.Vec3,
@@ -36,6 +41,7 @@ export type windowSizesType = {
 export type calInTickProps = {
   physicDelta: number
   graphicDelta: number
+  time: number
 }
 type callInTick = (props: calInTickProps) => void;
 type callInPostStep = () => void;
@@ -48,6 +54,7 @@ type mostImportantData = {
   clock: THREE.Clock
   addToCallInTickStack: (callInTick: callInTick) => void
   addToCallInPostStepStack: (callInTick: callInPostStep) => void
+  gltfLoader: GLTFLoader
 }
 
 export const DEFAULT_POSITION: THREE.Vector3 = new THREE.Vector3();
@@ -56,6 +63,10 @@ export const DEFAULT_QUATERNION: quaternionType = {
   angle: 0
 }
 
+const gltfLoader = new GLTFLoader();
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath( '/draco/' );
+gltfLoader.setDRACOLoader( dracoLoader );
 
 const callInTickStack: callInTick[] = [];
 const callInPostStepStack: callInPostStep[] = [];
@@ -69,7 +80,8 @@ export const MOST_IMPORTANT_DATA: mostImportantData = {
   },
   clock: new THREE.Clock(),
   addToCallInTickStack: (callInTick: callInTick) => callInTickStack.push(callInTick),
-  addToCallInPostStepStack: (callInPostStep: callInPostStep) => callInPostStepStack.push(callInPostStep)
+  addToCallInPostStepStack: (callInPostStep: callInPostStep) => callInPostStepStack.push(callInPostStep),
+  gltfLoader
 }
 
 const {scene, windowSizes, physicWorld, clock} = MOST_IMPORTANT_DATA;
@@ -91,13 +103,31 @@ export const Portfolio = () => {
   groundObject();
   const {chassisBody, carContainer} = carObject();
   poolObject();
-  benchObject({position: new THREE.Vector3(-4, 0.2, 0)})
-  lampPostObject({position: new THREE.Vector3(0, 0, 4)})
+  benchObject({position: new THREE.Vector3(0.8, 0, 6), quaternion: {vector: new CANNON.Vec3(0, -1, 0), angle: Math.PI}})
+  lampPostObject({position: new THREE.Vector3(0, 0, 6)})
+
+  benchObject({position: new THREE.Vector3(0.8, 0, -6)})
+  lampPostObject({position: new THREE.Vector3(0, 0, -6)})
+
+  benchObject({position: new THREE.Vector3(-6, 0, 0.8), quaternion: {vector: new CANNON.Vec3(0, 1, 0), angle: Math.PI * 0.5}})
+  lampPostObject({position: new THREE.Vector3(-6, 0, 0)})
+
+  benchObject({position: new THREE.Vector3(6, 0, 0.8), quaternion: {vector: new CANNON.Vec3(0, -1, 0), angle: Math.PI * 0.5}})
+  lampPostObject({position: new THREE.Vector3(6, 0, 0)})
+
+  logBenchObject({position: new THREE.Vector3(16, 0, 0)})
+
+  fireObject({position: new THREE.Vector3(0, 0, 3.5)})
+
+  recorderObject({position: new THREE.Vector3(0, 0.4, 2.1), quaternion: {vector: new CANNON.Vec3(0, 1, 0), angle: Math.PI * 0.5}})
+
+
   treeObject({position: new THREE.Vector3(10, 0, 0)}, "bush")
   treeObject({position: new THREE.Vector3(10, 0, -4)}, "treeAutumn")
   treeObject({position: new THREE.Vector3(10, 0, -16), quaternion: {vector: new CANNON.Vec3(0, -1, 0), angle: Math.PI * 0.5}}, "treeAutumn")
   treeObject({position: new THREE.Vector3(10, 0, -8)}, "treeSummer")
   treeObject({position: new THREE.Vector3(10, 0, -12)}, "pine")
+  treeObject({position: new THREE.Vector3(10, 0, 4)}, "treeAutumn2")
 
   const {callInTick} = teleportObject({exitPosition: new THREE.Vector3(18, 0, 8), enterPosition: new THREE.Vector3(8, 0, 8)})
 
@@ -113,7 +143,7 @@ export const Portfolio = () => {
     if (physicDelta < minDelta) return window.requestAnimationFrame(tick);
 
     // update call in tick stack
-    callInTickStack.forEach(call => call({physicDelta, graphicDelta}))
+    callInTickStack.forEach(call => call({physicDelta, graphicDelta, time: elapsedTime}))
 
     callInTick({body: chassisBody, mesh: carContainer})
 

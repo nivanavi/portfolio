@@ -1,7 +1,6 @@
 import * as CANNON from 'cannon-es'
 import * as THREE             from "three";
 import {dummyPhysicsMaterial} from "../../physics";
-import {GLTFLoader}           from "three/examples/jsm/loaders/GLTFLoader";
 
 // @ts-ignore
 import ferrisWheelModelGltf from "./models/fontain.gltf";
@@ -15,10 +14,7 @@ import ferrisWheelModelGltf from "./models/fontain.gltf";
 //   loop: false
 // });
 
-
-const gltfLoader = new GLTFLoader();
-
-export const ferrisWheelObject = ({physicWorld, scene, position}: ferrisWheelProps) => {
+export const ferrisWheelObject = ({position}: ferrisWheelProps) => {
 
   const ferrisWheelContainer: THREE.Group = new THREE.Group();
   ferrisWheelContainer.name = "ferrisWheel";

@@ -183,6 +183,48 @@ const raycaster = new THREE.Raycaster();
 //
 // const intersects = raycaster.intersectObjects([sphere, cube]);
 
+
+// TODO SHADERS вертекс и фрагмент шейдеры можно выносить в отдельные файлы.
+// вертекс шейдер нужен для корректного отображения позиции фрагмента в рендере
+// на это влияют 3 параметра
+//     uniform mat4 projectionMatrix; position rotation scale параметры из сетки
+//     uniform mat4 viewMatrix; position rotation fov near far параметры из камеры
+//     uniform mat4 modelMatri не понятно че это
+// используя ShaderMaterial вместо RawShaderMaterial в вертекс и фрагментс шейдерах можно не писать дефольные переменные по типу
+//     uniform mat4 projectionMatrix;
+//     uniform mat4 viewMatrix;
+//     uniform mat4 modelMatrix;
+//
+//     attribute vec3 position;
+const shaderMaterial = new THREE.RawShaderMaterial({
+  vertexShader: `
+    uniform mat4 projectionMatrix;
+    uniform mat4 viewMatrix;
+    uniform mat4 modelMatrix;
+    
+    attribute vec3 position;
+    
+    void main() {
+      gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0); 
+    }
+  `,
+  fragmentShader: `
+    precision mediump float;
+    
+    void main() {
+      gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    }
+  `
+})
+
+const shaderMesh = new THREE.Mesh(
+  new THREE.PlaneBufferGeometry(5, 5, 10, 10),
+  shaderMaterial
+)
+shaderMesh.position.set(0, 4, 0)
+
+scene.add(shaderMesh)
+
 const cameraPosition = {
   x: 0,
   y: 0

@@ -3,7 +3,6 @@ import * as CANNON                        from 'cannon-es'
 import {copyPositions}                    from "../../utils";
 import {dummyPhysicsMaterial}                                                   from "../../physics";
 import {DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps} from "../../index";
-import {GLTFLoader}                                                             from "three/examples/jsm/loaders/GLTFLoader";
 
 
 // @ts-ignore
@@ -14,9 +13,11 @@ import pineModelGltf       from "./models/treePine.gltf";
 import treeSummerModelGltf from "./models/treeSummer.gltf";
 // @ts-ignore
 import treeAutumnModelGltf from "./models/treeAutumn.gltf";
+// @ts-ignore
+import treeAutumn2ModelGltf from "./models/treeAutumn2.gltf";
 
 
-type treeTypes = "bush" | "pine" | "treeSummer" | "treeAutumn"
+type treeTypes = "bush" | "pine" | "treeSummer" | "treeAutumn" | "treeAutumn2"
 
 const getModelByType = (type: treeTypes) => {
   switch (type) {
@@ -28,13 +29,13 @@ const getModelByType = (type: treeTypes) => {
       return treeSummerModelGltf;
     case "treeAutumn":
       return treeAutumnModelGltf;
+    case "treeAutumn2":
+      return treeAutumn2ModelGltf;
   }
 }
 
-const gltfLoader = new GLTFLoader();
-
 export const treeObject = (props: objectProps, type: treeTypes) => {
-  const {scene, physicWorld} = MOST_IMPORTANT_DATA;
+  const {scene, physicWorld, gltfLoader} = MOST_IMPORTANT_DATA;
   const {position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION} = props;
   const treeContainer: THREE.Group = new THREE.Group();
   treeContainer.name = type;
@@ -49,6 +50,10 @@ export const treeObject = (props: objectProps, type: treeTypes) => {
       if (type === "pine") treeModel.position.set(0, -0.5, 0)
       if (type === "treeSummer") treeModel.position.set(0, -0.5, 0)
       if (type === "treeAutumn") treeModel.position.set(0, -0.5, 0)
+      if (type === "treeAutumn2") {
+        treeModel.position.set(0, -0.5, 0)
+        treeModel.scale.set(0.23, 0.23, 0.23);
+      }
       treeContainer.add(treeModel);
     }
   )
@@ -57,6 +62,7 @@ export const treeObject = (props: objectProps, type: treeTypes) => {
   const pineShape = new CANNON.Cylinder(0.1, 0.2, 1, 8);
   const threeSummerShape = new CANNON.Cylinder(0.18, 0.25, 1, 8);
   const treeAutumnShape = new CANNON.Cylinder(0.15, 0.2, 1, 8);
+  const treeAutumn2Shape = new CANNON.Cylinder(0.19, 0.24, 1, 8);
 
   const treeBody = new CANNON.Body({
     mass: 0,
@@ -78,6 +84,10 @@ export const treeObject = (props: objectProps, type: treeTypes) => {
   }
   if (type === "treeAutumn") {
     treeBody.addShape(treeAutumnShape)
+    treeBody.position.set(position.x, position.y + 0.5, position.z)
+  }
+  if (type === "treeAutumn2") {
+    treeBody.addShape(treeAutumn2Shape)
     treeBody.position.set(position.x, position.y + 0.5, position.z)
   }
 

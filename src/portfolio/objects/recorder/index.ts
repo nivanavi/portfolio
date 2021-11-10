@@ -5,9 +5,12 @@ import {Howl}                from "howler";
 
 // @ts-ignore
 import recorderSongUrl        from "./sounds/recorderSong.mp3"
+// @ts-ignore
+import recorderModelGltf       from "./models/recorder.gltf"
+
 import {dummyPhysicsMaterial} from "../../physics";
-import {CAR_DYNAMIC_OPTIONS}  from "../car";
-import {objectProps}          from "../../index";
+import {CAR_DYNAMIC_OPTIONS}                                                                    from "../car";
+import {calInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps} from "../../index";
 
 const recorderPlayer = new Howl({
   src: [recorderSongUrl],
@@ -17,42 +20,42 @@ const recorderPlayer = new Howl({
 });
 
 export const RECORDER_OPTIONS = {
-  width: 0.6,
-  height: 0.4,
-  depth: 0.25,
-  mass: 10,
   isPlay: false,
   maxVolume: 0.5,
   lastTouche: 0,
-  toucheDelta: 200,
-  lastBassJump: 0,
-  bassJumpDelta: 1000
+  toucheDelta: 200
 }
 
 const getVolumeByDistance = (distance: number) => RECORDER_OPTIONS.maxVolume / distance;
 
-export const recorderObject = () => {
-  // graphic
-  const recorderMaterial = new THREE.MeshStandardMaterial({
-    color: "red"
-  });
-  const recorderGeometry = new THREE.BoxBufferGeometry(RECORDER_OPTIONS.width, RECORDER_OPTIONS.height, RECORDER_OPTIONS.depth);
-  const recorderMesh = new THREE.Mesh(
-    recorderGeometry,
-    recorderMaterial
+export const recorderObject = (props: objectProps) => {
+  const {position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION} = props;
+  const {scene, physicWorld, gltfLoader, addToCallInTickStack} = MOST_IMPORTANT_DATA;
+  const recorderContainer: THREE.Group = new THREE.Group();
+  recorderContainer.name = "recorder";
+
+  // load models
+  gltfLoader.load(
+    recorderModelGltf,
+    model => {
+      const recorderModel = model.scene;
+      recorderModel.children.forEach(child => child.castShadow = true);
+      recorderModel.scale.set(0.14, 0.12, 0.12);
+      recorderModel.position.set(0, 0, 0)
+      recorderContainer.add(recorderModel);
+    }
   )
-  recorderMesh.receiveShadow = true
-  recorderMesh.rotation.x = -Math.PI * 0.5
+
   // physic
-  const recorderShape = new CANNON.Box(new CANNON.Vec3(RECORDER_OPTIONS.width * 0.5, RECORDER_OPTIONS.height * 0.5, RECORDER_OPTIONS.depth * 0.5));
+  const recorderShape = new CANNON.Box(new CANNON.Vec3(0.09, 0.12, 0.235));
   const recorderBody = new CANNON.Body({
-    mass: RECORDER_OPTIONS.mass,
-    shape: recorderShape,
+    mass: 5,
     material: dummyPhysicsMaterial
   })
+  recorderBody.addShape(recorderShape)
   recorderBody.allowSleep = true;
-  recorderBody.position.set(-2, -2, 2)
-  recorderBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI * 0.5)
+  recorderBody.position.set(position.x, position.y + 0.35, position.z)
+  recorderBody.quaternion.setFromAxisAngle(quaternion.vector, quaternion.angle)
 
   recorderBody.addEventListener("collide", (ev: any) => {
     if (ev.body.mass === 0 || ev.contact.getImpactVelocityAlongNormal() < 1.2) return;
@@ -66,17 +69,15 @@ export const recorderObject = () => {
   })
 
   physicWorld.addBody(recorderBody);
-  scene.add(recorderMesh);
+  scene.add(recorderContainer);
 
-  const callInTick = () => {
+  const callInTick: (props: calInTickProps) => void = () => {
     recorderPlayer.volume(getVolumeByDistance(recorderBody.position.distanceTo(CAR_DYNAMIC_OPTIONS.oldPosition)))
     copyPositions({
       body: recorderBody,
-      mesh: recorderMesh
+      mesh: recorderContainer
     })
   }
 
-  return {
-    callInTick
-  }
+  addToCallInTickStack(callInTick)
 }

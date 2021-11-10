@@ -3,7 +3,6 @@ import * as THREE             from "three";
 import {copyPositions}        from "../../utils";
 import {Howl}                 from "howler";
 import {dummyPhysicsMaterial} from "../../physics";
-import {GLTFLoader}           from "three/examples/jsm/loaders/GLTFLoader";
 
 // @ts-ignore
 import lampPostModelGltf     from "./models/lampPost.gltf";
@@ -18,11 +17,9 @@ const recorderPlayer = new Howl({
   loop: false
 });
 
-const gltfLoader = new GLTFLoader();
-
 export const lampPostObject = (props: objectProps) => {
   const {position = DEFAULT_POSITION} = props;
-  const {scene, physicWorld} = MOST_IMPORTANT_DATA;
+  const {scene, physicWorld, gltfLoader} = MOST_IMPORTANT_DATA;
 
   const LAMP_POST_OPTIONS = {
     isAlreadyBroken: false

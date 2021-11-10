@@ -3,7 +3,6 @@ import * as CANNON                                from 'cannon-es'
 import {carPhysicsMaterial, wheelPhysicsMaterial} from "../../physics";
 import {copyPositions}                            from "../../utils";
 import {Vector3}              from "three";
-import {GLTFLoader}           from "three/examples/jsm/loaders/GLTFLoader";
 
 // models
 // @ts-ignore
@@ -78,14 +77,12 @@ export const CAR_DYNAMIC_OPTIONS = {
   upsideDownState: "watching"
 }
 
-const gltfLoader = new GLTFLoader();
-
 const wheelsGraphic: THREE.Group[] = [];
 
 const wheelsPhysic: CANNON.Body[] = [];
 
 export const carObject = () => {
-  const {scene, physicWorld, addToCallInTickStack, addToCallInPostStepStack} = MOST_IMPORTANT_DATA;
+  const {scene, physicWorld, addToCallInTickStack, addToCallInPostStepStack, gltfLoader} = MOST_IMPORTANT_DATA;
 
   const chassisMesh: THREE.Group = new THREE.Group();
   chassisMesh.name = "car"
