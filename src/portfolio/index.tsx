@@ -5,23 +5,24 @@ import * as CANNON                                           from "cannon-es";
 import dat                                                   from "dat.gui";
 import {setupRenderer}                                       from "./renderer";
 import {OrbitControls}                                       from "three/examples/jsm/controls/OrbitControls";
-import {setupCameras}      from "./cameras";
-import {setupPhysics}      from "./physics";
-import {groundObject}      from "./objects/ground";
-import {setupLights}       from "./lights";
-import {carObject}         from "./objects/car";
-import CannonDebugRenderer from "../libs/cannonDebug";
-import {windowResizeUtil}  from "./utils";
-import {poolObject}        from "./objects/waterpool";
-import {benchObject}       from "./objects/bench";
-import {teleportObject}    from "./objects/teleport";
-import {treeObject}        from "./objects/tree";
-import {lampPostObject}    from "./objects/lampPost";
-import {GLTFLoader}        from "three/examples/jsm/loaders/GLTFLoader";
-import {DRACOLoader}       from "three/examples/jsm/loaders/DRACOLoader";
-import {recorderObject}    from "./objects/recorder";
-import {logBenchObject} from "./objects/logBench";
-import {fireObject}     from "./objects/fire";
+import {setupCameras}                                        from "./cameras";
+import {setupPhysics}                                        from "./physics";
+import {groundObject}                                        from "./objects/ground";
+import {setupLights}                                         from "./lights";
+import {carObject}                                           from "./objects/car";
+import CannonDebugRenderer                                   from "../libs/cannonDebug";
+import {windowResizeUtil}                                    from "./utils";
+import {poolObject}                                          from "./objects/waterpool";
+import {benchObject}                                         from "./objects/bench";
+import {teleportObject}                                      from "./objects/teleport";
+import {lampPostObject}                                      from "./objects/lampPost";
+import {GLTFLoader}                                          from "three/examples/jsm/loaders/GLTFLoader";
+import {DRACOLoader}                                         from "three/examples/jsm/loaders/DRACOLoader";
+import {recorderObject}                                      from "./objects/recorder";
+import {logBenchObject}                                      from "./objects/logBench";
+import {fireObject}                                          from "./objects/fire";
+import {TextureLoader}                                       from "three";
+import {getRandomTreeAndRotate, treeObject}                  from "./objects/tree";
 
 export type quaternionType = {
   vector: CANNON.Vec3,
@@ -55,6 +56,7 @@ type mostImportantData = {
   addToCallInTickStack: (callInTick: callInTick) => void
   addToCallInPostStepStack: (callInTick: callInPostStep) => void
   gltfLoader: GLTFLoader
+  textureLoader: TextureLoader
 }
 
 export const DEFAULT_POSITION: THREE.Vector3 = new THREE.Vector3();
@@ -63,10 +65,12 @@ export const DEFAULT_QUATERNION: quaternionType = {
   angle: 0
 }
 
+const textureLoader = new THREE.TextureLoader();
+
 const gltfLoader = new GLTFLoader();
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath( '/draco/' );
-gltfLoader.setDRACOLoader( dracoLoader );
+dracoLoader.setDecoderPath('/draco/');
+gltfLoader.setDRACOLoader(dracoLoader);
 
 const callInTickStack: callInTick[] = [];
 const callInPostStepStack: callInPostStep[] = [];
@@ -81,7 +85,8 @@ export const MOST_IMPORTANT_DATA: mostImportantData = {
   clock: new THREE.Clock(),
   addToCallInTickStack: (callInTick: callInTick) => callInTickStack.push(callInTick),
   addToCallInPostStepStack: (callInPostStep: callInPostStep) => callInPostStepStack.push(callInPostStep),
-  gltfLoader
+  gltfLoader,
+  textureLoader
 }
 
 const {scene, windowSizes, physicWorld, clock} = MOST_IMPORTANT_DATA;
@@ -122,12 +127,34 @@ export const Portfolio = () => {
   recorderObject({position: new THREE.Vector3(0, 0.4, 2.1), quaternion: {vector: new CANNON.Vec3(0, 1, 0), angle: Math.PI * 0.5}})
 
 
-  treeObject({position: new THREE.Vector3(10, 0, 0)}, "bush")
-  treeObject({position: new THREE.Vector3(10, 0, -4)}, "treeAutumn")
-  treeObject({position: new THREE.Vector3(10, 0, -16), quaternion: {vector: new CANNON.Vec3(0, -1, 0), angle: Math.PI * 0.5}}, "treeAutumn")
-  treeObject({position: new THREE.Vector3(10, 0, -8)}, "treeSummer")
-  treeObject({position: new THREE.Vector3(10, 0, -12)}, "pine")
-  treeObject({position: new THREE.Vector3(10, 0, 4)}, "treeAutumn2")
+  const positions: THREE.Vector3[] = [];
+  // const random = (min: number, max: number) => Math.floor(Math.random() * (max - min)) + min;
+  const getUniquePosition = (): THREE.Vector3 => {
+    const angle = Math.random() * Math.PI * 2;
+    const radius = 9 + Math.random() * 15
+    const x = Math.sin(angle) * radius;
+    const z = Math.cos(angle) * radius;
+    const vector: THREE.Vector3 = new THREE.Vector3(x, 0, z);
+    const findNear = positions.find(vec => vec.distanceTo(vector) < 4);
+    if (!!findNear) return getUniquePosition();
+    return vector;
+  }
+  Array.from({length: 50}).forEach(() => {
+    const {tree, quaternion} = getRandomTreeAndRotate();
+    const position = getUniquePosition();
+    positions.push(position)
+    treeObject({position, quaternion}, tree)
+  });
+
+  // do {
+  //     const x: number = random(7, 30);
+  //     const z: number = random(7, 30);
+  //     const vector: THREE.Vector3 = new THREE.Vector3(x, 0, z);
+  //     const findNear = positions.find(vec => vec.distanceTo(vector) < 3);
+  //     if (!findNear) positions.push(vector);
+  // } while (positions.length < 50)
+
+  console.log(new THREE.Vector3(0, 0, 0).distanceTo(new THREE.Vector3(0, 0, 5)))
 
   const {callInTick} = teleportObject({exitPosition: new THREE.Vector3(18, 0, 8), enterPosition: new THREE.Vector3(8, 0, 8)})
 
@@ -137,6 +164,7 @@ export const Portfolio = () => {
   const minDelta: number = 1000 / 70;
   const timeStep = 1 / 60;
   const tick = () => {
+    console.log("positions", positions)
     const elapsedTime = clock.getElapsedTime();
     const physicDelta = Math.round((elapsedTime - oldElapsedTime) * 1000);
     const graphicDelta = elapsedTime - oldElapsedTime;

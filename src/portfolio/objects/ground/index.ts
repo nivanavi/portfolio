@@ -3,12 +3,13 @@ import {groundPhysicsMaterial}               from "../../physics";
 import * as THREE                            from "three";
 import {copyPositions}                       from "../../utils";
 import {calInTickProps, MOST_IMPORTANT_DATA} from "../../index";
+import grassTexturePng                       from "./texture/grass.png";
 
 export const groundObject = () => {
-  const {scene, physicWorld, addToCallInTickStack} = MOST_IMPORTANT_DATA;
+  const {scene, physicWorld, addToCallInTickStack, textureLoader} = MOST_IMPORTANT_DATA;
 
-  const groundMaterial = new THREE.MeshStandardMaterial({color: "grey"});
-  const groundGeometry = new THREE.PlaneBufferGeometry(20, 20);
+  const groundMaterial = new THREE.MeshStandardMaterial({color: "green"});
+  const groundGeometry = new THREE.PlaneBufferGeometry(20000, 20000);
   const groundMesh = new THREE.Mesh(
     groundGeometry,
     groundMaterial
@@ -22,7 +23,10 @@ export const groundObject = () => {
   })
   groundBody.addShape(groundShape)
   groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI * 0.5)
-  // scene.fog = new THREE.Fog(CLEAR_COLOR, 10, 15);
+
+  // scene.fog = new THREE.Fog("green", 10, 15);
+
+
 
   physicWorld.addBody(groundBody);
   scene.add(groundMesh);

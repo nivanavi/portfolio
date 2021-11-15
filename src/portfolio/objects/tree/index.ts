@@ -1,8 +1,8 @@
 import * as THREE                         from "three";
 import * as CANNON                        from 'cannon-es'
 import {copyPositions}                    from "../../utils";
-import {dummyPhysicsMaterial}                                                   from "../../physics";
-import {DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps} from "../../index";
+import {dummyPhysicsMaterial}                                                                   from "../../physics";
+import {DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps, quaternionType} from "../../index";
 
 
 // @ts-ignore
@@ -18,6 +18,20 @@ import treeAutumn2ModelGltf from "./models/treeAutumn2.gltf";
 
 
 type treeTypes = "bush" | "pine" | "treeSummer" | "treeAutumn" | "treeAutumn2"
+
+const trees: treeTypes[] = ["bush", "pine", "treeSummer", "treeAutumn", "treeAutumn2"];
+
+export const getRandomTreeAndRotate = (): {tree: treeTypes, quaternion: quaternionType} => {
+  const tree: treeTypes = trees[Math.floor(Math.random() * (trees.length))];
+  const angle: number = Math.random() * Math.PI;
+  return {
+    tree,
+    quaternion: {
+      vector: new CANNON.Vec3(0, -1, 0),
+      angle
+    }
+  }
+}
 
 const getModelByType = (type: treeTypes) => {
   switch (type) {
