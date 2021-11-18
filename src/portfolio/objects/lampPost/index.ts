@@ -1,11 +1,11 @@
-import * as CANNON from 'cannon-es'
+import * as CANNON            from 'cannon-es'
 import * as THREE             from "three";
-import {copyPositions}        from "../../utils";
+import {copyPositions, sleep} from "../../utils";
 import {Howl}                 from "howler";
 import {dummyPhysicsMaterial} from "../../physics";
 
 // @ts-ignore
-import lampPostModelGltf     from "./models/lampPost.gltf";
+import lampPostModelGltf                                    from "./models/lampPost.gltf";
 // @ts-ignore
 import lampBrokenSong                                       from "./sounds/lampBroken.mp3";
 import {DEFAULT_POSITION, MOST_IMPORTANT_DATA, objectProps} from "../../index";
@@ -53,27 +53,23 @@ export const lampPostObject = (props: objectProps) => {
   lampPostBody.allowSleep = true;
   lampPostBody.position.set(position.x, position.y + 0.7, position.z)
 
+  const brokeLamp = async () => {
+    lampLight.visible = false;
+    await sleep(300);
+    lampLight.visible = true;
+    await sleep(250);
+    lampLight.visible = false;
+    await sleep(200);
+    lampLight.visible = true;
+    await sleep(450);
+    lampLight.visible = false;
+  }
+
   lampPostBody.addEventListener("collide", (ev: any) => {
-    console.log(lampLight)
     if (ev.contact.getImpactVelocityAlongNormal() < 1.2 || LAMP_POST_OPTIONS.isAlreadyBroken) return;
     LAMP_POST_OPTIONS.isAlreadyBroken = true;
     recorderPlayer.play();
-    lampLight.visible = false
-
-    setTimeout(() => {
-      setTimeout(() => {
-        lampLight.visible = true;
-        setTimeout(() => {
-          lampLight.visible = false;
-          setTimeout(() => {
-            lampLight.visible = true;
-            setTimeout(() => {
-              lampLight.visible = false;
-            }, 450)
-          }, 200)
-        }, 250)
-      }, 100)
-    }, 200)
+    brokeLamp();
   })
 
   copyPositions({

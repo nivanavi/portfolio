@@ -125,7 +125,7 @@ export const carObject = () => {
   const chassisShape = new CANNON.Box(new CANNON.Vec3(CAR_OPTIONS.chassisDepth * 0.5, CAR_OPTIONS.chassisHeight * 0.5, CAR_OPTIONS.chassisWidth * 0.5))
   const chassisBody = new CANNON.Body({mass: CAR_OPTIONS.chassisMass, material: carPhysicsMaterial});
   chassisBody.allowSleep = false;
-  chassisBody.position.set(4, 2, 0);
+  chassisBody.position.set(4, 1, 0);
   chassisBody.addShape(chassisShape, CAR_OPTIONS.chassisOffset)
 
   const vehicle = new CANNON.RaycastVehicle({
@@ -199,28 +199,27 @@ export const carObject = () => {
     if (!CAR_DYNAMIC_OPTIONS.up && !CAR_DYNAMIC_OPTIONS.down) brake(0.15)
 
     // TODO upside down
-    let upsideDownTimeout: ReturnType<typeof setTimeout>;
-    const localUp = new CANNON.Vec3(0, 1, 0);
-    const worldUp = new CANNON.Vec3();
-    chassisBody.vectorToWorldFrame(localUp, worldUp);
-
-    if (worldUp.dot(localUp) < 0.05) {
-      if (CAR_DYNAMIC_OPTIONS.upsideDownState === "watching") {
-        CAR_DYNAMIC_OPTIONS.upsideDownState = "pending"
-        upsideDownTimeout = setTimeout(() => {
-          CAR_DYNAMIC_OPTIONS.upsideDownState = "turning"
-          jump()
-          upsideDownTimeout = setTimeout(() => {
-            CAR_DYNAMIC_OPTIONS.upsideDownState = "watching"
-          }, 2000)
-        }, 2000)
-      }
-    } else {
-      if (CAR_DYNAMIC_OPTIONS.upsideDownState === "pending") {
-        CAR_DYNAMIC_OPTIONS.upsideDownState = "watching"
-        clearTimeout(upsideDownTimeout!)
-      }
-    }
+    // let upsideDownTimeout: ReturnType<typeof setTimeout>;
+    // const localUp = new CANNON.Vec3(0, 1, 0);
+    // const worldUp = new CANNON.Vec3();
+    // chassisBody.vectorToWorldFrame(localUp, worldUp);
+    // if (worldUp.dot(localUp) < 0.05) {
+    //   if (CAR_DYNAMIC_OPTIONS.upsideDownState === "watching") {
+    //     CAR_DYNAMIC_OPTIONS.upsideDownState = "pending"
+    //     upsideDownTimeout = setTimeout(() => {
+    //       CAR_DYNAMIC_OPTIONS.upsideDownState = "turning"
+    //       // jump()
+    //       upsideDownTimeout = setTimeout(() => {
+    //         CAR_DYNAMIC_OPTIONS.upsideDownState = "watching"
+    //       }, 2000)
+    //     }, 2000)
+    //   }
+    // } else {
+    //   if (CAR_DYNAMIC_OPTIONS.upsideDownState === "pending") {
+    //     CAR_DYNAMIC_OPTIONS.upsideDownState = "watching"
+    //     clearTimeout(upsideDownTimeout!)
+    //   }
+    // }
 
     // update wheels
     vehicle.wheelInfos.forEach((wheel, index) => {

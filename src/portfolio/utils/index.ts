@@ -37,3 +37,5 @@ export const windowResizeUtil = ({windowSizes, renderer, callback}: windowResize
   renderer.setSize(windowSizes.width, windowSizes.height);
   if (callback) callback()
 }
+
+export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));

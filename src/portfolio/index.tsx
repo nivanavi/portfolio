@@ -146,16 +146,6 @@ export const Portfolio = () => {
     treeObject({position, quaternion}, tree)
   });
 
-  // do {
-  //     const x: number = random(7, 30);
-  //     const z: number = random(7, 30);
-  //     const vector: THREE.Vector3 = new THREE.Vector3(x, 0, z);
-  //     const findNear = positions.find(vec => vec.distanceTo(vector) < 3);
-  //     if (!findNear) positions.push(vector);
-  // } while (positions.length < 50)
-
-  console.log(new THREE.Vector3(0, 0, 0).distanceTo(new THREE.Vector3(0, 0, 5)))
-
   const {callInTick} = teleportObject({exitPosition: new THREE.Vector3(18, 0, 8), enterPosition: new THREE.Vector3(8, 0, 8)})
 
   physicWorld.addEventListener("postStep", () => callInPostStepStack.forEach(call => call()))
@@ -164,7 +154,6 @@ export const Portfolio = () => {
   const minDelta: number = 1000 / 70;
   const timeStep = 1 / 60;
   const tick = () => {
-    console.log("positions", positions)
     const elapsedTime = clock.getElapsedTime();
     const physicDelta = Math.round((elapsedTime - oldElapsedTime) * 1000);
     const graphicDelta = elapsedTime - oldElapsedTime;
@@ -182,7 +171,7 @@ export const Portfolio = () => {
 
     // update other stuff
     cannonDebugRenderer.update();
-    orbitControl.update();
+    // orbitControl.update();
     renderer.render(scene, camera);
 
     // update old elapsed time
