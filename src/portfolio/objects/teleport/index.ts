@@ -2,9 +2,9 @@ import * as CANNON            from 'cannon-es'
 import * as THREE             from "three";
 import {copyPositions}        from "../../utils";
 import {Howl}                 from "howler";
-import {dummyPhysicsMaterial} from "../../physics";
-import {MOST_IMPORTANT_DATA}  from "../../index";
-import {CAR_DYNAMIC_OPTIONS}  from "../car";
+import {dummyPhysicsMaterial}                from "../../physics";
+import {calInTickProps, MOST_IMPORTANT_DATA} from "../../index";
+import {CAR_DYNAMIC_OPTIONS, CAR_OPTIONS}    from "../car";
 
 
 // @ts-ignore
@@ -87,13 +87,12 @@ const teleport = ({enterPosition, exitPosition, teleportCallback}: oneTeleportPr
   raycaster.far = 2.6;
   raycaster.set(rayOrigin, rayDirection)
 
-  const callInTick = ({body, mesh}: callInTickTeleport) => {
+  const callInTick = () => {
 
-    const intersects = raycaster.intersectObject(mesh);
+    const intersects = raycaster.intersectObject(CAR_OPTIONS.chassisMesh);
     if (intersects.length) {
-      console.log("body before teleport", body)
       teleportCallback();
-      body.position.set(exitPosition.x+ 2, exitPosition.y + 0.1, exitPosition.z)
+      CAR_OPTIONS.chassisBody.position.set(exitPosition.x+ 2, exitPosition.y + 0.1, exitPosition.z)
     }
   }
 
@@ -114,13 +113,14 @@ export const teleportObject = ({enterPosition, exitPosition}: teleportProps) => 
   const {callInTick: callInTickEnter} = teleport({enterPosition, exitPosition, teleportCallback})
   const {callInTick: callInTickExit} = teleport({enterPosition: exitPosition, exitPosition: enterPosition, teleportCallback})
 
-  const callInTick = (props: callInTickTeleport) => {
+  const callInTick: (props: calInTickProps) => void = () => {
     const currentTime = Date.now();
     if (currentTime < TELEPORT_OPTIONS.lastTeleport + TELEPORT_OPTIONS.teleportDelta) return;
 
-    callInTickEnter(props)
-    callInTickExit(props)
+    callInTickEnter()
+    callInTickExit()
   }
+  addToCallInTickStack(callInTick)
 
   return {
     callInTick

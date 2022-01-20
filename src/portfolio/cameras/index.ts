@@ -46,6 +46,7 @@ export const setupCameras = () => {
     // update camera pan
     camera.position.x += CAR_DYNAMIC_OPTIONS.oldPosition.x
     camera.position.z += CAR_DYNAMIC_OPTIONS.oldPosition.z
+    camera.position.y += CAR_DYNAMIC_OPTIONS.oldPosition.y
 
     const currentWatchPosition = new THREE.Vector3(CAR_DYNAMIC_OPTIONS.oldPosition.x, CAR_DYNAMIC_OPTIONS.oldPosition.y, CAR_DYNAMIC_OPTIONS.oldPosition.z)
     camera.lookAt(currentWatchPosition);

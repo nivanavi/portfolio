@@ -12,17 +12,19 @@ import {setupLights}                                         from "./lights";
 import {carObject}                                           from "./objects/car";
 import CannonDebugRenderer                                   from "../libs/cannonDebug";
 import {windowResizeUtil}                                    from "./utils";
-import {poolObject}                                          from "./objects/waterpool";
-import {benchObject}                                         from "./objects/bench";
-import {teleportObject}                                      from "./objects/teleport";
-import {lampPostObject}                                      from "./objects/lampPost";
-import {GLTFLoader}                                          from "three/examples/jsm/loaders/GLTFLoader";
-import {DRACOLoader}                                         from "three/examples/jsm/loaders/DRACOLoader";
-import {recorderObject}                                      from "./objects/recorder";
-import {logBenchObject}                                      from "./objects/logBench";
-import {fireObject}                                          from "./objects/fire";
-import {TextureLoader}                                       from "three";
-import {getRandomTreeAndRotate, treeObject}                  from "./objects/tree";
+import {poolObject}                         from "./objects/waterpool";
+import {benchObject}                        from "./objects/bench";
+import {teleportObject}                     from "./objects/teleport";
+import {lampPostObject}                     from "./objects/lampPost";
+import {GLTFLoader}                         from "three/examples/jsm/loaders/GLTFLoader";
+import {DRACOLoader}                        from "three/examples/jsm/loaders/DRACOLoader";
+import {recorderObject}                     from "./objects/recorder";
+import {logBenchObject}                     from "./objects/logBench";
+import {TextureLoader}                      from "three";
+import {getRandomTreeAndRotate, treeObject} from "./objects/tree";
+import {railsObject}                        from "./objects/rails";
+import {railBlockObject}                    from "./objects/railBlock";
+import {waterTowerObject}                   from "./objects/waterTower";
 
 export type quaternionType = {
   vector: CANNON.Vec3,
@@ -104,49 +106,52 @@ export const Portfolio = () => {
   const orbitControl = new OrbitControls(camera, canvas);
   const cannonDebugRenderer = new CannonDebugRenderer(scene, physicWorld)
 
-  // add objects
-  groundObject();
-  const {chassisBody, carContainer} = carObject();
-  poolObject();
-  benchObject({position: new THREE.Vector3(0.8, 0, 6), quaternion: {vector: new CANNON.Vec3(0, -1, 0), angle: Math.PI}})
-  lampPostObject({position: new THREE.Vector3(0, 0, 6)})
+  // car
+  carObject();
 
-  benchObject({position: new THREE.Vector3(0.8, 0, -6)})
-  lampPostObject({position: new THREE.Vector3(0, 0, -6)})
+  // level 1
+  // groundObject();
+  // poolObject();
+  // benchObject({position: new THREE.Vector3(0.8, 0, 6), quaternion: {vector: new CANNON.Vec3(0, -1, 0), angle: Math.PI}})
+  // lampPostObject({position: new THREE.Vector3(0, 0, 6)})
+  //
+  // benchObject({position: new THREE.Vector3(0.8, 0, -6)})
+  // lampPostObject({position: new THREE.Vector3(0, 0, -6)})
+  //
+  // benchObject({position: new THREE.Vector3(-6, 0, 0.8), quaternion: {vector: new CANNON.Vec3(0, 1, 0), angle: Math.PI * 0.5}})
+  // lampPostObject({position: new THREE.Vector3(-6, 0, 0)})
+  //
+  // benchObject({position: new THREE.Vector3(6, 0, 0.8), quaternion: {vector: new CANNON.Vec3(0, -1, 0), angle: Math.PI * 0.5}})
+  // lampPostObject({position: new THREE.Vector3(6, 0, 0)})
+  //
+  // logBenchObject({position: new THREE.Vector3(16, 0, 0)})
+  //
+  // recorderObject({position: new THREE.Vector3(0, 0.4, 2.1), quaternion: {vector: new CANNON.Vec3(0, 1, 0), angle: Math.PI * 0.5}})
+  //
+  // teleportObject({exitPosition: new THREE.Vector3(18, 15, 8), enterPosition: new THREE.Vector3(8, 0, 8)})
+  // const positions: THREE.Vector3[] = [];
+  // const getUniquePosition = (): THREE.Vector3 => {
+  //   const angle = Math.random() * Math.PI * 2;
+  //   const radius = 9 + Math.random() * 15
+  //   const x = Math.sin(angle) * radius;
+  //   const z = Math.cos(angle) * radius;
+  //   const vector: THREE.Vector3 = new THREE.Vector3(x, 0, z);
+  //   const findNear = positions.find(vec => vec.distanceTo(vector) < 4);
+  //   if (!!findNear) return getUniquePosition();
+  //   return vector;
+  // }
+  // Array.from({length: 50}).forEach(() => {
+  //   const {tree, quaternion} = getRandomTreeAndRotate();
+  //   const position = getUniquePosition();
+  //   positions.push(position)
+  //   treeObject({position, quaternion}, tree)
+  // });
 
-  benchObject({position: new THREE.Vector3(-6, 0, 0.8), quaternion: {vector: new CANNON.Vec3(0, 1, 0), angle: Math.PI * 0.5}})
-  lampPostObject({position: new THREE.Vector3(-6, 0, 0)})
-
-  benchObject({position: new THREE.Vector3(6, 0, 0.8), quaternion: {vector: new CANNON.Vec3(0, -1, 0), angle: Math.PI * 0.5}})
-  lampPostObject({position: new THREE.Vector3(6, 0, 0)})
-
-  logBenchObject({position: new THREE.Vector3(16, 0, 0)})
-
-  fireObject({position: new THREE.Vector3(0, 0, 3.5)})
-
-  recorderObject({position: new THREE.Vector3(0, 0.4, 2.1), quaternion: {vector: new CANNON.Vec3(0, 1, 0), angle: Math.PI * 0.5}})
-
-
-  const positions: THREE.Vector3[] = [];
-  // const random = (min: number, max: number) => Math.floor(Math.random() * (max - min)) + min;
-  const getUniquePosition = (): THREE.Vector3 => {
-    const angle = Math.random() * Math.PI * 2;
-    const radius = 9 + Math.random() * 15
-    const x = Math.sin(angle) * radius;
-    const z = Math.cos(angle) * radius;
-    const vector: THREE.Vector3 = new THREE.Vector3(x, 0, z);
-    const findNear = positions.find(vec => vec.distanceTo(vector) < 4);
-    if (!!findNear) return getUniquePosition();
-    return vector;
-  }
-  Array.from({length: 50}).forEach(() => {
-    const {tree, quaternion} = getRandomTreeAndRotate();
-    const position = getUniquePosition();
-    positions.push(position)
-    treeObject({position, quaternion}, tree)
-  });
-
-  const {callInTick} = teleportObject({exitPosition: new THREE.Vector3(18, 0, 8), enterPosition: new THREE.Vector3(8, 0, 8)})
+  // level 2
+  groundObject({position: new THREE.Vector3(0, 0, 0), color: "#D58B1C"});
+  railsObject({position: new THREE.Vector3(0, 0, 0)})
+  railBlockObject({position: new THREE.Vector3(0, 0, 3)})
+  waterTowerObject({position: new THREE.Vector3(0, 0, 9)})
 
   physicWorld.addEventListener("postStep", () => callInPostStepStack.forEach(call => call()))
 
@@ -161,8 +166,6 @@ export const Portfolio = () => {
 
     // update call in tick stack
     callInTickStack.forEach(call => call({physicDelta, graphicDelta, time: elapsedTime}))
-
-    callInTick({body: chassisBody, mesh: carContainer})
 
     // update physic step
     if (!oldElapsedTime) physicWorld.step(timeStep)

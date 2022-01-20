@@ -55,13 +55,9 @@ export const lampPostObject = (props: objectProps) => {
 
   const brokeLamp = async () => {
     lampLight.visible = false;
-    await sleep(300);
+    await sleep(700);
     lampLight.visible = true;
-    await sleep(250);
-    lampLight.visible = false;
-    await sleep(200);
-    lampLight.visible = true;
-    await sleep(450);
+    await sleep(500);
     lampLight.visible = false;
   }
 

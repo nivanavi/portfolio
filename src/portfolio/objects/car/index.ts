@@ -27,6 +27,8 @@ const delorian = {
 
 export const CAR_OPTIONS = {
   ...delorian,
+  chassisMesh: new THREE.Mesh(),
+  chassisBody: new CANNON.Body(),
   maxSteeringForce: Math.PI * 0.17,
   steeringSpeed: 0.005,
   accelerationMaxSpeed: 0.055,
@@ -84,8 +86,8 @@ const wheelsPhysic: CANNON.Body[] = [];
 export const carObject = () => {
   const {scene, physicWorld, addToCallInTickStack, addToCallInPostStepStack, gltfLoader} = MOST_IMPORTANT_DATA;
 
-  const chassisMesh: THREE.Group = new THREE.Group();
-  chassisMesh.name = "car"
+  const chassisContainer: THREE.Group = new THREE.Group();
+  chassisContainer.name = "car"
 
   // load models
   gltfLoader.load(
@@ -96,7 +98,7 @@ export const carObject = () => {
       carModel.scale.set(0.675, 0.675, 0.675)
       carModel.receiveShadow = true;
       carModel.position.set(0, 0, 0.005)
-      chassisMesh.add(model.scene)
+      chassisContainer.add(model.scene)
     }
   )
 
@@ -115,15 +117,17 @@ export const carObject = () => {
     }
   )
 
-  const carContainerMaterial = new THREE.MeshStandardMaterial();
-  carContainerMaterial.visible = false;
-  const carContainerGeometry = new THREE.BoxBufferGeometry(CAR_OPTIONS.chassisDepth, CAR_OPTIONS.chassisHeight, CAR_OPTIONS.chassisWidth);
-  const carContainer = new THREE.Mesh(carContainerGeometry, carContainerMaterial);
-  carContainer.position.set(CAR_OPTIONS.chassisOffset.x, CAR_OPTIONS.chassisOffset.y, CAR_OPTIONS.chassisOffset.z)
+  const chassisMeshMaterial = new THREE.MeshStandardMaterial();
+  chassisMeshMaterial.visible = false;
+  const chassisMeshGeometry = new THREE.BoxBufferGeometry(CAR_OPTIONS.chassisDepth, CAR_OPTIONS.chassisHeight, CAR_OPTIONS.chassisWidth);
+  const chassisMesh = new THREE.Mesh(chassisMeshGeometry, chassisMeshMaterial);
+  chassisMesh.position.set(CAR_OPTIONS.chassisOffset.x, CAR_OPTIONS.chassisOffset.y, CAR_OPTIONS.chassisOffset.z)
 
 
   const chassisShape = new CANNON.Box(new CANNON.Vec3(CAR_OPTIONS.chassisDepth * 0.5, CAR_OPTIONS.chassisHeight * 0.5, CAR_OPTIONS.chassisWidth * 0.5))
   const chassisBody = new CANNON.Body({mass: CAR_OPTIONS.chassisMass, material: carPhysicsMaterial});
+  // chassisBody.mass = CAR_OPTIONS.chassisMass;
+  // chassisBody.material = carPhysicsMaterial;
   chassisBody.allowSleep = false;
   chassisBody.position.set(4, 1, 0);
   chassisBody.addShape(chassisShape, CAR_OPTIONS.chassisOffset)
@@ -157,8 +161,10 @@ export const carObject = () => {
   })
 
   vehicle.addToWorld(physicWorld);
-  chassisMesh.add(carContainer)
-  scene.add(chassisMesh);
+  chassisContainer.add(chassisMesh)
+  scene.add(chassisContainer);
+  CAR_OPTIONS.chassisMesh = chassisMesh;
+  CAR_OPTIONS.chassisBody = chassisBody;
 
   vehicle.wheelInfos.forEach(wheel => {
     const shape = new CANNON.Cylinder(wheel.radius || 0, wheel.radius || 0, WHEEL_OPTIONS.height, 20)
@@ -169,11 +175,11 @@ export const carObject = () => {
     wheelsPhysic.push(body);
   })
 
-  const jump = (toReturn = true, strength = 15) => {
-    let worldPosition = chassisBody.position
-    worldPosition = worldPosition.vadd(new CANNON.Vec3(toReturn ? 0.08 : 0, 0, 0))
-    chassisBody.applyImpulse(new CANNON.Vec3(0, strength, 2), worldPosition)
-  }
+  // const jump = (toReturn = true, strength = 15) => {
+  //   let worldPosition = chassisBody.position
+  //   worldPosition = worldPosition.vadd(new CANNON.Vec3(toReturn ? 0.08 : 0, 0, 0))
+  //   chassisBody.applyImpulse(new CANNON.Vec3(0, strength, 2), worldPosition)
+  // }
 
   const brake = (force: number) => {
     vehicle.setBrake(force, 0)
@@ -234,8 +240,7 @@ export const carObject = () => {
   let rotation = 0;
   const callInTick: (props: calInTickProps) => void = ({physicDelta}) => {
     // update
-    copyPositions({mesh: chassisMesh, body: chassisBody})
-    // copyPositions({mesh: carContainer, body: chassisBody})
+    copyPositions({mesh: chassisContainer, body: chassisBody})
 
     wheelsPhysic.forEach((wheel, index) => {
       copyPositions({mesh: wheelsGraphic[index], body: wheel})
@@ -355,7 +360,6 @@ export const carObject = () => {
 
   return {
     chassisBody,
-    chassisMesh,
-    carContainer
+    chassisMesh
   }
 }
