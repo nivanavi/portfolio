@@ -58,6 +58,7 @@ export const treeObject = (props: objectProps, type: treeTypes) => {
     getModelByType(type),
     model => {
       const treeModel = model.scene;
+      treeModel.children.forEach(child => child.castShadow = true);
       treeModel.scale.set(0.35, 0.35, 0.35);
 
       if (type === "bush") treeModel.position.set(0, -0.5, 0)

@@ -1,14 +1,13 @@
 import * as CANNON from 'cannon-es'
 import * as THREE             from "three";
-import {copyPositions}        from "../../utils";
 import {dummyPhysicsMaterial} from "../../physics";
 
 // @ts-ignore
 import waterTowerModelGltf                                                                           from "./models/waterTower.gltf";
-import {DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps} from "../../index";
+import {DEFAULT_POSITION, MOST_IMPORTANT_DATA, objectProps} from "../../index";
 
 export const waterTowerObject = (props?: objectProps) => {
-  const {position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION} = props || {};
+  const {position = DEFAULT_POSITION} = props || {};
   const {scene, physicWorld, gltfLoader} = MOST_IMPORTANT_DATA;
 
   const waterTowerContainer: THREE.Group = new THREE.Group();

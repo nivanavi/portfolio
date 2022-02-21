@@ -25,6 +25,11 @@ import {getRandomTreeAndRotate, treeObject} from "./objects/tree";
 import {railsObject}                        from "./objects/rails";
 import {railBlockObject}                    from "./objects/railBlock";
 import {waterTowerObject}                   from "./objects/waterTower";
+import {windTowerObject}                    from "./objects/windTower";
+import {lampPostWestObject}                 from "./objects/lampPostWest";
+import {heyObject}                          from "./objects/hey";
+import {saloonObject}                       from "./objects/saloon";
+import {barrelObject}                       from "./objects/barrel";
 
 export type quaternionType = {
   vector: CANNON.Vec3,
@@ -152,6 +157,11 @@ export const Portfolio = () => {
   railsObject({position: new THREE.Vector3(0, 0, 0)})
   railBlockObject({position: new THREE.Vector3(0, 0, 3)})
   waterTowerObject({position: new THREE.Vector3(0, 0, 9)})
+  windTowerObject({position: new THREE.Vector3(0, 0, 0)})
+  lampPostWestObject({position: new THREE.Vector3(0, 0, 1)})
+  heyObject({position: new THREE.Vector3(0, 0, 4)})
+  saloonObject({position: new THREE.Vector3(8, 0, 0)})
+  barrelObject({position: new THREE.Vector3(3, 0, 0)})
 
   physicWorld.addEventListener("postStep", () => callInPostStepStack.forEach(call => call()))
 
@@ -174,7 +184,7 @@ export const Portfolio = () => {
 
     // update other stuff
     cannonDebugRenderer.update();
-    // orbitControl.update();
+    orbitControl.update();
     renderer.render(scene, camera);
 
     // update old elapsed time
