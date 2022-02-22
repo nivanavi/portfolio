@@ -4,12 +4,12 @@ import {copyPositions} from "../../utils";
 import {dummyPhysicsMaterial} from "../../physics";
 
 // @ts-ignore
-import lampPostWestModelGltf                                    from "./models/lampPostWest.gltf";
-import {DEFAULT_POSITION, MOST_IMPORTANT_DATA, objectProps} from "../../index";
+import lampPostWestModelGltf                                                    from "./models/lampPostWest.gltf";
+import {DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps} from "../../index";
 
 
 export const lampPostWestObject = (props: objectProps) => {
-  const {position = DEFAULT_POSITION} = props;
+  const {position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION} = props;
   const {scene, physicWorld, gltfLoader} = MOST_IMPORTANT_DATA;
 
   const lampPostWestContainer: THREE.Group = new THREE.Group();
@@ -37,6 +37,7 @@ export const lampPostWestObject = (props: objectProps) => {
   })
   lampPostWestBody.allowSleep = true;
   lampPostWestBody.position.set(position.x, position.y + 0.7, position.z)
+  lampPostWestBody.quaternion.setFromAxisAngle(quaternion.vector, quaternion.angle)
 
   copyPositions({
     body: lampPostWestBody,

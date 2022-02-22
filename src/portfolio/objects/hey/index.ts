@@ -18,7 +18,6 @@ export const heyObject = (props?: objectProps) => {
   gltfLoader.load(
     heyModelGltf,
     model => {
-      console.log(model)
       const heyModel = model.scene;
       heyModel.children.forEach(child => child.castShadow = true);
       heyModel.scale.set(0.17, 0.17, 0.17);

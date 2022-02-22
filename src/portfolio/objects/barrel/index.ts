@@ -18,7 +18,6 @@ export const barrelObject = (props?: objectProps) => {
   gltfLoader.load(
     barrelModelGltf,
     model => {
-      console.log(model)
       const barrelModel = model.scene;
       barrelModel.children.forEach(child => child.castShadow = true);
       barrelModel.scale.set(0.25, 0.25, 0.25);

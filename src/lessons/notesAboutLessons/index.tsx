@@ -105,7 +105,7 @@ const count = 500;
 
 const positions = new Float32Array(count * 3);
 const colors = new Float32Array(count * 3);
-console.log(positions);
+// console.log(positions);
 Array.from({length: count * 3}).forEach((_, index) => {
   positions[index] = (Math.random() - 0.5) * 10;
   colors[index] = Math.random();

@@ -11,8 +11,8 @@ export const setupLights = () => {
 
   directionalLight.position.set(0, 13, 0);
   directionalLight.castShadow = true;
-  // directionalLight.shadow.mapSize.x = 1024;
-  // directionalLight.shadow.mapSize.y = 1024;
+  // directionalLight.shadow.mapSize.x = 15024;
+  // directionalLight.shadow.mapSize.y = 15024;
   // directionalLight.shadow.camera.top = 20;
   // directionalLight.shadow.camera.right = 20;
   // directionalLight.shadow.camera.bottom = -20;

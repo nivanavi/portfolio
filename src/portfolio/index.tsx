@@ -12,24 +12,26 @@ import {setupLights}                                         from "./lights";
 import {carObject}                                           from "./objects/car";
 import CannonDebugRenderer                                   from "../libs/cannonDebug";
 import {windowResizeUtil}                                    from "./utils";
-import {poolObject}                         from "./objects/waterpool";
-import {benchObject}                        from "./objects/bench";
-import {teleportObject}                     from "./objects/teleport";
-import {lampPostObject}                     from "./objects/lampPost";
-import {GLTFLoader}                         from "three/examples/jsm/loaders/GLTFLoader";
-import {DRACOLoader}                        from "three/examples/jsm/loaders/DRACOLoader";
-import {recorderObject}                     from "./objects/recorder";
-import {logBenchObject}                     from "./objects/logBench";
-import {TextureLoader}                      from "three";
-import {getRandomTreeAndRotate, treeObject} from "./objects/tree";
-import {railsObject}                        from "./objects/rails";
-import {railBlockObject}                    from "./objects/railBlock";
-import {waterTowerObject}                   from "./objects/waterTower";
-import {windTowerObject}                    from "./objects/windTower";
-import {lampPostWestObject}                 from "./objects/lampPostWest";
-import {heyObject}                          from "./objects/hey";
-import {saloonObject}                       from "./objects/saloon";
-import {barrelObject}                       from "./objects/barrel";
+import {poolObject}                                          from "./objects/waterpool";
+import {benchObject}                                         from "./objects/bench";
+import {teleportObject}                                      from "./objects/teleport";
+import {lampPostObject}                                      from "./objects/lampPost";
+import {GLTFLoader}                                          from "three/examples/jsm/loaders/GLTFLoader";
+import {DRACOLoader}                                         from "three/examples/jsm/loaders/DRACOLoader";
+import {recorderObject}                                      from "./objects/recorder";
+import {logBenchObject}                                      from "./objects/logBench";
+import {TextureLoader}                                       from "three";
+import {getRandomTreeAndRotate, treeObject}                  from "./objects/tree";
+import {railsObject}                                         from "./objects/rails";
+import {railBlockObject}                                     from "./objects/railBlock";
+import {waterTowerObject}                                    from "./objects/waterTower";
+import {windTowerObject}                                     from "./objects/windTower";
+import {lampPostWestObject}                                  from "./objects/lampPostWest";
+import {heyObject}                                           from "./objects/hey";
+import {saloonObject}                                        from "./objects/saloon";
+import {barrelObject}                                        from "./objects/barrel";
+import {ladderObject}                                        from "./objects/ladder";
+import {cactusObject, getRandomCactusAndRotate}              from "./objects/cactuses";
 
 export type quaternionType = {
   vector: CANNON.Vec3,
@@ -98,6 +100,19 @@ export const MOST_IMPORTANT_DATA: mostImportantData = {
 
 const {scene, windowSizes, physicWorld, clock} = MOST_IMPORTANT_DATA;
 
+const getUniquePosition = (minRadius: number, levelYOffset: number, positions: THREE.Vector3[]): THREE.Vector3 => {
+  const angle = Math.random() * Math.PI * 2;
+  const radius = minRadius + Math.random() * 15
+  const x = Math.sin(angle) * radius;
+  const z = Math.cos(angle) * radius;
+  const vector: THREE.Vector3 = new THREE.Vector3(x, levelYOffset, z);
+  const findNear = positions.find(vec => vec.distanceTo(vector) < 4);
+  if (!!findNear) return getUniquePosition(minRadius, levelYOffset, positions);
+  return vector;
+}
+
+const level1YOffset: number = 0;
+const level2YOffset: number = 15;
 
 export const Portfolio = () => {
   const {canvas} = useSceneIgniterContext();
@@ -115,53 +130,95 @@ export const Portfolio = () => {
   carObject();
 
   // level 1
-  // groundObject();
-  // poolObject();
-  // benchObject({position: new THREE.Vector3(0.8, 0, 6), quaternion: {vector: new CANNON.Vec3(0, -1, 0), angle: Math.PI}})
-  // lampPostObject({position: new THREE.Vector3(0, 0, 6)})
-  //
-  // benchObject({position: new THREE.Vector3(0.8, 0, -6)})
-  // lampPostObject({position: new THREE.Vector3(0, 0, -6)})
-  //
-  // benchObject({position: new THREE.Vector3(-6, 0, 0.8), quaternion: {vector: new CANNON.Vec3(0, 1, 0), angle: Math.PI * 0.5}})
-  // lampPostObject({position: new THREE.Vector3(-6, 0, 0)})
-  //
-  // benchObject({position: new THREE.Vector3(6, 0, 0.8), quaternion: {vector: new CANNON.Vec3(0, -1, 0), angle: Math.PI * 0.5}})
-  // lampPostObject({position: new THREE.Vector3(6, 0, 0)})
-  //
-  // logBenchObject({position: new THREE.Vector3(16, 0, 0)})
-  //
-  // recorderObject({position: new THREE.Vector3(0, 0.4, 2.1), quaternion: {vector: new CANNON.Vec3(0, 1, 0), angle: Math.PI * 0.5}})
-  //
-  // teleportObject({exitPosition: new THREE.Vector3(18, 15, 8), enterPosition: new THREE.Vector3(8, 0, 8)})
-  // const positions: THREE.Vector3[] = [];
-  // const getUniquePosition = (): THREE.Vector3 => {
-  //   const angle = Math.random() * Math.PI * 2;
-  //   const radius = 9 + Math.random() * 15
-  //   const x = Math.sin(angle) * radius;
-  //   const z = Math.cos(angle) * radius;
-  //   const vector: THREE.Vector3 = new THREE.Vector3(x, 0, z);
-  //   const findNear = positions.find(vec => vec.distanceTo(vector) < 4);
-  //   if (!!findNear) return getUniquePosition();
-  //   return vector;
-  // }
-  // Array.from({length: 50}).forEach(() => {
-  //   const {tree, quaternion} = getRandomTreeAndRotate();
-  //   const position = getUniquePosition();
-  //   positions.push(position)
-  //   treeObject({position, quaternion}, tree)
-  // });
+  groundObject();
+  poolObject();
+  benchObject({position: new THREE.Vector3(0.8, level1YOffset, 6), quaternion: {vector: new CANNON.Vec3(0, -1, 0), angle: Math.PI}})
+  lampPostObject({position: new THREE.Vector3(0, level1YOffset, 6)})
+
+  benchObject({position: new THREE.Vector3(0.8, level1YOffset, -6)})
+  lampPostObject({position: new THREE.Vector3(0, level1YOffset, -6)})
+
+  benchObject({position: new THREE.Vector3(-6, level1YOffset, 0.8), quaternion: {vector: new CANNON.Vec3(0, 1, 0), angle: Math.PI * 0.5}})
+  lampPostObject({position: new THREE.Vector3(-6, level1YOffset, 0)})
+
+  benchObject({position: new THREE.Vector3(6, level1YOffset, 0.8), quaternion: {vector: new CANNON.Vec3(0, -1, 0), angle: Math.PI * 0.5}})
+  lampPostObject({position: new THREE.Vector3(6, level1YOffset, 0)})
+
+  logBenchObject({position: new THREE.Vector3(16, level1YOffset, 0)})
+
+  recorderObject({position: new THREE.Vector3(0, level1YOffset + 0.4, 2.1), quaternion: {vector: new CANNON.Vec3(0, 1, 0), angle: Math.PI * 0.5}})
+
+  teleportObject({exitPosition: new THREE.Vector3(18, level2YOffset, 8), enterPosition: new THREE.Vector3(8, level1YOffset, 8)})
+  const positions1level: THREE.Vector3[] = [new THREE.Vector3(8, level1YOffset, 8)];
+  Array.from({length: 50}).forEach(() => {
+    const {tree, quaternion} = getRandomTreeAndRotate();
+    const position = getUniquePosition(9, level1YOffset, positions1level);
+    positions1level.push(position)
+    treeObject({position, quaternion}, tree)
+  });
 
   // level 2
-  groundObject({position: new THREE.Vector3(0, 0, 0), color: "#D58B1C"});
-  railsObject({position: new THREE.Vector3(0, 0, 0)})
-  railBlockObject({position: new THREE.Vector3(0, 0, 3)})
-  waterTowerObject({position: new THREE.Vector3(0, 0, 9)})
-  windTowerObject({position: new THREE.Vector3(0, 0, 0)})
-  lampPostWestObject({position: new THREE.Vector3(0, 0, 1)})
-  heyObject({position: new THREE.Vector3(0, 0, 4)})
-  saloonObject({position: new THREE.Vector3(8, 0, 0)})
-  barrelObject({position: new THREE.Vector3(3, 0, 0)})
+  groundObject({position: new THREE.Vector3(0, level2YOffset, 0), color: "#D58B1C"});
+  railsObject({position: new THREE.Vector3(0, level2YOffset, 0)})
+  railBlockObject({position: new THREE.Vector3(-12, level2YOffset, 0)})
+  saloonObject({
+    position: new THREE.Vector3(0, level2YOffset, -8), quaternion: {
+      vector: new CANNON.Vec3(0, -1, 0),
+      angle: Math.PI / 2
+    }
+  })
+  barrelObject({position: new THREE.Vector3(-2.5, level2YOffset, -8)})
+  barrelObject({position: new THREE.Vector3(-2.5, level2YOffset, -8.5)})
+  barrelObject({position: new THREE.Vector3(-2.7, level2YOffset, -9)})
+  barrelObject({position: new THREE.Vector3(-2.5, level2YOffset + 0.7, -8.25)})
+
+  barrelObject({position: new THREE.Vector3(0, level2YOffset, 9)})
+  barrelObject({position: new THREE.Vector3(0.5, level2YOffset, 9)})
+  barrelObject({position: new THREE.Vector3(1, level2YOffset, 9)})
+  barrelObject({position: new THREE.Vector3(0.25, level2YOffset + 0.7, 9)})
+  barrelObject({position: new THREE.Vector3(0.75, level2YOffset + 0.7, 9)})
+  barrelObject({position: new THREE.Vector3(0.5, level2YOffset + 1.4, 9)})
+
+  heyObject({position: new THREE.Vector3(4, level2YOffset, 6)})
+  heyObject({position: new THREE.Vector3(4, level2YOffset, 6.5)})
+  heyObject({position: new THREE.Vector3(4, level2YOffset + 1, 6)})
+  heyObject({position: new THREE.Vector3(4, level2YOffset + 1, 6.5)})
+  heyObject({
+    position: new THREE.Vector3(4, level2YOffset, 7.1), quaternion: {
+      vector: new CANNON.Vec3(0, -1, 0), angle: Math.PI / 5
+    }
+  })
+
+  waterTowerObject({position: new THREE.Vector3(8, level2YOffset, -7)})
+  windTowerObject({position: new THREE.Vector3(-3, level2YOffset, 9)})
+  lampPostWestObject({position: new THREE.Vector3(-10, level2YOffset, 1.5)})
+  lampPostWestObject({position: new THREE.Vector3(0, level2YOffset, 1.5)})
+  lampPostWestObject({position: new THREE.Vector3(10, level2YOffset, 1.5)})
+  lampPostWestObject({
+    position: new THREE.Vector3(-5, level2YOffset, -1.5), quaternion: {
+      vector: new CANNON.Vec3(0, -1, 0), angle: Math.PI
+    }
+  })
+  lampPostWestObject({
+    position: new THREE.Vector3(5, level2YOffset, -1.5), quaternion: {
+      vector: new CANNON.Vec3(0, -1, 0), angle: Math.PI
+    }
+  })
+  ladderObject({position: new THREE.Vector3(3.2, level2YOffset, 6), quaternion: {
+    vector: new CANNON.Vec3(0, 0, -1),
+      angle: Math.PI / 10
+    }})
+  ladderObject({position: new THREE.Vector3(-3, level2YOffset, 9.5), quaternion: {
+    vector: new CANNON.Vec3(0, 1, -1),
+      angle: Math.PI /2
+    }})
+  const positions2level: THREE.Vector3[] = [new THREE.Vector3(18, level2YOffset, 8)];
+  Array.from({length: 50}).forEach(() => {
+    const {cactus, quaternion} = getRandomCactusAndRotate();
+    const position = getUniquePosition(12.5, level2YOffset, positions2level);
+    positions2level.push(position)
+    cactusObject({position, quaternion}, cactus)
+  });
 
   physicWorld.addEventListener("postStep", () => callInPostStepStack.forEach(call => call()))
 

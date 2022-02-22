@@ -72,9 +72,8 @@ export const windTowerObject = (props?: objectProps) => {
     }
   )
 
-  windTowerHeadContainer.position.copy(position);
   windTowerHeadContainer.position.y = windTowerHeadContainer.position.y + 3.4
-  windTowerContainer.position.copy(position);
+  windTowerContainer.position.set(position.x, position.y, position.z)
 
   // physic
   const windTowerShape = new CANNON.Box(new CANNON.Vec3(0.3, 1, 0.3));

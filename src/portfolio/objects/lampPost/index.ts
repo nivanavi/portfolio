@@ -9,6 +9,7 @@ import lampPostModelGltf                                    from "./models/lampP
 // @ts-ignore
 import lampBrokenSong                                       from "./sounds/lampBroken.mp3";
 import {DEFAULT_POSITION, MOST_IMPORTANT_DATA, objectProps} from "../../index";
+import {SpotLight}                                          from "three";
 
 const recorderPlayer = new Howl({
   src: [lampBrokenSong],
@@ -34,7 +35,6 @@ export const lampPostObject = (props: objectProps) => {
     lampPostModelGltf,
     model => {
       const lampPostModel = model.scene;
-      console.log(lampPostModel.children)
       lampPostModel.children.forEach(child => child.name === "lampPostLight" ? child.children[0].castShadow = true : undefined)
       lampPostModel.children.forEach(child => child.name === "lampPostLight" ? lampLight = child.children[0] : undefined)
       lampPostModel.scale.set(0.18, 0.18, 0.18);
@@ -54,11 +54,17 @@ export const lampPostObject = (props: objectProps) => {
   lampPostBody.position.set(position.x, position.y + 0.7, position.z)
 
   const brokeLamp = async () => {
-    lampLight.visible = false;
-    await sleep(700);
-    lampLight.visible = true;
-    await sleep(500);
-    lampLight.visible = false;
+    if (!lampLight.children[0]) return;
+    if (!lampLight.children[0].parent) return;
+    (lampLight.children[0].parent as SpotLight).intensity = 0;
+    await sleep(300);
+    (lampLight.children[0].parent as SpotLight).intensity = 0.5;
+    await sleep(250);
+    (lampLight.children[0].parent as SpotLight).intensity = 0;
+    await sleep(200);
+    (lampLight.children[0].parent as SpotLight).intensity = 0.5;
+    await sleep(450);
+    (lampLight.children[0].parent as SpotLight).intensity = 0;
   }
 
   lampPostBody.addEventListener("collide", (ev: any) => {
