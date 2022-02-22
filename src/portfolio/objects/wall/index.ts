@@ -47,6 +47,7 @@ export const wallObject = () => {
       material: dummyPhysicsMaterial
     })
     body.allowSleep = true;
+    body.sleepSpeedLimit = 0.01
     body.position.copy(position)
     if (isYDirection) body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 0, -1), Math.PI * 0.5)
     const mesh = new THREE.Mesh(

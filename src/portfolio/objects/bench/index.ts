@@ -32,6 +32,8 @@ export const benchObject = (props?: objectProps) => {
     mass: 5,
     material: dummyPhysicsMaterial
   })
+  benchBody.allowSleep = true;
+  benchBody.sleepSpeedLimit = 0.01;
   benchBody.addShape(benchShape)
   benchBody.position.set(position.x, position.y + 0.28, position.z)
   benchBody.quaternion.setFromAxisAngle(quaternion.vector, quaternion.angle)

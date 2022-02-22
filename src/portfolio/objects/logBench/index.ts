@@ -31,6 +31,8 @@ export const logBenchObject = (props?: objectProps) => {
     mass: 25,
     material: dummyPhysicsMaterial
   })
+  logBenchBody.allowSleep = true;
+  logBenchBody.sleepSpeedLimit = 0.01;
   logBenchBody.addShape(logBenchShape)
   logBenchBody.position.set(position.x, position.y + 0.28, position.z)
   logBenchBody.quaternion.setFromAxisAngle(quaternion.vector, quaternion.angle)

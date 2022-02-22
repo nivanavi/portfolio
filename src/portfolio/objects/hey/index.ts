@@ -32,6 +32,8 @@ export const heyObject = (props?: objectProps) => {
     mass: 3,
     material: dummyPhysicsMaterial
   })
+  heyBody.allowSleep = true;
+  heyBody.sleepSpeedLimit = 0.01;
   heyBody.addShape(heyShape)
   heyBody.position.set(position.x, position.y + 0.28, position.z)
   heyBody.quaternion.setFromAxisAngle(quaternion.vector, quaternion.angle)

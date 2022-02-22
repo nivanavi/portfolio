@@ -32,10 +32,11 @@ export const ladderObject = (props?: objectProps) => {
     mass: 5,
     material: dummyPhysicsMaterial
   })
+  ladderBody.allowSleep = true;
+  ladderBody.sleepSpeedLimit = 0.01;
   ladderBody.addShape(ladderShape)
   ladderBody.position.set(position.x, position.y + 1, position.z)
   ladderBody.quaternion.setFromAxisAngle(quaternion.vector, quaternion.angle)
-  // ladderBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0, -1, 0), 1.5)
 
   copyPositions({
     mesh: ladderContainer,

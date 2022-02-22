@@ -21,17 +21,17 @@ import {DRACOLoader}                                         from "three/example
 import {recorderObject}                                      from "./objects/recorder";
 import {logBenchObject}                                      from "./objects/logBench";
 import {TextureLoader}                                       from "three";
-import {getRandomTreeAndRotate, treeObject}                  from "./objects/tree";
-import {railsObject}                                         from "./objects/rails";
-import {railBlockObject}                                     from "./objects/railBlock";
-import {waterTowerObject}                                    from "./objects/waterTower";
-import {windTowerObject}                                     from "./objects/windTower";
-import {lampPostWestObject}                                  from "./objects/lampPostWest";
-import {heyObject}                                           from "./objects/hey";
-import {saloonObject}                                        from "./objects/saloon";
-import {barrelObject}                                        from "./objects/barrel";
-import {ladderObject}                                        from "./objects/ladder";
-import {cactusObject, getRandomCactusAndRotate}              from "./objects/cactuses";
+import {getRandomTreeAndRotate, treeObject}     from "./objects/tree";
+import {railsObject}                            from "./objects/rails";
+import {railBlockObject}                        from "./objects/railBlock";
+import {waterTowerObject}                       from "./objects/waterTower";
+import {windTowerObject}                        from "./objects/windTower";
+import {lampPostWestObject}                     from "./objects/lampPostWest";
+import {heyObject}                              from "./objects/hey";
+import {saloonObject}                           from "./objects/saloon";
+import {barrelObject}                           from "./objects/barrel";
+import {ladderObject}                           from "./objects/ladder";
+import {cactusObject, getRandomCactusAndRotate} from "./objects/cactuses";
 
 export type quaternionType = {
   vector: CANNON.Vec3,
@@ -113,6 +113,7 @@ const getUniquePosition = (minRadius: number, levelYOffset: number, positions: T
 
 const level1YOffset: number = 0;
 const level2YOffset: number = 15;
+const level3YOffset: number = 30;
 
 export const Portfolio = () => {
   const {canvas} = useSceneIgniterContext();
@@ -144,12 +145,11 @@ export const Portfolio = () => {
   benchObject({position: new THREE.Vector3(6, level1YOffset, 0.8), quaternion: {vector: new CANNON.Vec3(0, -1, 0), angle: Math.PI * 0.5}})
   lampPostObject({position: new THREE.Vector3(6, level1YOffset, 0)})
 
-  logBenchObject({position: new THREE.Vector3(16, level1YOffset, 0)})
-
-  recorderObject({position: new THREE.Vector3(0, level1YOffset + 0.4, 2.1), quaternion: {vector: new CANNON.Vec3(0, 1, 0), angle: Math.PI * 0.5}})
+  logBenchObject({position: new THREE.Vector3(16, level1YOffset, 4), quaternion: {vector: new CANNON.Vec3(0, 1, 0), angle: Math.PI / 5}})
+  recorderObject({position: new THREE.Vector3(15.8, level1YOffset + 0.4, 3.7), quaternion: {vector: new CANNON.Vec3(0, 1, 0), angle: Math.PI * 0.5}})
 
   teleportObject({exitPosition: new THREE.Vector3(18, level2YOffset, 8), enterPosition: new THREE.Vector3(8, level1YOffset, 8)})
-  const positions1level: THREE.Vector3[] = [new THREE.Vector3(8, level1YOffset, 8)];
+  const positions1level: THREE.Vector3[] = [new THREE.Vector3(8, level1YOffset, 8), new THREE.Vector3(16, level1YOffset, 4)];
   Array.from({length: 50}).forEach(() => {
     const {tree, quaternion} = getRandomTreeAndRotate();
     const position = getUniquePosition(9, level1YOffset, positions1level);
@@ -190,7 +190,7 @@ export const Portfolio = () => {
   })
 
   waterTowerObject({position: new THREE.Vector3(8, level2YOffset, -7)})
-  windTowerObject({position: new THREE.Vector3(-3, level2YOffset, 9)})
+  windTowerObject({position: new THREE.Vector3(-5, level2YOffset, 5)})
   lampPostWestObject({position: new THREE.Vector3(-10, level2YOffset, 1.5)})
   lampPostWestObject({position: new THREE.Vector3(0, level2YOffset, 1.5)})
   lampPostWestObject({position: new THREE.Vector3(10, level2YOffset, 1.5)})
@@ -212,13 +212,17 @@ export const Portfolio = () => {
     vector: new CANNON.Vec3(0, 1, -1),
       angle: Math.PI /2
     }})
-  const positions2level: THREE.Vector3[] = [new THREE.Vector3(18, level2YOffset, 8)];
+  teleportObject({exitPosition: new THREE.Vector3(18, level3YOffset, 8), enterPosition: new THREE.Vector3(8, level2YOffset, 8)})
+  const positions2level: THREE.Vector3[] = [new THREE.Vector3(18, level2YOffset, 8), new THREE.Vector3(8, level2YOffset, 8)];
   Array.from({length: 50}).forEach(() => {
     const {cactus, quaternion} = getRandomCactusAndRotate();
     const position = getUniquePosition(12.5, level2YOffset, positions2level);
     positions2level.push(position)
     cactusObject({position, quaternion}, cactus)
   });
+
+  // level 3
+  groundObject({position: new THREE.Vector3(0, level3YOffset, 0), color: 'grey'});
 
   physicWorld.addEventListener("postStep", () => callInPostStepStack.forEach(call => call()))
 

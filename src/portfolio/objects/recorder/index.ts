@@ -52,8 +52,9 @@ export const recorderObject = (props: objectProps) => {
     mass: 5,
     material: dummyPhysicsMaterial
   })
-  recorderBody.addShape(recorderShape)
   recorderBody.allowSleep = true;
+  recorderBody.sleepSpeedLimit = 0.01;
+  recorderBody.addShape(recorderShape)
   recorderBody.position.set(position.x, position.y + 0.35, position.z)
   recorderBody.quaternion.setFromAxisAngle(quaternion.vector, quaternion.angle)
 

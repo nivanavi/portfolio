@@ -1,7 +1,7 @@
 import * as THREE             from "three";
-import * as CANNON                                from 'cannon-es'
-import {carPhysicsMaterial, wheelPhysicsMaterial} from "../../physics";
-import {copyPositions}                            from "../../utils";
+import * as CANNON                                                      from 'cannon-es'
+import {dummyPhysicsMaterial, wheelPhysicsMaterial} from "../../physics";
+import {copyPositions}                                                  from "../../utils";
 import {Vector3}              from "three";
 
 // models
@@ -125,9 +125,7 @@ export const carObject = () => {
 
 
   const chassisShape = new CANNON.Box(new CANNON.Vec3(CAR_OPTIONS.chassisDepth * 0.5, CAR_OPTIONS.chassisHeight * 0.5, CAR_OPTIONS.chassisWidth * 0.5))
-  const chassisBody = new CANNON.Body({mass: CAR_OPTIONS.chassisMass, material: carPhysicsMaterial});
-  // chassisBody.mass = CAR_OPTIONS.chassisMass;
-  // chassisBody.material = carPhysicsMaterial;
+  const chassisBody = new CANNON.Body({mass: CAR_OPTIONS.chassisMass});
   chassisBody.allowSleep = false;
   chassisBody.position.set(4, 1, 0);
   chassisBody.addShape(chassisShape, CAR_OPTIONS.chassisOffset)
