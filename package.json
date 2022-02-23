@@ -3,38 +3,34 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
-    "@types/jest": "^26.0.15",
-    "@types/node": "^12.0.0",
-    "@types/react": "^17.0.0",
-    "@types/react-dom": "^17.0.0",
+    "@testing-library/jest-dom": "^5.16.2",
+    "@testing-library/react": "^12.1.3",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.4.1",
+    "@types/node": "^17.0.20",
+    "@types/react": "^17.0.39",
+    "@types/react-dom": "^17.0.11",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-scripts": "4.0.3",
-    "typescript": "^4.1.2",
-    "web-vitals": "^1.0.1",
-    "three": "^0.132.2",
-    "@types/three": "^0.131.0",
-    "dat.gui": "^0.7.7",
+    "react-scripts": "^5.0.0",
+    "typescript": "^4.5.5",
+    "web-vitals": "^2.1.4",
+    "three": "^0.137.5",
+    "@types/three": "^0.137.0",
+    "dat.gui": "^0.7.9",
     "@types/dat.gui": "^0.7.7",
-    "cannon-es": "^0.18.0",
+    "cannon-es": "^0.19.0",
     "howler": "^2.2.3",
-    "@types/howler": "^2.2.4",
-    "three-to-cannon": "^4.0.2"
+    "@types/howler": "^2.2.5"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "eject": "react-scripts eject",
+    "lint": "eslint src",
+    "prettier:fix": "prettier --write",
+    "prettier:check": "prettier --check ."
   },
   "browserslist": {
     "production": [
@@ -47,5 +43,18 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.6.0",
+    "@typescript-eslint/parser": "^5.6.0",
+    "eslint-config-airbnb": "^19.0.2",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-import-resolver-typescript": "^2.5.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.27.1",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "prettier": "2.5.1"
   }
 }

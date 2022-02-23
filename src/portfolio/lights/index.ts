@@ -1,30 +1,47 @@
-import * as THREE            from "three";
-import {MOST_IMPORTANT_DATA} from "../index";
+import * as THREE from 'three';
+import { MOST_IMPORTANT_DATA } from '../index';
 
-export const setupLights = () => {
-  const {scene} = MOST_IMPORTANT_DATA;
-  const ambientLight = new THREE.AmbientLight("#ffffff", 1);
+type setLightsType = (levelYOffset: number) => void;
 
+export const setupLights: () => {
+	setLightsFor1Level: setLightsType;
+	setLightsFor2Level: setLightsType;
+	setLightsFor3Level: setLightsType;
+} = () => {
+	const { scene } = MOST_IMPORTANT_DATA;
+	const ambientLight = new THREE.AmbientLight('#ffffff');
 
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5)
-  const helper = new THREE.DirectionalLightHelper( directionalLight, 5, "red" );
+	const pointLight = new THREE.PointLight('#ffffff');
+	pointLight.castShadow = true; // default false
+	pointLight.shadow.mapSize.height = 1024;
+	pointLight.shadow.mapSize.width = 1024;
+	scene.add(pointLight);
+	scene.add(ambientLight);
 
-  directionalLight.position.set(0, 13, 0);
-  directionalLight.castShadow = true;
-  // directionalLight.shadow.mapSize.x = 15024;
-  // directionalLight.shadow.mapSize.y = 15024;
-  // directionalLight.shadow.camera.top = 20;
-  // directionalLight.shadow.camera.right = 20;
-  // directionalLight.shadow.camera.bottom = -20;
-  // directionalLight.shadow.camera.left = -20;
-  // directionalLight.shadow.camera.near = 15;
-  // directionalLight.shadow.camera.far = 15;
-  // directionalLight.shadow.radius = 10;
+	const setLightsFor1Level: setLightsType = (levelYOffset: number) => {
+		ambientLight.intensity = 0.5;
+		pointLight.intensity = 0.8;
+		pointLight.distance = 40;
+		pointLight.position.set(0, levelYOffset, -7);
+	};
 
-  scene.add(ambientLight, directionalLight)
-  scene.add( helper );
-  return {
-    ambientLight,
-    directionalLight
-  }
-}
+	const setLightsFor2Level: setLightsType = (levelYOffset: number) => {
+		ambientLight.intensity = 1;
+		pointLight.intensity = 0.8;
+		pointLight.distance = 60;
+		pointLight.position.set(0, levelYOffset, 7);
+	};
+
+	const setLightsFor3Level: setLightsType = levelYOffset => {
+		ambientLight.intensity = 1;
+		pointLight.intensity = 0.8;
+		pointLight.distance = 60;
+		pointLight.position.set(0, levelYOffset, 7);
+	};
+
+	return {
+		setLightsFor1Level,
+		setLightsFor2Level,
+		setLightsFor3Level,
+	};
+};
