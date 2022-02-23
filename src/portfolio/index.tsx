@@ -110,8 +110,8 @@ const getUniquePosition = (minRadius: number, levelYOffset: number, positions: T
 };
 
 const level1YOffset: number = 0;
-const level2YOffset: number = 15;
-const level3YOffset: number = 30;
+const level2YOffset: number = 120;
+const level3YOffset: number = 240;
 
 export const Portfolio: React.FC = () => {
 	const canvas = useSceneIgniterContext().canvas!;
@@ -148,8 +148,8 @@ export const Portfolio: React.FC = () => {
 	recorderObject({ position: new THREE.Vector3(15.8, level1YOffset + 0.4, 3.7), quaternion: { vector: new CANNON.Vec3(0, 1, 0), angle: Math.PI * 0.5 } });
 
 	teleportObject({
-		exit: { position: new THREE.Vector3(18, level2YOffset, 8), callback: () => setLightsFor2Level(30) },
-		enter: { position: new THREE.Vector3(8, level1YOffset, 8), callback: () => setLightsFor1Level(15) },
+		exit: { position: new THREE.Vector3(18, level2YOffset, 8), callback: () => setLightsFor2Level(level2YOffset + 15) },
+		enter: { position: new THREE.Vector3(8, level1YOffset, 8), callback: () => setLightsFor1Level(level1YOffset + 15) },
 	});
 	const positions1level: THREE.Vector3[] = [new THREE.Vector3(8, level1YOffset, 8), new THREE.Vector3(16, level1YOffset, 4)];
 	Array.from({ length: 50 }).forEach(() => {
