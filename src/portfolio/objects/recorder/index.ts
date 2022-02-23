@@ -1,7 +1,7 @@
 import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
-import { copyPositions } from '../../utils';
 import { Howl } from 'howler';
+import { copyPositions } from '../../utils';
 
 // @ts-ignore
 import recorderSongUrl from './sounds/recorderSong.mp3';

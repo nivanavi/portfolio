@@ -46,7 +46,7 @@ export const barrelObject: (props: objectProps) => void = props => {
 	physicWorld.addBody(barrelBody);
 	scene.add(barrelContainer);
 
-	const callInTick: (props: calInTickProps) => void = () => {
+	const callInTick: (propsCalInTick: calInTickProps) => void = () => {
 		copyPositions({
 			mesh: barrelContainer,
 			body: barrelBody,

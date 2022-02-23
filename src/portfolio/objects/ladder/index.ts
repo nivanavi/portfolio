@@ -45,7 +45,7 @@ export const ladderObject: (props?: objectProps) => void = props => {
 	physicWorld.addBody(ladderBody);
 	scene.add(ladderContainer);
 
-	const callInTick: (props: calInTickProps) => void = () => {
+	const callInTick: (propsCalInTick: calInTickProps) => void = () => {
 		copyPositions({
 			mesh: ladderContainer,
 			body: ladderBody,

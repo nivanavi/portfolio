@@ -1,11 +1,6 @@
-import React              from 'react';
-import {PortfolioIgniter} from "./portfolio";
+import React from 'react';
+import { PortfolioIgniter } from './portfolio';
 
-
-function App() {
-  return (
-    <PortfolioIgniter/>
-  );
-}
+const App: React.FC = () => <PortfolioIgniter />;
 
 export default App;

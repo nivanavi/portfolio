@@ -55,7 +55,7 @@ export const benchObject: (props?: objectProps) => void = props => {
 	//   }, 683)
 	// })
 
-	const callInTick: (props: calInTickProps) => void = () => {
+	const callInTick: (propsCalInTick: calInTickProps) => void = () => {
 		copyPositions({
 			mesh: benchContainer,
 			body: benchBody,

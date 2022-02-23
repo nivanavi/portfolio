@@ -48,7 +48,7 @@ export const heyObject: (props?: objectProps) => void = props => {
 	physicWorld.addBody(heyBody);
 	scene.add(heyContainer);
 
-	const callInTick: (props: calInTickProps) => void = () => {
+	const callInTick: (propsCalInTick: calInTickProps) => void = () => {
 		copyPositions({
 			mesh: heyContainer,
 			body: heyBody,
