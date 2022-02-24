@@ -1,9 +1,12 @@
 import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
-import { copyPositions } from '../../utils';
 import { dummyPhysicsMaterial } from '../../physics';
 import { calInTickProps, MOST_IMPORTANT_DATA } from '../../index';
 import { CAR_OPTIONS } from '../car';
+
+// @ts-ignore
+// eslint-disable-next-line import/no-unresolved
+import teleportModelGltf from './models/teleport.gltf';
 
 // @ts-ignore
 // import recorderSongUrl        from "./sounds/recorderSong.mp3"
@@ -18,46 +21,48 @@ interface oneTeleportProps extends teleportProps {
 }
 
 const teleport: (props: oneTeleportProps) => { callInTick: () => void } = ({ enter, exit, teleportCallback }) => {
-	const { physicWorld, scene } = MOST_IMPORTANT_DATA;
+	const { physicWorld, scene, gltfLoader } = MOST_IMPORTANT_DATA;
 
-	const teleportMaterial = new THREE.MeshStandardMaterial({
-		color: 'yellow',
+	const teleportContainer: THREE.Group = new THREE.Group();
+	teleportContainer.name = 'teleport';
+
+	gltfLoader.load(teleportModelGltf, model => {
+		const teleportModel = model.scene;
+		teleportModel.children.forEach(child => {
+			child.castShadow = true;
+		});
+		teleportModel.scale.set(0.4, 0.4, 0.4);
+		teleportModel.position.set(0, 0, 0);
+		teleportContainer.add(teleportModel);
 	});
-	const teleportGeometry = new THREE.BoxBufferGeometry(0.4, 4, 0.4);
 
-	const teleportLeftMesh = new THREE.Mesh(teleportGeometry, teleportMaterial);
-	const teleportRightMesh = new THREE.Mesh(teleportGeometry, teleportMaterial);
-	teleportLeftMesh.receiveShadow = true;
-	teleportRightMesh.receiveShadow = true;
-
+	// lights
+	const pointLight = new THREE.PointLight('purple', 1);
+	pointLight.distance = 2.5;
+	pointLight.intensity = 5;
 	// physic
-	const teleportShape = new CANNON.Box(new CANNON.Vec3(0.2, 2, 0.2));
+	const teleportLeftShape = new CANNON.Box(new CANNON.Vec3(1, 1.8, 0.3));
+	const teleportRightShape = new CANNON.Box(new CANNON.Vec3(1, 1.8, 0.3));
 	const teleportLeftBody = new CANNON.Body({
 		mass: 0,
-		shape: teleportShape,
+		shape: teleportLeftShape,
 		material: dummyPhysicsMaterial,
 	});
 	const teleportRightBody = new CANNON.Body({
 		mass: 0,
-		shape: teleportShape,
+		shape: teleportRightShape,
 		material: dummyPhysicsMaterial,
 	});
 
-	teleportLeftBody.position.set(enter.position.x, enter.position.y, enter.position.z);
-	teleportRightBody.position.set(exit.position.x + 3, exit.position.y, exit.position.z);
-
-	copyPositions({
-		body: teleportLeftBody,
-		mesh: teleportLeftMesh,
-	});
-	copyPositions({
-		body: teleportRightBody,
-		mesh: teleportRightMesh,
-	});
+	pointLight.position.set(enter.position.x + 1.5, enter.position.y + 1.85, enter.position.z - 0.2);
+	teleportContainer.position.set(enter.position.x + 1.5, enter.position.y + 1.85, enter.position.z);
+	teleportLeftBody.position.set(enter.position.x - 0.7, enter.position.y + 1.8, enter.position.z);
+	teleportRightBody.position.set(enter.position.x + 3.8, enter.position.y + 1.8, enter.position.z);
 
 	physicWorld.addBody(teleportLeftBody);
 	physicWorld.addBody(teleportRightBody);
-	scene.add(teleportLeftMesh, teleportRightMesh);
+	scene.add(teleportContainer);
+	scene.add(pointLight);
 
 	const raycaster = new THREE.Raycaster();
 	const rayOrigin = new THREE.Vector3(enter.position.x, enter.position.y + 0.3, enter.position.z);

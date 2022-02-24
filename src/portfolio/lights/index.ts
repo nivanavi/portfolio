@@ -34,9 +34,9 @@ export const setupLights: () => {
 
 	const setLightsFor3Level: setLightsType = levelYOffset => {
 		ambientLight.intensity = 1;
-		pointLight.intensity = 0.8;
+		pointLight.intensity = 0.6;
 		pointLight.distance = 60;
-		pointLight.position.set(0, levelYOffset, 7);
+		pointLight.position.set(12, levelYOffset, 0);
 	};
 
 	return {

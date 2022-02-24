@@ -31,7 +31,7 @@ export const poolObject: (props?: objectProps) => void = props => {
 	const waterMaterial = new THREE.ShaderMaterial({
 		uniforms: {
 			uTime: { value: 0 },
-			waterColor: { value: new THREE.Color('#7fffd4') },
+			waterColor: { value: new THREE.Color('#125e44') },
 			depthColor: { value: new THREE.Color('#09d2c8') },
 			elevationLevel: { value: 0.07 },
 		},

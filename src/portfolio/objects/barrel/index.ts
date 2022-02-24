@@ -34,6 +34,8 @@ export const barrelObject: (props: objectProps) => void = props => {
 		mass: 3,
 		material: dummyPhysicsMaterial,
 	});
+	barrelBody.allowSleep = true;
+	barrelBody.sleepSpeedLimit = 0.01;
 	barrelBody.addShape(barrelShape);
 	barrelBody.position.set(position.x, position.y + 0.28, position.z);
 	barrelBody.quaternion.setFromAxisAngle(quaternion.vector, quaternion.angle);

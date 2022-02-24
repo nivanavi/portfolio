@@ -37,3 +37,24 @@ export const sleep: (ms: number) => Promise<unknown> = ms =>
 	new Promise(resolve => {
 		setTimeout(resolve, ms);
 	});
+
+export const updateCOM: (body: CANNON.Body) => void = body => {
+	// first calculate the center of mass
+	// NOTE: this method assumes all the shapes are voxels of equal mass.
+	// If you're not using voxels, you'll need to calculate the COM a different way.
+	const com = new CANNON.Vec3();
+	body.shapeOffsets.forEach(offset => {
+		com.vadd(offset, com);
+	});
+	com.scale(1 / body.shapes.length, com);
+
+	// move the shapes so the body origin is at the COM
+	body.shapeOffsets.forEach(offset => {
+		offset.vsub(com, offset);
+	});
+
+	// now move the body so the shapes' net displacement is 0
+	const worldCOM = new CANNON.Vec3();
+	body.vectorToWorldFrame(com, worldCOM);
+	body.position.vadd(worldCOM, body.position);
+};

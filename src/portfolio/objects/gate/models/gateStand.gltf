@@ -1,0 +1,151 @@
+{
+    "asset" : {
+        "generator" : "Khronos glTF Blender I/O v1.6.16",
+        "version" : "2.0"
+    },
+    "scene" : 0,
+    "scenes" : [
+        {
+            "name" : "Scene",
+            "nodes" : [
+                0
+            ]
+        }
+    ],
+    "nodes" : [
+        {
+            "mesh" : 0,
+            "name" : "Cube.055",
+            "translation" : [
+                0,
+                -0.45923295617103577,
+                0.002830982208251953
+            ]
+        }
+    ],
+    "materials" : [
+        {
+            "doubleSided" : true,
+            "name" : "wood.001",
+            "pbrMetallicRoughness" : {
+                "baseColorFactor" : [
+                    0.2961384057998657,
+                    0.05612845718860626,
+                    0.012286496348679066,
+                    1
+                ],
+                "metallicFactor" : 0,
+                "roughnessFactor" : 0.5
+            }
+        },
+        {
+            "doubleSided" : true,
+            "name" : "woodDark",
+            "pbrMetallicRoughness" : {
+                "baseColorFactor" : [
+                    0.0761854276061058,
+                    0.019382353872060776,
+                    0.005181519314646721,
+                    1
+                ],
+                "metallicFactor" : 0,
+                "roughnessFactor" : 0.5
+            }
+        }
+    ],
+    "meshes" : [
+        {
+            "name" : "Cube.055",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 0
+                    },
+                    "indices" : 1,
+                    "material" : 0
+                },
+                {
+                    "attributes" : {
+                        "POSITION" : 2
+                    },
+                    "indices" : 3,
+                    "material" : 1
+                }
+            ]
+        }
+    ],
+    "accessors" : [
+        {
+            "bufferView" : 0,
+            "componentType" : 5126,
+            "count" : 28,
+            "max" : [
+                0.4461544454097748,
+                2.9363484382629395,
+                0.4461544454097748
+            ],
+            "min" : [
+                -0.4461544454097748,
+                -1.9866998195648193,
+                -0.4461544454097748
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 1,
+            "componentType" : 5123,
+            "count" : 108,
+            "type" : "SCALAR"
+        },
+        {
+            "bufferView" : 2,
+            "componentType" : 5126,
+            "count" : 24,
+            "max" : [
+                0.4461544454097748,
+                2.5961756706237793,
+                0.4461544454097748
+            ],
+            "min" : [
+                -0.4461544454097748,
+                2.1567862033843994,
+                -0.4461544454097748
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 3,
+            "componentType" : 5123,
+            "count" : 96,
+            "type" : "SCALAR"
+        }
+    ],
+    "bufferViews" : [
+        {
+            "buffer" : 0,
+            "byteLength" : 336,
+            "byteOffset" : 0
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 216,
+            "byteOffset" : 336
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 288,
+            "byteOffset" : 552
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 192,
+            "byteOffset" : 840
+        }
+    ],
+    "buffers" : [
+        {
+            "byteLength" : 1032,
+            "uri" : "data:application/octet-stream;base64,TGGpvi5M/r9MYak+TGGpvi5M/j9MYak+TGGpvi5M/r9MYam+TGGpvi5M/j9MYam+TGGpPi5M/r9MYak+TGGpPi5M/j9MYak+TGGpPi5M/r9MYam+TGGpPi5M/j9MYam+W27kvskICkBbbuQ+W27kvskICkBbbuS+W27kPskICkBbbuQ+W27kPskICkBbbuS+W27kvgUGD0BbbuQ+W27kvgUGD0BbbuS+W27kPgUGD0BbbuQ+W27kPgUGD0BbbuS+W27kvr4nJkBbbuQ+W27kvr4nJkBbbuS+W27kPr4nJkBbbuQ+W27kPr4nJkBbbuS+gbiDviLtO0CBuIM+gbiDviLtO0CBuIO+gbiDPiLtO0CBuIM+gbiDPiLtO0CBuIO+W27kPl7GIUBbbuS+W27kPl7GIUBbbuQ+W27kvl7GIUBbbuQ+W27kvl7GIUBbbuS+AAABAAMAAAADAAIAAgADAAcAAgAHAAYABgAHAAUABgAFAAQABAAFAAEABAABAAAAAgAGAAQAAgAEAAAABwADAAkABwAJAAsABQAHAAsABQALAAoAAwABAAgAAwAIAAkAAQAFAAoAAQAKAAgAEgATABcAEgAXABYAFwAVABQAFwAUABYAEQAQABQAEQAUABUAEAASABYAEAAWABQAEwARABUAEwAVABcADwANABsADwAbABgADAAOABkADAAZABoADQAMABoADQAaABsADgAPABgADgAYABkAW27kvskICkBbbuQ+W27kvskICkBbbuS+W27kPskICkBbbuQ+W27kPskICkBbbuS+W27kvgUGD0BbbuQ+W27kvgUGD0BbbuS+W27kPgUGD0BbbuQ+W27kPgUGD0BbbuS+W27kvr4nJkBbbuQ+W27kvr4nJkBbbuS+W27kPr4nJkBbbuQ+W27kPr4nJkBbbuS+yuq9PmeHDEDK6r0+yuq9vmeHDEDK6r0+yuq9vmeHDEDK6r2+yuq9PmeHDEDK6r2+W27kPl7GIUBbbuS+W27kPl7GIUBbbuQ+W27kvl7GIUBbbuQ+W27kvl7GIUBbbuS+PArLPg73I0A8Csu+PArLvg73I0A8Css+PArLPg73I0A8Css+PArLvg73I0A8Csu+DQAMAAYADQAGAAQAFgAUAAsAFgALAAoADwAOAAUADwAFAAcADAAPAAcADAAHAAYADgANAAQADgAEAAUAFwAVAAgAFwAIAAkAFQAWAAoAFQAKAAgAFAAXAAkAFAAJAAsAAQAAAA0AAQANAA4AAgADAA8AAgAPAAwAAwABAA4AAwAOAA8AAAACAAwAAAAMAA0AEAATABcAEAAXABQAEgARABYAEgAWABUAEwASABUAEwAVABcAEQAQABQAEQAUABYA"
+        }
+    ]
+}

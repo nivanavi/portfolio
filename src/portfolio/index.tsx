@@ -5,6 +5,7 @@ import dat from 'dat.gui';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { TextureLoader } from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { SceneIgniterContextProvider, useSceneIgniterContext } from '../lessons/lessonIgniter';
 import { setupRenderer } from './renderer';
 import { setupCameras } from './cameras';
@@ -30,6 +31,13 @@ import { saloonObject } from './objects/saloon';
 import { barrelObject } from './objects/barrel';
 import { ladderObject } from './objects/ladder';
 import { cactusObject, getRandomCactusAndRotate } from './objects/cactuses';
+import { pinObject } from './objects/pin';
+import CannonDebugRenderer from '../libs/cannonDebug';
+import { ballObject } from './objects/ball';
+import { wallObject } from './objects/wall';
+import { fenceObject } from './objects/fence';
+import { rampObject } from './objects/ramp';
+import { gateObject } from './objects/gate';
 
 export type quaternionType = {
 	vector: CANNON.Vec3;
@@ -109,9 +117,13 @@ const getUniquePosition = (minRadius: number, levelYOffset: number, positions: T
 	return vector;
 };
 
+// const level1YOffset: number = 0;
+// const level2YOffset: number = 120;
+// const level3YOffset: number = 240;
+
 const level1YOffset: number = 0;
-const level2YOffset: number = 120;
-const level3YOffset: number = 240;
+const level2YOffset: number = 16;
+const level3YOffset: number = 32;
 
 export const Portfolio: React.FC = () => {
 	const canvas = useSceneIgniterContext().canvas!;
@@ -120,18 +132,18 @@ export const Portfolio: React.FC = () => {
 	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 	const { camera } = setupCameras();
-	const { setLightsFor1Level, setLightsFor2Level } = setupLights();
+	const { setLightsFor1Level, setLightsFor2Level, setLightsFor3Level } = setupLights();
 
 	// not important stuff
-	// const orbitControl = new OrbitControls(camera, canvas);
-	// const cannonDebugRenderer = new CannonDebugRenderer(scene, physicWorld);
+	const orbitControl = new OrbitControls(camera, canvas);
+	const cannonDebugRenderer = new CannonDebugRenderer(scene, physicWorld);
 
 	// car
-	carObject({ position: new THREE.Vector3(3.2, 0, 0) });
-	setLightsFor1Level(15);
+	carObject({ position: new THREE.Vector3(5, 0, -3) });
+	setLightsFor1Level(level1YOffset + 15);
 	// level 1
 	groundObject();
-	poolObject();
+	poolObject({ position: new THREE.Vector3(0, level1YOffset, 0) });
 	benchObject({ position: new THREE.Vector3(0.8, level1YOffset, 6), quaternion: { vector: new CANNON.Vec3(0, -1, 0), angle: Math.PI } });
 	lampPostObject({ position: new THREE.Vector3(0, level1YOffset, 6) });
 
@@ -145,13 +157,15 @@ export const Portfolio: React.FC = () => {
 	lampPostObject({ position: new THREE.Vector3(6, level1YOffset, 0) });
 
 	logBenchObject({ position: new THREE.Vector3(16, level1YOffset, 4), quaternion: { vector: new CANNON.Vec3(0, 1, 0), angle: Math.PI / 5 } });
-	recorderObject({ position: new THREE.Vector3(15.8, level1YOffset + 0.4, 3.7), quaternion: { vector: new CANNON.Vec3(0, 1, 0), angle: Math.PI * 0.5 } });
+	recorderObject({ position: new THREE.Vector3(15.8, level1YOffset + 0.2, 3.7), quaternion: { vector: new CANNON.Vec3(0, 1, 0), angle: Math.PI * 0.5 } });
 
+	const level1TeleportEnter = new THREE.Vector3(2, level1YOffset, -22);
+	const level1TeleportExit = new THREE.Vector3(0, level2YOffset, 23);
 	teleportObject({
-		exit: { position: new THREE.Vector3(18, level2YOffset, 8), callback: () => setLightsFor2Level(level2YOffset + 15) },
-		enter: { position: new THREE.Vector3(8, level1YOffset, 8), callback: () => setLightsFor1Level(level1YOffset + 15) },
+		exit: { position: level1TeleportExit, callback: () => setLightsFor2Level(level2YOffset + 15) },
+		enter: { position: level1TeleportEnter, callback: () => setLightsFor1Level(level1YOffset + 15) },
 	});
-	const positions1level: THREE.Vector3[] = [new THREE.Vector3(8, level1YOffset, 8), new THREE.Vector3(16, level1YOffset, 4)];
+	const positions1level: THREE.Vector3[] = [level1TeleportEnter];
 	Array.from({ length: 50 }).forEach(() => {
 		const { tree, quaternion } = getRandomTreeAndRotate();
 		const position = getUniquePosition(9, level1YOffset, positions1level);
@@ -227,8 +241,13 @@ export const Portfolio: React.FC = () => {
 			angle: Math.PI / 2,
 		},
 	});
-	teleportObject({ exit: { position: new THREE.Vector3(18, level3YOffset, 8) }, enter: { position: new THREE.Vector3(8, level2YOffset, 8) } });
-	const positions2level: THREE.Vector3[] = [new THREE.Vector3(18, level2YOffset, 8), new THREE.Vector3(8, level2YOffset, 8)];
+	const level2TeleportEnter = new THREE.Vector3(-4, level2YOffset, -25);
+	const level2TeleportExit = new THREE.Vector3(18, level3YOffset, -25);
+	teleportObject({
+		exit: { position: level2TeleportExit, callback: () => setLightsFor3Level(level3YOffset + 15) },
+		enter: { position: level2TeleportEnter, callback: () => setLightsFor2Level(level2YOffset + 15) },
+	});
+	const positions2level: THREE.Vector3[] = [level2TeleportEnter, level1TeleportExit];
 	Array.from({ length: 50 }).forEach(() => {
 		const { cactus, quaternion } = getRandomCactusAndRotate();
 		const position = getUniquePosition(12.5, level2YOffset, positions2level);
@@ -237,7 +256,57 @@ export const Portfolio: React.FC = () => {
 	});
 
 	// level 3
-	groundObject({ position: new THREE.Vector3(0, level3YOffset, 0), color: 'grey' });
+	groundObject({ position: new THREE.Vector3(0, level3YOffset, 0), color: '#7C7C7C' });
+
+	// bowling area
+	fenceObject({
+		position: new THREE.Vector3(-1.5, level3YOffset, -2.5),
+	});
+	fenceObject({
+		position: new THREE.Vector3(-1.5, level3YOffset, 2.5),
+		quaternion: {
+			vector: new CANNON.Vec3(0, -1, 0),
+			angle: Math.PI,
+		},
+	});
+	ballObject({ position: new THREE.Vector3(3.5, level3YOffset, 0) });
+	pinObject({ position: new THREE.Vector3(-4, level3YOffset, 0) });
+
+	pinObject({ position: new THREE.Vector3(-4.6, level3YOffset, -0.4) });
+	pinObject({ position: new THREE.Vector3(-4.6, level3YOffset, 0.4) });
+
+	pinObject({ position: new THREE.Vector3(-5.2, level3YOffset, -0.8) });
+	pinObject({ position: new THREE.Vector3(-5.2, level3YOffset, 0) });
+	pinObject({ position: new THREE.Vector3(-5.2, level3YOffset, 0.8) });
+
+	pinObject({ position: new THREE.Vector3(-5.8, level3YOffset, -1.2) });
+	pinObject({ position: new THREE.Vector3(-5.8, level3YOffset, -0.4) });
+	pinObject({ position: new THREE.Vector3(-5.8, level3YOffset, 0.4) });
+	pinObject({ position: new THREE.Vector3(-5.8, level3YOffset, 1.2) });
+
+	// ramp area
+	wallObject({ position: new THREE.Vector3(6.7, level3YOffset, 18), rows: 4, brickInRows: 5, isYDirection: false });
+	rampObject({ position: new THREE.Vector3(8, level3YOffset, 12) });
+	// ramp area
+	wallObject({ position: new THREE.Vector3(24, level3YOffset, 0), rows: 20, brickInRows: 2, isYDirection: true });
+	rampObject({
+		position: new THREE.Vector3(20, level3YOffset, 0),
+		quaternion: {
+			vector: new CANNON.Vec3(0, -1, 0),
+			angle: Math.PI * 1.5,
+		},
+	});
+
+	// house area
+	wallObject({ position: new THREE.Vector3(7.4, level3YOffset, -18), rows: 6, brickInRows: 6, isYDirection: true });
+	wallObject({ position: new THREE.Vector3(8, level3YOffset, -18), rows: 6, brickInRows: 6, isYDirection: false });
+
+	// gate area
+	gateObject({ position: new THREE.Vector3(-1, level3YOffset, 15) });
+	gateObject({
+		position: new THREE.Vector3(1.8, level3YOffset, 15),
+		isRevers: true,
+	});
 
 	physicWorld.addEventListener('postStep', () => callInPostStepStack.forEach(call => call()));
 
@@ -258,8 +327,8 @@ export const Portfolio: React.FC = () => {
 		else physicWorld.step(timeStep, physicDelta, 3);
 
 		// update other stuff
-		// cannonDebugRenderer.update();
-		// orbitControl.update();
+		cannonDebugRenderer.update();
+		orbitControl.update();
 		renderer.render(scene, camera);
 
 		// update old elapsed time

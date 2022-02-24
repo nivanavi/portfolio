@@ -1,0 +1,98 @@
+{
+    "asset" : {
+        "generator" : "Khronos glTF Blender I/O v1.6.16",
+        "version" : "2.0"
+    },
+    "scene" : 0,
+    "scenes" : [
+        {
+            "name" : "Scene",
+            "nodes" : [
+                0
+            ]
+        }
+    ],
+    "nodes" : [
+        {
+            "mesh" : 0,
+            "name" : "Cube",
+            "translation" : [
+                0,
+                -0.002604106906801462,
+                -1.9073486328125e-05
+            ]
+        }
+    ],
+    "materials" : [
+        {
+            "doubleSided" : true,
+            "name" : "stone",
+            "pbrMetallicRoughness" : {
+                "baseColorFactor" : [
+                    0.8227860927581787,
+                    0.7304610013961792,
+                    0.760524570941925,
+                    1
+                ],
+                "metallicFactor" : 0,
+                "roughnessFactor" : 0.4000000059604645
+            }
+        }
+    ],
+    "meshes" : [
+        {
+            "name" : "Cube",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 0
+                    },
+                    "indices" : 1,
+                    "material" : 0
+                }
+            ]
+        }
+    ],
+    "accessors" : [
+        {
+            "bufferView" : 0,
+            "componentType" : 5126,
+            "count" : 24,
+            "max" : [
+                0.5903347134590149,
+                0.523919403553009,
+                1.063088059425354
+            ],
+            "min" : [
+                -0.5903347134590149,
+                -0.523919403553009,
+                -1.0688064098358154
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 1,
+            "componentType" : 5123,
+            "count" : 132,
+            "type" : "SCALAR"
+        }
+    ],
+    "bufferViews" : [
+        {
+            "buffer" : 0,
+            "byteLength" : 288,
+            "byteOffset" : 0
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 264,
+            "byteOffset" : 288
+        }
+    ],
+    "buffers" : [
+        {
+            "byteLength" : 552,
+            "uri" : "data:application/octet-stream;base64,LSAXvyiinD5FE4g/H0GevpUfBj9FE4g/1kMSv8neAT+XaGc/LSAXP/pBcr5FE4i/wQwRPz5DAT+ivfS+P0kCP5UfBj9FE4i/1kMSv1R6Ar+MYGm/+mXcvpUfBr9FE4i/LSAXv6h60r5FE4i/1kMSv8neAT9uNA6/5NDkvmsxAj+mzoi/ZLARvyNO7D6mzoi/wQwRPz5DAT8M+HM/BO7xPpUfBj9FE4g/IDoPP98VA7/KT1g/fWjMPpUfBr9FE4g/aET1Ptiu0L5FE4g/LSAXP7e9wb61enU/1kMSv1R6Ar8XYUk/LSAXvzKXar5FE4g/ge2nvpUfBr9FE4g/LSAXP9MVk75FE4i/IDoPP98VA79Uyzm/RuWzPpUfBr9FE4i/AgAAAAEABQAEAAMAEwASABQACAAHAAYACgALAAkAEgATAAAAAAACAAkACQALAAgACAAGABIAEgAAAAkACQAIABIADwAOABEADwARABAAEAARAAwAEAAMAA0ABAAFAAoACgAJAAIAAgABAA0ADQAMAAQABAAKAAIAAgANAAQAFgAVAAMAAwAEAAwADAARAA4ADgAWAAMAAwAMAA4ADwAQAA0ADQABAAAAAAATABQAFAAPAA0ADQAAABQAFgAXABUABgAHABcAFwAWAA4ADgAPABQAFAASAAYABgAXAA4ADgAUAAYABwAIAAsACwAKAAUABQADABUAFQAXAAcABwALAAUABQAVAAcA"
+        }
+    ]
+}
