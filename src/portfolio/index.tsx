@@ -1,7 +1,6 @@
 import React from 'react';
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
-import dat from 'dat.gui';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { TextureLoader } from 'three';
@@ -68,7 +67,6 @@ type callInPostStepType = () => void;
 type mostImportantData = {
 	scene: THREE.Scene;
 	physicWorld: CANNON.World;
-	gui: dat.GUI;
 	windowSizes: windowSizesType;
 	clock: THREE.Clock;
 	addToCallInTickStack: (callInTick: callInTickType) => void;
@@ -95,7 +93,6 @@ const callInPostStepStack: callInPostStepType[] = [];
 export const MOST_IMPORTANT_DATA: mostImportantData = {
 	scene: new THREE.Scene(),
 	physicWorld: setupPhysics().physicWorld,
-	gui: new dat.GUI(),
 	windowSizes: {
 		width: window.innerWidth,
 		height: window.innerHeight,

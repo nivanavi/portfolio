@@ -1,6 +1,5 @@
 import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
-import { v4 } from 'uuid';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { windowSizesType } from '../index';
 
@@ -98,5 +97,3 @@ export const createModelContainer: (props: loadModelType) => THREE.Group = props
 
 	return container;
 };
-
-export const uuidv4 = (): string => v4();
