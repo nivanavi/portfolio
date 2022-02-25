@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
-import { copyPositions } from '../../utils';
+import { copyPositions, createModelContainer } from '../../utils';
 import { dummyPhysicsMaterial } from '../../physics';
 import { DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps, quaternionType } from '../../index';
 
@@ -36,42 +36,53 @@ export const getRandomTreeAndRotate = (): { tree: treeTypes; quaternion: quatern
 const getModelByType: (type: treeTypes) => any = type => {
 	switch (type) {
 		case 'bush':
-			return bushModelGltf;
+			return {
+				modelSrc: bushModelGltf,
+				position: new THREE.Vector3(0, -0.5, 0),
+				scale: new THREE.Vector3(0.35, 0.35, 0.35),
+			};
 		case 'pine':
-			return pineModelGltf;
+			return {
+				modelSrc: pineModelGltf,
+				position: new THREE.Vector3(0, -0.5, 0),
+				scale: new THREE.Vector3(0.35, 0.35, 0.35),
+			};
 		case 'treeSummer':
-			return treeSummerModelGltf;
+			return {
+				modelSrc: treeSummerModelGltf,
+				position: new THREE.Vector3(0, -0.5, 0),
+				scale: new THREE.Vector3(0.35, 0.35, 0.35),
+			};
 		case 'treeAutumn':
-			return treeAutumnModelGltf;
+			return {
+				modelSrc: treeAutumnModelGltf,
+				position: new THREE.Vector3(0, -0.5, 0),
+				scale: new THREE.Vector3(0.35, 0.35, 0.35),
+			};
 		case 'treeAutumn2':
-			return treeAutumn2ModelGltf;
+			return {
+				modelSrc: treeAutumn2ModelGltf,
+				position: new THREE.Vector3(0, -0.5, 0),
+				scale: new THREE.Vector3(0.23, 0.23, 0.23),
+			};
 		default:
-			return bushModelGltf;
+			return {
+				modelSrc: bushModelGltf,
+				position: new THREE.Vector3(0, -0.5, 0),
+				scale: new THREE.Vector3(0.35, 0.35, 0.35),
+			};
 	}
 };
 
 export const treeObject: (props?: treeObjectProps) => void = props => {
 	const { scene, physicWorld, gltfLoader } = MOST_IMPORTANT_DATA;
 	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION, type = 'bush' } = props || {};
-	const treeContainer: THREE.Group = new THREE.Group();
-	treeContainer.name = type;
 
-	gltfLoader.load(getModelByType(type), model => {
-		const treeModel = model.scene;
-		treeModel.children.forEach(child => {
-			child.castShadow = true;
-		});
-		treeModel.scale.set(0.35, 0.35, 0.35);
-
-		if (type === 'bush') treeModel.position.set(0, -0.5, 0);
-		if (type === 'pine') treeModel.position.set(0, -0.5, 0);
-		if (type === 'treeSummer') treeModel.position.set(0, -0.5, 0);
-		if (type === 'treeAutumn') treeModel.position.set(0, -0.5, 0);
-		if (type === 'treeAutumn2') {
-			treeModel.position.set(0, -0.5, 0);
-			treeModel.scale.set(0.23, 0.23, 0.23);
-		}
-		treeContainer.add(treeModel);
+	// load models
+	const treeContainer = createModelContainer({
+		gltfLoader,
+		containerName: type,
+		...getModelByType(type),
 	});
 
 	const bushShape = new CANNON.Sphere(0.6);

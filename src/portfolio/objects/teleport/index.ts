@@ -7,6 +7,7 @@ import { CAR_OPTIONS } from '../car';
 // @ts-ignore
 // eslint-disable-next-line import/no-unresolved
 import teleportModelGltf from './models/teleport.gltf';
+import { createModelContainer } from '../../utils';
 
 // @ts-ignore
 // import recorderSongUrl        from "./sounds/recorderSong.mp3"
@@ -23,17 +24,12 @@ interface oneTeleportProps extends teleportProps {
 const teleport: (props: oneTeleportProps) => { callInTick: () => void } = ({ enter, exit, teleportCallback }) => {
 	const { physicWorld, scene, gltfLoader } = MOST_IMPORTANT_DATA;
 
-	const teleportContainer: THREE.Group = new THREE.Group();
-	teleportContainer.name = 'teleport';
-
-	gltfLoader.load(teleportModelGltf, model => {
-		const teleportModel = model.scene;
-		teleportModel.children.forEach(child => {
-			child.castShadow = true;
-		});
-		teleportModel.scale.set(0.4, 0.4, 0.4);
-		teleportModel.position.set(0, 0, 0);
-		teleportContainer.add(teleportModel);
+	// load models
+	const teleportContainer = createModelContainer({
+		gltfLoader,
+		containerName: 'teleport',
+		modelSrc: teleportModelGltf,
+		scale: new THREE.Vector3(0.4, 0.4, 0.4),
 	});
 
 	// lights

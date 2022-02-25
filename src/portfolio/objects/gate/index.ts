@@ -1,6 +1,6 @@
 import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
-import { copyPositions } from '../../utils';
+import { copyPositions, createModelContainer } from '../../utils';
 import { dummyPhysicsMaterial } from '../../physics';
 
 // @ts-ignore
@@ -16,37 +16,25 @@ export const gateObject: (props: gateObjectProps) => void = props => {
 	const { position = DEFAULT_POSITION, isRevers = false } = props || {};
 	const { scene, physicWorld, addToCallInTickStack, gltfLoader } = MOST_IMPORTANT_DATA;
 
-	const gateContainer: THREE.Group = new THREE.Group();
-	gateContainer.name = 'gate';
-
-	const gateStandContainer: THREE.Group = new THREE.Group();
-	gateStandContainer.name = 'gateStand';
-
 	// load models
-	gltfLoader.load(gateModelGltf, model => {
-		const gateModel = model.scene;
-		gateModel.children.forEach(child => {
-			child.castShadow = true;
-			child.children.forEach(nestChild => {
-				nestChild.castShadow = true;
-			});
-		});
-		gateModel.scale.set(0.25, 0.25, 0.25);
-		gateModel.position.set(0, 0, 0);
-		if (isRevers) gateModel.rotation.y = Math.PI;
-		gateContainer.add(gateModel);
+	const gateContainer = createModelContainer({
+		gltfLoader,
+		containerName: 'gate',
+		modelSrc: gateModelGltf,
+		scale: new THREE.Vector3(0.25, 0.25, 0.25),
+		rotation: isRevers
+			? {
+					vector: new THREE.Vector3(0, 1, 0),
+					angle: Math.PI,
+			  }
+			: undefined,
 	});
-	gltfLoader.load(gateStandModelGltf, model => {
-		const gateStandModel = model.scene;
-		gateStandModel.children.forEach(child => {
-			child.castShadow = true;
-			child.children.forEach(nestChild => {
-				nestChild.castShadow = true;
-			});
-		});
-		gateStandModel.scale.set(0.25, 0.25, 0.25);
-		gateStandModel.position.set(0, 0, 0);
-		gateStandContainer.add(gateStandModel);
+
+	const gateStandContainer = createModelContainer({
+		gltfLoader,
+		containerName: 'gateStand',
+		modelSrc: gateStandModelGltf,
+		scale: new THREE.Vector3(0.25, 0.25, 0.25),
 	});
 
 	// physic

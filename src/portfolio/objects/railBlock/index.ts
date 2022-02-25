@@ -1,6 +1,6 @@
 import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
-import { copyPositions } from '../../utils';
+import { copyPositions, createModelContainer } from '../../utils';
 import { dummyPhysicsMaterial } from '../../physics';
 
 // @ts-ignore
@@ -11,18 +11,13 @@ export const railBlockObject: (props?: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION } = props || {};
 	const { scene, physicWorld, gltfLoader } = MOST_IMPORTANT_DATA;
 
-	const railBlockContainer: THREE.Group = new THREE.Group();
-	railBlockContainer.name = 'railBlock';
-
 	// load models
-	gltfLoader.load(railBlockModelGltf, model => {
-		const railBlockModel = model.scene;
-		railBlockModel.children.forEach(child => {
-			child.castShadow = true;
-		});
-		railBlockModel.scale.set(0.15, 0.15, 0.15);
-		railBlockModel.position.set(-0.02, 0.03, 0);
-		railBlockContainer.add(railBlockModel);
+	const railBlockContainer = createModelContainer({
+		gltfLoader,
+		containerName: 'railBlock',
+		modelSrc: railBlockModelGltf,
+		scale: new THREE.Vector3(0.15, 0.15, 0.15),
+		position: new THREE.Vector3(-0.02, 0.03, 0),
 	});
 
 	// physic

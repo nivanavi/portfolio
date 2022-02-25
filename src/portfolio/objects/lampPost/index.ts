@@ -1,7 +1,7 @@
 import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
 import { Howl } from 'howler';
-import { copyPositions, sleep } from '../../utils';
+import { copyPositions, createModelContainer, sleep } from '../../utils';
 import { dummyPhysicsMaterial } from '../../physics';
 
 // @ts-ignore
@@ -25,26 +25,20 @@ export const lampPostObject: (props?: objectProps) => void = props => {
 		isAlreadyBroken: false,
 	};
 
-	const lampPostContainer: THREE.Group = new THREE.Group();
 	let lampLight: THREE.Object3D = new THREE.Object3D();
-	lampPostContainer.name = 'lampPost';
-	// graphic
+
 	// load models
-	gltfLoader.load(lampPostModelGltf, model => {
-		const lampPostModel = model.scene;
-		lampPostModel.children.forEach(child => {
-			child.castShadow = true;
-			child.children.forEach(nestChild => {
-				nestChild.castShadow = true;
+	const lampPostContainer = createModelContainer({
+		gltfLoader,
+		containerName: 'lampPost',
+		modelSrc: lampPostModelGltf,
+		scale: new THREE.Vector3(0.18, 0.18, 0.18),
+		position: new THREE.Vector3(0, -0.7, 0),
+		callback: (_, model) => {
+			model.children.forEach(child => {
+				if (child.name === 'lampPostLight') lampLight = child.children[0];
 			});
-		});
-		// lampPostModel.children.forEach(child => child.name === "lampPostLight" ? child.children[0].castShadow = true : undefined)
-		lampPostModel.children.forEach(child => {
-			if (child.name === 'lampPostLight') lampLight = child.children[0];
-		});
-		lampPostModel.scale.set(0.18, 0.18, 0.18);
-		lampPostModel.position.set(0, -0.7, 0);
-		lampPostContainer.add(lampPostModel);
+		},
 	});
 
 	// physic

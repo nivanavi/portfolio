@@ -1,5 +1,6 @@
 import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { windowSizesType } from '../index';
 
 export type copyPositionType = {
@@ -57,4 +58,42 @@ export const updateCOM: (body: CANNON.Body) => void = body => {
 	const worldCOM = new CANNON.Vec3();
 	body.vectorToWorldFrame(com, worldCOM);
 	body.position.vadd(worldCOM, body.position);
+};
+
+type quaternionType = {
+	vector: THREE.Vector3;
+	angle: number;
+};
+
+type loadModelType = {
+	containerName: string;
+	position?: THREE.Vector3;
+	scale?: THREE.Vector3;
+	rotation?: quaternionType;
+	gltfLoader: GLTFLoader;
+	modelSrc: string;
+	callback?: (container: THREE.Group, modelScene: THREE.Group) => void;
+};
+
+export const createModelContainer: (props: loadModelType) => THREE.Group = props => {
+	const { position = new THREE.Vector3(0, 0, 0), scale = new THREE.Vector3(1, 1, 1), rotation, containerName, gltfLoader, modelSrc, callback } = props;
+	const container: THREE.Group = new THREE.Group();
+	container.name = containerName;
+
+	gltfLoader.load(modelSrc, model => {
+		const modelScene = model.scene;
+		modelScene.children.forEach(child => {
+			child.castShadow = true;
+			child.children.forEach(nestChild => {
+				nestChild.castShadow = true;
+			});
+		});
+		modelScene.scale.copy(scale);
+		modelScene.position.copy(position);
+		if (rotation) modelScene.quaternion.setFromAxisAngle(rotation.vector, rotation.angle);
+		container.add(modelScene);
+		if (callback) callback(container, modelScene);
+	});
+
+	return container;
 };

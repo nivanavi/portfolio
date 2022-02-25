@@ -1,6 +1,6 @@
 import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
-import { copyPositions } from '../../utils';
+import { copyPositions, createModelContainer } from '../../utils';
 import { dummyPhysicsMaterial } from '../../physics';
 
 // @ts-ignore
@@ -11,19 +11,13 @@ export const lampPostWestObject: (props?: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION } = props || {};
 	const { scene, physicWorld, gltfLoader } = MOST_IMPORTANT_DATA;
 
-	const lampPostWestContainer: THREE.Group = new THREE.Group();
-	lampPostWestContainer.name = 'lampPostWestWest';
-
-	// graphic
 	// load models
-	gltfLoader.load(lampPostWestModelGltf, model => {
-		const lampPostWestModel = model.scene;
-		lampPostWestModel.children.forEach(child => {
-			child.castShadow = true;
-		});
-		lampPostWestModel.scale.set(0.7, 0.7, 0.7);
-		lampPostWestModel.position.set(0, 0.4, 0);
-		lampPostWestContainer.add(lampPostWestModel);
+	const lampPostWestContainer = createModelContainer({
+		gltfLoader,
+		containerName: 'lampPostWestWest',
+		modelSrc: lampPostWestModelGltf,
+		scale: new THREE.Vector3(0.7, 0.7, 0.7),
+		position: new THREE.Vector3(0, 0.4, 0),
 	});
 
 	// physic

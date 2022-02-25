@@ -1,6 +1,6 @@
 import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
-import { copyPositions, updateCOM } from '../../utils';
+import { copyPositions, createModelContainer, updateCOM } from '../../utils';
 import { dummyPhysicsMaterial } from '../../physics';
 
 // @ts-ignore
@@ -11,21 +11,13 @@ export const pinObject: (props: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION } = props || {};
 	const { scene, physicWorld, addToCallInTickStack, gltfLoader } = MOST_IMPORTANT_DATA;
 
-	const pinContainer: THREE.Group = new THREE.Group();
-	pinContainer.name = 'pin';
-
 	// load models
-	gltfLoader.load(pinModelGltf, model => {
-		const pinModel = model.scene;
-		pinModel.children.forEach(child => {
-			child.castShadow = true;
-			child.children.forEach(nestChild => {
-				nestChild.castShadow = true;
-			});
-		});
-		pinModel.scale.set(0.2, 0.2, 0.2);
-		pinModel.position.set(0, 0.1, 0);
-		pinContainer.add(pinModel);
+	const pinContainer = createModelContainer({
+		gltfLoader,
+		containerName: 'pin',
+		modelSrc: pinModelGltf,
+		scale: new THREE.Vector3(0.2, 0.2, 0.2),
+		position: new THREE.Vector3(0, 0.1, 0),
 	});
 
 	// physic

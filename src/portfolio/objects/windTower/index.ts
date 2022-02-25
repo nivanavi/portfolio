@@ -9,6 +9,7 @@ import windArrowModelGltf from './models/windArrow.gltf';
 // @ts-ignore
 import windLegsModelGltf from './models/windLegs.gltf';
 import { calInTickProps, DEFAULT_POSITION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
+import { createModelContainer } from '../../utils';
 
 type getRandomWindOptionType = {
 	windSpeed: number;
@@ -34,47 +35,31 @@ export const windTowerObject: (props?: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION } = props || {};
 	const { scene, physicWorld, gltfLoader, addToCallInTickStack } = MOST_IMPORTANT_DATA;
 
-	const windTowerContainer: THREE.Group = new THREE.Group();
-	windTowerContainer.name = 'windTower';
-
-	const windTowerHeadContainer: THREE.Group = new THREE.Group();
-	windTowerContainer.name = 'windTowerHead';
-
-	const windWheelContainer: THREE.Group = new THREE.Group();
-	windTowerContainer.name = 'windWheel';
+	// load models
+	const windTowerContainer = createModelContainer({
+		gltfLoader,
+		containerName: 'windTower',
+		modelSrc: windLegsModelGltf,
+		scale: new THREE.Vector3(0.3, 0.3, 0.3),
+		position: new THREE.Vector3(0.125, 1.7, -0.07),
+	});
+	const windTowerHeadContainer = createModelContainer({
+		gltfLoader,
+		containerName: 'windTowerHead',
+		modelSrc: windArrowModelGltf,
+		scale: new THREE.Vector3(0.3, 0.3, 0.3),
+		position: new THREE.Vector3(0, 0, -0.35),
+	});
+	const windWheelContainer = createModelContainer({
+		gltfLoader,
+		containerName: 'windWheel',
+		modelSrc: windWheelModelGltf,
+		scale: new THREE.Vector3(0.25, 0.25, 0.25),
+		position: new THREE.Vector3(0, 0, 0.3),
+	});
 
 	windTowerHeadContainer.add(windWheelContainer);
 	windTowerContainer.add(windTowerHeadContainer);
-
-	// load models
-	gltfLoader.load(windWheelModelGltf, model => {
-		const windWheelModel = model.scene;
-		windWheelModel.children.forEach(child => {
-			child.castShadow = true;
-		});
-		windWheelModel.scale.set(0.25, 0.25, 0.25);
-		windWheelModel.position.set(0, 0, 0.3);
-		windWheelContainer.add(windWheelModel);
-	});
-	gltfLoader.load(windArrowModelGltf, model => {
-		const windArrowModel = model.scene;
-		windArrowModel.children.forEach(child => {
-			child.castShadow = true;
-		});
-		windArrowModel.scale.set(0.3, 0.3, 0.3);
-		windArrowModel.position.set(0, 0, -0.35);
-		windTowerHeadContainer.add(windArrowModel);
-	});
-	gltfLoader.load(windLegsModelGltf, model => {
-		const windLegsModel = model.scene;
-		windLegsModel.children.forEach(child => {
-			child.castShadow = true;
-		});
-		windLegsModel.scale.set(0.3, 0.3, 0.3);
-		windLegsModel.position.set(0.125, 1.7, -0.07);
-		windTowerContainer.add(windLegsModel);
-	});
-
 	windTowerHeadContainer.position.y += 3.4;
 	windTowerContainer.position.set(position.x, position.y, position.z);
 

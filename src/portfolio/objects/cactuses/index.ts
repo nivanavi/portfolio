@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
-import { copyPositions } from '../../utils';
+import { copyPositions, createModelContainer } from '../../utils';
 import { dummyPhysicsMaterial } from '../../physics';
 import { DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps, quaternionType } from '../../index';
 
@@ -33,42 +33,50 @@ export const getRandomCactusAndRotate = (): { cactus: cactusTypes; quaternion: q
 	};
 };
 
-const getModelByType: (type: cactusTypes) => any = type => {
+const getModelByType: (type: cactusTypes) => { modelSrc: any; position?: THREE.Vector3 } = type => {
 	switch (type) {
 		case 'bigStone':
-			return bigStoneModelGltf;
+			return {
+				modelSrc: bigStoneModelGltf,
+			};
 		case 'middleStone':
-			return middleStoneModelGltf;
+			return {
+				modelSrc: middleStoneModelGltf,
+				position: new THREE.Vector3(0, 0.1, -0.05),
+			};
 		case 'littleStone':
-			return littleStoneModelGltf;
+			return {
+				modelSrc: littleStoneModelGltf,
+				position: new THREE.Vector3(0, 0.05, 0),
+			};
 		case 'tripleCactus':
-			return tripleCactusModelGltf;
+			return {
+				modelSrc: tripleCactusModelGltf,
+				position: new THREE.Vector3(0, 0.65, 0),
+			};
 		case 'doubleCactus':
-			return doubleCactusModelGltf;
+			return {
+				modelSrc: doubleCactusModelGltf,
+				position: new THREE.Vector3(0, 0.38, 0),
+			};
 		default:
-			return littleStoneModelGltf;
+			return {
+				modelSrc: littleStoneModelGltf,
+				position: new THREE.Vector3(0, 0.05, 0),
+			};
 	}
 };
 
 export const cactusObject: (props?: cactusObjectProps) => void = props => {
 	const { scene, physicWorld, gltfLoader } = MOST_IMPORTANT_DATA;
 	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION, type = 'littleStone' } = props || {};
-	const cactusContainer: THREE.Group = new THREE.Group();
-	cactusContainer.name = type;
 
-	gltfLoader.load(getModelByType(type), model => {
-		const cactusModel = model.scene;
-		cactusModel.children.forEach(child => {
-			child.castShadow = true;
-		});
-		cactusModel.scale.set(0.2, 0.2, 0.2);
-
-		if (type === 'bigStone') cactusModel.position.set(0, 0, 0);
-		if (type === 'middleStone') cactusModel.position.set(0, 0.1, -0.05);
-		if (type === 'littleStone') cactusModel.position.set(0, 0.05, 0);
-		if (type === 'tripleCactus') cactusModel.position.set(0, 0.65, 0);
-		if (type === 'doubleCactus') cactusModel.position.set(0, 0.38, 0);
-		cactusContainer.add(cactusModel);
+	// load models
+	const cactusContainer = createModelContainer({
+		gltfLoader,
+		containerName: type,
+		...getModelByType(type),
+		scale: new THREE.Vector3(0.2, 0.2, 0.2),
 	});
 
 	const bigStoneShape = new CANNON.Sphere(0.5);

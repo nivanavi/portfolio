@@ -1,6 +1,6 @@
 import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
-import { copyPositions } from '../../utils';
+import { copyPositions, createModelContainer } from '../../utils';
 import { dummyPhysicsMaterial } from '../../physics';
 
 // @ts-ignore
@@ -11,18 +11,13 @@ export const saloonObject: (props?: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION } = props || {};
 	const { scene, physicWorld, gltfLoader } = MOST_IMPORTANT_DATA;
 
-	const saloonContainer: THREE.Group = new THREE.Group();
-	saloonContainer.name = 'saloon';
-
 	// load models
-	gltfLoader.load(saloonModelGltf, model => {
-		const saloonModel = model.scene;
-		saloonModel.children.forEach(child => {
-			child.castShadow = true;
-		});
-		saloonModel.scale.set(0.25, 0.25, 0.25);
-		saloonModel.position.set(-0.55, 0.245, 0);
-		saloonContainer.add(saloonModel);
+	const saloonContainer = createModelContainer({
+		gltfLoader,
+		containerName: 'saloon',
+		modelSrc: saloonModelGltf,
+		scale: new THREE.Vector3(0.25, 0.25, 0.25),
+		position: new THREE.Vector3(-0.55, 0.245, 0),
 	});
 
 	// physic

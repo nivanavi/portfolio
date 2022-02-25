@@ -5,26 +5,24 @@ import { dummyPhysicsMaterial } from '../../physics';
 // @ts-ignore
 import waterTowerModelGltf from './models/waterTower.gltf';
 import { DEFAULT_POSITION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
+import { createModelContainer } from '../../utils';
 
 export const waterTowerObject: (props?: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION } = props || {};
 	const { scene, physicWorld, gltfLoader } = MOST_IMPORTANT_DATA;
 
-	const waterTowerContainer: THREE.Group = new THREE.Group();
-	waterTowerContainer.name = 'waterTower';
-
 	// load models
-	gltfLoader.load(waterTowerModelGltf, model => {
-		const waterTowerModel = model.scene;
-		waterTowerModel.children.forEach(child => {
-			child.castShadow = true;
-		});
-		waterTowerModel.scale.set(0.12, 0.12, 0.12);
-		waterTowerModel.position.set(0, 2.25, 0);
-		waterTowerModel.rotation.y = 0.7;
-		waterTowerContainer.add(waterTowerModel);
+	const waterTowerContainer = createModelContainer({
+		gltfLoader,
+		containerName: 'waterTower',
+		modelSrc: waterTowerModelGltf,
+		scale: new THREE.Vector3(0.12, 0.12, 0.12),
+		position: new THREE.Vector3(0, 2.25, 0),
+		rotation: {
+			vector: new THREE.Vector3(0, -1, 0),
+			angle: Math.PI * 1.785,
+		},
 	});
-
 	waterTowerContainer.position.copy(position);
 
 	// physic

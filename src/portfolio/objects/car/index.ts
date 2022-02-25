@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import { wheelPhysicsMaterial } from '../../physics';
-import { copyPositions } from '../../utils';
+import { copyPositions, createModelContainer } from '../../utils';
 // models
 // @ts-ignore
 import delorianModel from './models/delorian.gltf';
@@ -84,33 +84,29 @@ export const carObject: (props?: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION } = props || {};
 	const { scene, physicWorld, addToCallInTickStack, addToCallInPostStepStack, gltfLoader } = MOST_IMPORTANT_DATA;
 
-	const chassisContainer: THREE.Group = new THREE.Group();
-	chassisContainer.name = 'car';
-
 	// load models
-	gltfLoader.load(delorianModel, model => {
-		const carModel = model.scene;
-		carModel.children[0].children.forEach(child => {
-			child.castShadow = true;
-		});
-		carModel.scale.set(0.675, 0.675, 0.675);
-		carModel.receiveShadow = true;
-		carModel.position.set(0, 0, 0.005);
-		chassisContainer.add(model.scene);
+	const chassisContainer = createModelContainer({
+		gltfLoader,
+		containerName: 'car',
+		modelSrc: delorianModel,
+		scale: new THREE.Vector3(0.675, 0.675, 0.675),
+		position: new THREE.Vector3(0, 0, 0.005),
 	});
 
-	gltfLoader.load(wheelModel, model => {
-		Array.from({ length: 4 }).forEach(() => {
-			const wheelMesh = model.scene.clone();
-			wheelMesh.children[0].children.forEach(child => {
-				child.castShadow = true;
+	// load models
+	createModelContainer({
+		gltfLoader,
+		containerName: 'wheel',
+		modelSrc: wheelModel,
+		scale: new THREE.Vector3(0.1, 0.1, 0.1),
+		callback: container => {
+			Array.from({ length: 4 }).forEach(() => {
+				const wheelMesh = container.clone();
+				wheelMesh.quaternion.setFromAxisAngle(new THREE.Vector3(0, -1, 0), Math.PI * 0.5);
+				scene.add(wheelMesh);
+				wheelsGraphic.push(wheelMesh);
 			});
-			wheelMesh.name = 'wheel';
-			wheelMesh.quaternion.setFromAxisAngle(new THREE.Vector3(0, -1, 0), Math.PI * 0.5);
-			wheelMesh.scale.set(0.1, 0.1, 0.1);
-			scene.add(wheelMesh);
-			wheelsGraphic.push(wheelMesh);
-		});
+		},
 	});
 
 	const chassisMeshMaterial = new THREE.MeshStandardMaterial();

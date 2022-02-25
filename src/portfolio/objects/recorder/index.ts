@@ -1,7 +1,7 @@
 import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
 import { Howl } from 'howler';
-import { copyPositions } from '../../utils';
+import { copyPositions, createModelContainer } from '../../utils';
 
 // @ts-ignore
 import recorderSongUrl from './sounds/recorderSong.mp3';
@@ -31,21 +31,13 @@ const getVolumeByDistance: (distance: number) => number = distance => RECORDER_O
 export const recorderObject: (props?: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION } = props || {};
 	const { scene, physicWorld, gltfLoader, addToCallInTickStack } = MOST_IMPORTANT_DATA;
-	const recorderContainer: THREE.Group = new THREE.Group();
-	recorderContainer.name = 'recorder';
 
 	// load models
-	gltfLoader.load(recorderModelGltf, model => {
-		const recorderModel = model.scene;
-		recorderModel.children.forEach(child => {
-			child.castShadow = true;
-			child.children.forEach(nestChild => {
-				nestChild.castShadow = true;
-			});
-		});
-		recorderModel.scale.set(0.14, 0.12, 0.12);
-		recorderModel.position.set(0, 0, 0);
-		recorderContainer.add(recorderModel);
+	const recorderContainer = createModelContainer({
+		gltfLoader,
+		containerName: 'recorder',
+		modelSrc: recorderModelGltf,
+		scale: new THREE.Vector3(0.14, 0.12, 0.12),
 	});
 
 	// physic

@@ -5,22 +5,18 @@ import { DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps 
 
 // @ts-ignore
 import railsModelGltf from './models/rails.gltf';
+import { createModelContainer } from '../../utils';
 
 export const railsObject: (props?: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION } = props || {};
 	const { scene, physicWorld, gltfLoader } = MOST_IMPORTANT_DATA;
 
-	const railsContainer: THREE.Group = new THREE.Group();
-	railsContainer.name = 'rails';
-
 	// load models
-	gltfLoader.load(railsModelGltf, model => {
-		const railsModel = model.scene;
-		railsModel.children.forEach(child => {
-			child.castShadow = true;
-		});
-		railsModel.scale.set(0.25, 0.25, 0.25);
-		railsContainer.add(railsModel);
+	const railsContainer = createModelContainer({
+		gltfLoader,
+		containerName: 'rails',
+		modelSrc: railsModelGltf,
+		scale: new THREE.Vector3(0.25, 0.25, 0.25),
 	});
 
 	railsContainer.position.copy(position);

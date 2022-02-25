@@ -1,6 +1,6 @@
 import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
-import { copyPositions } from '../../utils';
+import { copyPositions, createModelContainer } from '../../utils';
 import { dummyPhysicsMaterial } from '../../physics';
 
 // @ts-ignore
@@ -11,18 +11,12 @@ export const benchObject: (props?: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION } = props || {};
 	const { scene, physicWorld, addToCallInTickStack, gltfLoader } = MOST_IMPORTANT_DATA;
 
-	const benchContainer: THREE.Group = new THREE.Group();
-	benchContainer.name = 'bench';
-
 	// load models
-	gltfLoader.load(benchModelGltf, model => {
-		const benchModel = model.scene;
-		benchModel.children.forEach(child => {
-			child.castShadow = true;
-		});
-		benchModel.scale.set(0.27, 0.27, 0.27);
-		benchModel.position.set(0, 0, 0);
-		benchContainer.add(benchModel);
+	const benchContainer = createModelContainer({
+		gltfLoader,
+		containerName: 'bench',
+		modelSrc: benchModelGltf,
+		scale: new THREE.Vector3(0.27, 0.27, 0.27),
 	});
 
 	// physic

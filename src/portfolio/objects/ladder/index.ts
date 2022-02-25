@@ -1,6 +1,6 @@
 import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
-import { copyPositions } from '../../utils';
+import { copyPositions, createModelContainer } from '../../utils';
 import { dummyPhysicsMaterial } from '../../physics';
 
 // @ts-ignore
@@ -11,18 +11,12 @@ export const ladderObject: (props?: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION } = props || {};
 	const { scene, physicWorld, addToCallInTickStack, gltfLoader } = MOST_IMPORTANT_DATA;
 
-	const ladderContainer: THREE.Group = new THREE.Group();
-	ladderContainer.name = 'ladder';
-
 	// load models
-	gltfLoader.load(ladderModelGltf, model => {
-		const ladderModel = model.scene;
-		ladderModel.children.forEach(child => {
-			child.castShadow = true;
-		});
-		ladderModel.scale.set(0.27, 0.27, 0.27);
-		ladderModel.position.set(0, 0, 0);
-		ladderContainer.add(ladderModel);
+	const ladderContainer = createModelContainer({
+		gltfLoader,
+		containerName: 'ladder',
+		modelSrc: ladderModelGltf,
+		scale: new THREE.Vector3(0.27, 0.27, 0.27),
 	});
 
 	// physic

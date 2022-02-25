@@ -1,6 +1,6 @@
 import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
-import { copyPositions } from '../../utils';
+import { copyPositions, createModelContainer } from '../../utils';
 import { dummyPhysicsMaterial } from '../../physics';
 
 // @ts-ignore
@@ -11,18 +11,12 @@ export const fenceObject: (props?: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION } = props || {};
 	const { scene, physicWorld, gltfLoader } = MOST_IMPORTANT_DATA;
 
-	const fenceContainer: THREE.Group = new THREE.Group();
-	fenceContainer.name = 'fence';
-
 	// load models
-	gltfLoader.load(fenceModelGltf, model => {
-		const fenceModel = model.scene;
-		fenceModel.children.forEach(child => {
-			child.castShadow = true;
-		});
-		fenceModel.scale.set(0.4, 0.4, 0.4);
-		fenceModel.position.set(0, 0, 0);
-		fenceContainer.add(fenceModel);
+	const fenceContainer = createModelContainer({
+		gltfLoader,
+		containerName: 'fence',
+		modelSrc: fenceModelGltf,
+		scale: new THREE.Vector3(0.4, 0.4, 0.4),
 	});
 
 	// physic
