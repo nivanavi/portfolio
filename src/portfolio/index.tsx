@@ -39,6 +39,8 @@ import { fenceObject } from './objects/fence';
 import { rampObject } from './objects/ramp';
 import { gateObject } from './objects/gate';
 
+export const IS_DEVELOP = true;
+
 export type quaternionType = {
 	vector: CANNON.Vec3;
 	angle: number;
@@ -139,7 +141,7 @@ export const Portfolio: React.FC = () => {
 	const cannonDebugRenderer = new CannonDebugRenderer(scene, physicWorld);
 
 	// car
-	carObject({ position: new THREE.Vector3(5, 0, -3) });
+	carObject({ position: new THREE.Vector3(5, level3YOffset, -3) });
 	setLightsFor1Level(level1YOffset + 15);
 	// level 1
 	groundObject();
@@ -184,10 +186,10 @@ export const Portfolio: React.FC = () => {
 			angle: Math.PI / 2,
 		},
 	});
-	barrelObject({ position: new THREE.Vector3(-2.5, level2YOffset, -8) });
-	barrelObject({ position: new THREE.Vector3(-2.5, level2YOffset, -8.5) });
-	barrelObject({ position: new THREE.Vector3(-2.7, level2YOffset, -9) });
-	barrelObject({ position: new THREE.Vector3(-2.5, level2YOffset + 0.7, -8.25) });
+	barrelObject({ position: new THREE.Vector3(2.5, level2YOffset, -8) });
+	barrelObject({ position: new THREE.Vector3(2.5, level2YOffset, -8.5) });
+	barrelObject({ position: new THREE.Vector3(2.7, level2YOffset, -9) });
+	barrelObject({ position: new THREE.Vector3(2.5, level2YOffset + 0.7, -8.25) });
 
 	barrelObject({ position: new THREE.Vector3(0, level2YOffset, 9) });
 	barrelObject({ position: new THREE.Vector3(0.5, level2YOffset, 9) });
@@ -269,7 +271,8 @@ export const Portfolio: React.FC = () => {
 			angle: Math.PI,
 		},
 	});
-	ballObject({ position: new THREE.Vector3(3.5, level3YOffset, 0) });
+	// ballObject({ position: new THREE.Vector3(3.5, level3YOffset, 0) });
+	ballObject({ position: new THREE.Vector3(19, level3YOffset, -20) });
 	pinObject({ position: new THREE.Vector3(-4, level3YOffset, 0) });
 
 	pinObject({ position: new THREE.Vector3(-4.6, level3YOffset, -0.4) });
@@ -307,6 +310,7 @@ export const Portfolio: React.FC = () => {
 		position: new THREE.Vector3(1.8, level3YOffset, 15),
 		isRevers: true,
 	});
+	wallObject({ position: new THREE.Vector3(-0.4, level3YOffset, 15.8), rows: 4, brickInRows: 4, isYDirection: false });
 
 	physicWorld.addEventListener('postStep', () => callInPostStepStack.forEach(call => call()));
 
@@ -327,8 +331,10 @@ export const Portfolio: React.FC = () => {
 		else physicWorld.step(timeStep, physicDelta, 3);
 
 		// update other stuff
-		cannonDebugRenderer.update();
-		orbitControl.update();
+		if (IS_DEVELOP) {
+			cannonDebugRenderer.update();
+			orbitControl.update();
+		}
 		renderer.render(scene, camera);
 
 		// update old elapsed time

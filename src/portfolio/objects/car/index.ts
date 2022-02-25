@@ -165,11 +165,11 @@ export const carObject: (props?: objectProps) => void = props => {
 		wheelsPhysic.push(body);
 	});
 
-	// const jump = (toReturn = true, strength = 15) => {
-	//   let worldPosition = chassisBody.position
-	//   worldPosition = worldPosition.vadd(new CANNON.Vec3(toReturn ? 0.08 : 0, 0, 0))
-	//   chassisBody.applyImpulse(new CANNON.Vec3(0, strength, 2), worldPosition)
-	// }
+	// const jump = (): void => {
+	// 	let worldPosition = chassisBody.position;
+	// 	worldPosition = worldPosition.vadd(new CANNON.Vec3(0, 0, 0));
+	// 	chassisBody.applyImpulse(new CANNON.Vec3(0.4, 0.2, 0), worldPosition);
+	// };
 
 	const brake: (force: number) => void = force => {
 		vehicle.setBrake(force, 0);
@@ -200,21 +200,20 @@ export const carObject: (props?: objectProps) => void = props => {
 		// const worldUp = new CANNON.Vec3();
 		// chassisBody.vectorToWorldFrame(localUp, worldUp);
 		// if (worldUp.dot(localUp) < 0.05) {
-		//   if (CAR_DYNAMIC_OPTIONS.upsideDownState === "watching") {
-		//     CAR_DYNAMIC_OPTIONS.upsideDownState = "pending"
-		//     upsideDownTimeout = setTimeout(() => {
-		//       CAR_DYNAMIC_OPTIONS.upsideDownState = "turning"
-		//       // jump()
-		//       upsideDownTimeout = setTimeout(() => {
-		//         CAR_DYNAMIC_OPTIONS.upsideDownState = "watching"
-		//       }, 2000)
-		//     }, 2000)
-		//   }
-		// } else {
-		//   if (CAR_DYNAMIC_OPTIONS.upsideDownState === "pending") {
-		//     CAR_DYNAMIC_OPTIONS.upsideDownState = "watching"
-		//     clearTimeout(upsideDownTimeout!)
-		//   }
+		// 	if (CAR_DYNAMIC_OPTIONS.upsideDownState === 'watching') {
+		// 		CAR_DYNAMIC_OPTIONS.upsideDownState = 'pending';
+		// 		upsideDownTimeout = setTimeout(() => {
+		// 			CAR_DYNAMIC_OPTIONS.upsideDownState = 'turning';
+		// 			console.log('jump');
+		// 			jump();
+		// 			upsideDownTimeout = setTimeout(() => {
+		// 				CAR_DYNAMIC_OPTIONS.upsideDownState = 'watching';
+		// 			}, 2000);
+		// 		}, 2000);
+		// 	}
+		// } else if (CAR_DYNAMIC_OPTIONS.upsideDownState === 'pending') {
+		// 	CAR_DYNAMIC_OPTIONS.upsideDownState = 'watching';
+		// 	clearTimeout(upsideDownTimeout!);
 		// }
 
 		// update wheels

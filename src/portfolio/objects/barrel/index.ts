@@ -22,7 +22,7 @@ export const barrelObject: (props: objectProps) => void = props => {
 	// physic
 	const barrelShape = new CANNON.Cylinder(0.25, 0.25, 0.58, 12);
 	const barrelBody = new CANNON.Body({
-		mass: 3,
+		mass: 1,
 		material: dummyPhysicsMaterial,
 	});
 	barrelBody.allowSleep = true;

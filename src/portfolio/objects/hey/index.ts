@@ -22,7 +22,7 @@ export const heyObject: (props?: objectProps) => void = props => {
 	// physic
 	const heyShape = new CANNON.Box(new CANNON.Vec3(0.45, 0.25, 0.25));
 	const heyBody = new CANNON.Body({
-		mass: 3,
+		mass: 2,
 		material: dummyPhysicsMaterial,
 	});
 	heyBody.allowSleep = true;
