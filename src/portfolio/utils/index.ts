@@ -6,7 +6,7 @@ import { windowSizesType } from '../index';
 
 export type copyPositionType = {
 	body: CANNON.Body | null | undefined;
-	mesh: THREE.Mesh | THREE.Group | null | undefined;
+	mesh: THREE.Mesh | THREE.Group | THREE.Object3D | null | undefined;
 	isCopyRotation?: boolean;
 	positionOffset?: THREE.Vector3 | CANNON.Vec3;
 };

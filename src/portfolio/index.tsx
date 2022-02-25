@@ -38,8 +38,9 @@ import { wallObject } from './objects/wall';
 import { fenceObject } from './objects/fence';
 import { rampObject } from './objects/ramp';
 import { gateObject } from './objects/gate';
+import { textObject } from './objects/text';
 
-export const IS_DEVELOP = true;
+export const IS_DEVELOP = false;
 
 export type quaternionType = {
 	vector: CANNON.Vec3;
@@ -119,14 +120,14 @@ const getUniquePosition = (minRadius: number, levelYOffset: number, positions: T
 	return vector;
 };
 
-// const level1YOffset: number = 0;
-// const level2YOffset: number = 120;
-// const level3YOffset: number = 240;
-
 const level1YOffset: number = 0;
-const level2YOffset: number = 16;
-const level3YOffset: number = 32;
+const level2YOffset: number = 120;
+const level3YOffset: number = 240;
 
+// const level1YOffset: number = 0;
+// const level2YOffset: number = 16;
+// const level3YOffset: number = 32;
+const TEXT: string | undefined = window.location.hash.startsWith('#') ? window.location.hash.replace('#', '') : 'nivanavi_dev';
 export const Portfolio: React.FC = () => {
 	const canvas = useSceneIgniterContext().canvas!;
 	const { renderer } = setupRenderer({ canvas });
@@ -271,8 +272,7 @@ export const Portfolio: React.FC = () => {
 			angle: Math.PI,
 		},
 	});
-	// ballObject({ position: new THREE.Vector3(3.5, level3YOffset, 0) });
-	ballObject({ position: new THREE.Vector3(19, level3YOffset, -20) });
+	ballObject({ position: new THREE.Vector3(3.5, level3YOffset, 0) });
 	pinObject({ position: new THREE.Vector3(-4, level3YOffset, 0) });
 
 	pinObject({ position: new THREE.Vector3(-4.6, level3YOffset, -0.4) });
@@ -311,6 +311,9 @@ export const Portfolio: React.FC = () => {
 		isRevers: true,
 	});
 	wallObject({ position: new THREE.Vector3(-0.4, level3YOffset, 15.8), rows: 4, brickInRows: 4, isYDirection: false });
+
+	// text area
+	textObject({ position: new THREE.Vector3(18, level3YOffset, 14), text: TEXT });
 
 	physicWorld.addEventListener('postStep', () => callInPostStepStack.forEach(call => call()));
 
