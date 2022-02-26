@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
-import { wheelPhysicsMaterial } from '../../physics';
+import { dummyPhysicsMaterial, wheelPhysicsMaterial } from '../../physics';
 import { copyPositions, createModelContainer } from '../../utils';
 // models
 // @ts-ignore
@@ -73,7 +73,9 @@ export const CAR_DYNAMIC_OPTIONS = {
 	brake: false,
 	boost: false,
 	isBurnOut: false,
-	upsideDownState: 'watching',
+	lastRespawn: 0,
+	respawnDelta: 500,
+	isCanRespawn: false,
 };
 
 const wheelsGraphic: THREE.Group[] = [];
@@ -165,11 +167,20 @@ export const carObject: (props?: objectProps) => void = props => {
 		wheelsPhysic.push(body);
 	});
 
-	// const jump = (): void => {
-	// 	let worldPosition = chassisBody.position;
-	// 	worldPosition = worldPosition.vadd(new CANNON.Vec3(0, 0, 0));
-	// 	chassisBody.applyImpulse(new CANNON.Vec3(0.4, 0.2, 0), worldPosition);
+	// this.car.jump = (_toReturn = true, _strength = 60) => {
+	// 	let worldPosition = this.car.chassis.body.position;
+	// 	worldPosition = worldPosition.vadd(new CANNON.Vec3(_toReturn ? 0.08 : 0, 0, 0));
+	// 	this.car.chassis.body.applyImpulse(new CANNON.Vec3(0, 0, _strength), worldPosition);
 	// };
+
+	const respawn = (): void => {
+		if (!CAR_DYNAMIC_OPTIONS.isCanRespawn) return;
+		const currentTime = Date.now();
+		if (currentTime < CAR_DYNAMIC_OPTIONS.lastRespawn + CAR_DYNAMIC_OPTIONS.respawnDelta) return;
+		CAR_DYNAMIC_OPTIONS.lastRespawn = currentTime;
+		chassisBody.position.set(position.x, position.y + 0.5, position.z);
+		chassisBody.quaternion.setFromAxisAngle(quaternion.vector, quaternion.angle);
+	};
 
 	const brake: (force: number) => void = force => {
 		vehicle.setBrake(force, 0);
@@ -195,26 +206,16 @@ export const carObject: (props?: objectProps) => void = props => {
 		if (!CAR_DYNAMIC_OPTIONS.up && !CAR_DYNAMIC_OPTIONS.down) brake(0.15);
 
 		// TODO upside down
-		// let upsideDownTimeout: ReturnType<typeof setTimeout>;
-		// const localUp = new CANNON.Vec3(0, 1, 0);
-		// const worldUp = new CANNON.Vec3();
-		// chassisBody.vectorToWorldFrame(localUp, worldUp);
-		// if (worldUp.dot(localUp) < 0.05) {
-		// 	if (CAR_DYNAMIC_OPTIONS.upsideDownState === 'watching') {
-		// 		CAR_DYNAMIC_OPTIONS.upsideDownState = 'pending';
-		// 		upsideDownTimeout = setTimeout(() => {
-		// 			CAR_DYNAMIC_OPTIONS.upsideDownState = 'turning';
-		// 			console.log('jump');
-		// 			jump();
-		// 			upsideDownTimeout = setTimeout(() => {
-		// 				CAR_DYNAMIC_OPTIONS.upsideDownState = 'watching';
-		// 			}, 2000);
-		// 		}, 2000);
-		// 	}
-		// } else if (CAR_DYNAMIC_OPTIONS.upsideDownState === 'pending') {
-		// 	CAR_DYNAMIC_OPTIONS.upsideDownState = 'watching';
-		// 	clearTimeout(upsideDownTimeout!);
-		// }
+		const localUp = new CANNON.Vec3(0, 1, 0);
+		const worldUp = new CANNON.Vec3();
+		chassisBody.vectorToWorldFrame(localUp, worldUp);
+		if (worldUp.dot(localUp) < 0.05) {
+			if (!chassisBody.material) chassisBody.material = dummyPhysicsMaterial;
+			if (!CAR_DYNAMIC_OPTIONS.isCanRespawn) CAR_DYNAMIC_OPTIONS.isCanRespawn = true;
+		} else {
+			if (chassisBody.material) chassisBody.material = null;
+			if (CAR_DYNAMIC_OPTIONS.isCanRespawn) CAR_DYNAMIC_OPTIONS.isCanRespawn = false;
+		}
 
 		// update wheels
 		vehicle.wheelInfos.forEach((wheel, index) => {
@@ -333,6 +334,9 @@ export const carObject: (props?: objectProps) => void = props => {
 				break;
 			case 'ShiftLeft':
 				CAR_DYNAMIC_OPTIONS.boost = isPressed;
+				break;
+			case 'KeyR':
+				respawn();
 				break;
 			default:
 				break;

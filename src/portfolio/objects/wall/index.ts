@@ -1,12 +1,9 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
-import { Howl } from 'howler';
 import { copyPositions, copyPositionType, createModelContainer } from '../../utils';
 import { dummyPhysicsMaterial } from '../../physics';
 import { calInTickProps, DEFAULT_POSITION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
 
-// @ts-ignore
-import recorderSongUrl from './sounds/brickSound.mp3';
 // @ts-ignore
 // eslint-disable-next-line import/no-unresolved
 import brickModelGltf from './models/brick.gltf';
@@ -19,19 +16,11 @@ type createWallProps = {
 
 type wallObjectProps = createWallProps & objectProps;
 
-const brickPlayer = new Howl({
-	src: [recorderSongUrl],
-	volume: 0.5,
-	html5: true,
-});
-
 export const BRICK_OPTION = {
 	width: 0.3,
 	height: 0.26,
 	depth: 0.53,
 	mass: 0.5,
-	lastPlaySound: 0,
-	soundDelta: 100,
 };
 
 export const wallObject: (props?: wallObjectProps) => void = props => {
@@ -70,13 +59,13 @@ export const wallObject: (props?: wallObjectProps) => void = props => {
 				});
 
 				body.addEventListener('collide', (ev: any) => {
-					const force: number = ev.contact.getImpactVelocityAlongNormal();
-					const currentTime = Date.now();
-					if (currentTime < BRICK_OPTION.lastPlaySound + BRICK_OPTION.soundDelta || force < 0.7) return;
-					BRICK_OPTION.lastPlaySound = currentTime;
-					const volume = Math.min(Math.max((force - 0.7) * 0.75, 0.2), 0.85) ** 2;
-					brickPlayer.volume(volume);
-					brickPlayer.play();
+					// const force: number = ev.contact.getImpactVelocityAlongNormal();
+					// const currentTime = Date.now();
+					// if (currentTime < BRICK_OPTION.lastPlaySound + BRICK_OPTION.soundDelta || force < 0.7) return;
+					// BRICK_OPTION.lastPlaySound = currentTime;
+					// const volume = Math.min(Math.max((force - 0.7) * 0.75, 0.2), 0.85) ** 2;
+					// brickPlayer.volume(volume);
+					// brickPlayer.play();
 				});
 			};
 			const createWall: () => void = () => {

@@ -1,21 +1,12 @@
 import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
-import { Howl } from 'howler';
 import { copyPositions, createModelContainer, sleep } from '../../utils';
 import { dummyPhysicsMaterial } from '../../physics';
 
 // @ts-ignore
 import lampPostModelGltf from './models/lampPost.gltf';
 // @ts-ignore
-import lampBrokenSong from './sounds/lampBroken.mp3';
 import { DEFAULT_POSITION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
-
-const recorderPlayer = new Howl({
-	src: [lampBrokenSong],
-	html5: true,
-	volume: 0.5,
-	loop: false,
-});
 
 export const lampPostObject: (props?: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION } = props || {};
@@ -69,7 +60,7 @@ export const lampPostObject: (props?: objectProps) => void = props => {
 	lampPostBody.addEventListener('collide', (ev: any) => {
 		if (ev.contact.getImpactVelocityAlongNormal() < 1.2 || LAMP_POST_OPTIONS.isAlreadyBroken) return;
 		LAMP_POST_OPTIONS.isAlreadyBroken = true;
-		recorderPlayer.play();
+		// recorderPlayer.play();
 		brokeLamp();
 	});
 

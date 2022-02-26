@@ -11,7 +11,7 @@ export type copyPositionType = {
 };
 
 export const copyPositions: (props: copyPositionType) => void = ({ body, mesh, isCopyRotation = true, positionOffset }) => {
-	if (!body || !mesh) return console.log('U try copy position of null');
+	if (!body || !mesh) return console.log('U try copy position of null', body, mesh);
 
 	mesh.position.x = body.position.x + (positionOffset?.x || 0);
 	mesh.position.y = body.position.y + (positionOffset?.y || 0);

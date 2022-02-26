@@ -139,7 +139,9 @@ export const Portfolio: React.FC = () => {
 	const cannonDebugRenderer = new CannonDebugRenderer(scene, physicWorld);
 
 	// car
-	carObject({ position: new THREE.Vector3(5, level3YOffset, -3) });
+	carObject({
+		position: new THREE.Vector3(5, level3YOffset, -3),
+	});
 	setLightsFor1Level(level1YOffset + 15);
 	// level 1
 	groundObject();
