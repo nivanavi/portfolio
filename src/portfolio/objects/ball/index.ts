@@ -6,6 +6,7 @@ import { dummyPhysicsMaterial } from '../../physics';
 // @ts-ignore
 import ballModelGltf from './models/ball.gltf';
 import { calInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
+import { playSound } from '../../sounds';
 
 export const ballObject: (props: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION } = props || {};
@@ -30,6 +31,11 @@ export const ballObject: (props: objectProps) => void = props => {
 	ballBody.addShape(ballShape);
 	ballBody.position.set(position.x, position.y + 0.8, position.z);
 	ballBody.quaternion.setFromAxisAngle(quaternion.vector, quaternion.angle);
+
+	ballBody.addEventListener('collide', (ev: any) => {
+		const relativeVelocity = ev.contact.getImpactVelocityAlongNormal();
+		playSound('ball', relativeVelocity);
+	});
 
 	copyPositions({
 		mesh: ballContainer,

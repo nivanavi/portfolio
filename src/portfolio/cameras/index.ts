@@ -1,8 +1,6 @@
 import * as THREE from 'three';
 import { calInTickProps, IS_DEVELOP, MOST_IMPORTANT_DATA } from '../index';
-import { CAR_DYNAMIC_OPTIONS } from '../objects/car';
-// import { calInTickProps, MOST_IMPORTANT_DATA } from '../index';
-// import { CAR_DYNAMIC_OPTIONS } from '../objects/car';
+import { CAR_EXPORT_DATA } from '../objects/car';
 
 export const CAMERA_OPTIONS = {
 	position: new THREE.Vector3(0, 10, -5),
@@ -44,11 +42,11 @@ export const setupCameras: () => { camera: THREE.PerspectiveCamera } = () => {
 		CAMERA_OPTIONS.zoomDistance = CAMERA_OPTIONS.zoomMinDistance + CAMERA_OPTIONS.zoomAmplitude * CAMERA_OPTIONS.zoomValue;
 
 		// update camera pan
-		camera.position.x += CAR_DYNAMIC_OPTIONS.oldPosition.x;
-		camera.position.z += CAR_DYNAMIC_OPTIONS.oldPosition.z;
-		camera.position.y += CAR_DYNAMIC_OPTIONS.oldPosition.y;
+		camera.position.x += CAR_EXPORT_DATA.position.x;
+		camera.position.z += CAR_EXPORT_DATA.position.z;
+		camera.position.y += CAR_EXPORT_DATA.position.y;
 
-		const currentWatchPosition = new THREE.Vector3(CAR_DYNAMIC_OPTIONS.oldPosition.x, CAR_DYNAMIC_OPTIONS.oldPosition.y, CAR_DYNAMIC_OPTIONS.oldPosition.z);
+		const currentWatchPosition = new THREE.Vector3(CAR_EXPORT_DATA.position.x, CAR_EXPORT_DATA.position.y, CAR_EXPORT_DATA.position.z);
 		camera.lookAt(currentWatchPosition);
 	};
 	if (!IS_DEVELOP) {

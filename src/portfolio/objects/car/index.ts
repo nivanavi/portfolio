@@ -8,83 +8,91 @@ import delorianModel from './models/delorian.gltf';
 // @ts-ignore
 import wheelModel from './models/wheel.gltf';
 import { calInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
+import { playSound } from '../../sounds';
 
-const delorian = {
+type carObjectType = { respawnCallBack?: () => void } & objectProps;
+
+const DELORIAN_SETTINGS = {
 	chassisWidth: 1.02,
 	chassisHeight: 0.58,
 	chassisDepth: 2.03,
 	chassisMass: 20,
 	chassisOffset: new CANNON.Vec3(0.15, 0.16, 0),
-
 	wheelMass: 5,
 	wheelFrontOffsetDepth: 0.735,
 	wheelBackOffsetDepth: -0.5,
 	wheelOffsetWidth: 0.425,
 };
 
-export const CAR_OPTIONS = {
-	...delorian,
+export const CAR_EXPORT_DATA = {
 	chassisMesh: new THREE.Mesh(),
 	chassisBody: new CANNON.Body(),
-	maxSteeringForce: Math.PI * 0.17,
-	steeringSpeed: 0.005,
-	accelerationMaxSpeed: 0.055,
-	boostAccelerationMaxSpeed: 0.1,
-	acceleratingSpeed: 2,
-	brakeForce: 0.45,
+	position: new CANNON.Vec3(),
 };
 
-export const WHEEL_OPTIONS = {
-	radius: 0.17,
-	height: 0.1,
-	suspensionStiffness: 25,
-	suspensionRestLength: 0.1,
-	frictionSlip: 5,
-	dampingRelaxation: 1.8,
-	dampingCompression: 1.5,
-	maxSuspensionForce: 100000,
-	rollInfluence: 0.01,
-	maxSuspensionTravel: 0.3,
-	customSlidingRotationalSpeed: -30,
-	useCustomSlidingRotationalSpeed: true,
-	directionLocal: new CANNON.Vec3(0, -1, 0),
-	axleLocal: new CANNON.Vec3(0, 0, 1),
-	frontLeft: 0,
-	frontRight: 1,
-	backLeft: 2,
-	backRight: 3,
-	chassisConnectionPointLocal: new CANNON.Vec3(1, 1, 0), // Will be changed for each wheel
-};
-
-export const CAR_DYNAMIC_OPTIONS = {
-	steering: 0,
-	accelerating: 0,
-	speed: 0,
-	worldForward: new CANNON.Vec3(),
-	forwardSpeed: 0,
-	oldPosition: new CANNON.Vec3(),
-	goingForward: true,
-	lastStopBurnOut: 0,
-	stopBurnOutDelta: 300,
-	up: false,
-	down: false,
-	left: false,
-	right: false,
-	brake: false,
-	boost: false,
-	isBurnOut: false,
+const RESPAWN_OPTIONS = {
 	lastRespawn: 0,
-	respawnDelta: 500,
+	respawnDelta: 2000,
 	isCanRespawn: false,
 };
 
-const wheelsGraphic: THREE.Group[] = [];
-
-const wheelsPhysic: CANNON.Body[] = [];
-
-export const carObject: (props?: objectProps) => void = props => {
-	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION } = props || {};
+export const carObject: (props?: carObjectType) => void = props => {
+	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION, respawnCallBack } = props || {};
 	const { scene, physicWorld, addToCallInTickStack, addToCallInPostStepStack, gltfLoader } = MOST_IMPORTANT_DATA;
+
+	const CAR_OPTIONS = {
+		...DELORIAN_SETTINGS,
+		maxSteeringForce: Math.PI * 0.17,
+		steeringSpeed: 0.005,
+		accelerationMaxSpeed: 0.055,
+		boostAccelerationMaxSpeed: 0.1,
+		acceleratingSpeed: 2,
+		brakeForce: 0.45,
+	};
+
+	const WHEEL_OPTIONS = {
+		radius: 0.17,
+		height: 0.1,
+		suspensionStiffness: 25,
+		suspensionRestLength: 0.1,
+		frictionSlip: 5,
+		dampingRelaxation: 1.8,
+		dampingCompression: 1.5,
+		maxSuspensionForce: 100000,
+		rollInfluence: 0.01,
+		maxSuspensionTravel: 0.3,
+		customSlidingRotationalSpeed: -30,
+		useCustomSlidingRotationalSpeed: true,
+		directionLocal: new CANNON.Vec3(0, -1, 0),
+		axleLocal: new CANNON.Vec3(0, 0, 1),
+		frontLeft: 0,
+		frontRight: 1,
+		backLeft: 2,
+		backRight: 3,
+		chassisConnectionPointLocal: new CANNON.Vec3(1, 1, 0), // Will be changed for each wheel
+	};
+
+	const CAR_DYNAMIC_OPTIONS = {
+		steering: 0,
+		accelerating: 0,
+		speed: 0,
+		worldForward: new CANNON.Vec3(),
+		forwardSpeed: 0,
+		oldPosition: new CANNON.Vec3(),
+		goingForward: true,
+		lastStopBurnOut: 0,
+		stopBurnOutDelta: 300,
+		up: false,
+		down: false,
+		left: false,
+		right: false,
+		brake: false,
+		boost: false,
+		isBurnOut: false,
+	};
+
+	const wheelsGraphic: THREE.Group[] = [];
+	const wheelsPhysic: CANNON.Body[] = [];
 
 	// load models
 	const chassisContainer = createModelContainer({
@@ -155,8 +163,8 @@ export const carObject: (props?: objectProps) => void = props => {
 	vehicle.addToWorld(physicWorld);
 	chassisContainer.add(chassisMesh);
 	scene.add(chassisContainer);
-	CAR_OPTIONS.chassisMesh = chassisMesh;
-	CAR_OPTIONS.chassisBody = chassisBody;
+	CAR_EXPORT_DATA.chassisMesh = chassisMesh;
+	CAR_EXPORT_DATA.chassisBody = chassisBody;
 
 	vehicle.wheelInfos.forEach(wheel => {
 		const shape = new CANNON.Cylinder(wheel.radius || 0, wheel.radius || 0, WHEEL_OPTIONS.height, 20);
@@ -167,17 +175,12 @@ export const carObject: (props?: objectProps) => void = props => {
 		wheelsPhysic.push(body);
 	});
 
-	// this.car.jump = (_toReturn = true, _strength = 60) => {
-	// 	let worldPosition = this.car.chassis.body.position;
-	// 	worldPosition = worldPosition.vadd(new CANNON.Vec3(_toReturn ? 0.08 : 0, 0, 0));
-	// 	this.car.chassis.body.applyImpulse(new CANNON.Vec3(0, 0, _strength), worldPosition);
-	// };
-
 	const respawn = (): void => {
-		if (!CAR_DYNAMIC_OPTIONS.isCanRespawn) return;
+		if (!RESPAWN_OPTIONS.isCanRespawn) return;
 		const currentTime = Date.now();
-		if (currentTime < CAR_DYNAMIC_OPTIONS.lastRespawn + CAR_DYNAMIC_OPTIONS.respawnDelta) return;
-		CAR_DYNAMIC_OPTIONS.lastRespawn = currentTime;
+		if (currentTime < RESPAWN_OPTIONS.lastRespawn + RESPAWN_OPTIONS.respawnDelta) return;
+		RESPAWN_OPTIONS.lastRespawn = currentTime;
+		if (respawnCallBack) respawnCallBack();
 		chassisBody.position.set(position.x, position.y + 0.5, position.z);
 		chassisBody.quaternion.setFromAxisAngle(quaternion.vector, quaternion.angle);
 	};
@@ -194,6 +197,7 @@ export const carObject: (props?: objectProps) => void = props => {
 		let positionDelta = new CANNON.Vec3().copy(chassisBody.position);
 		positionDelta = positionDelta.vsub(CAR_DYNAMIC_OPTIONS.oldPosition);
 		CAR_DYNAMIC_OPTIONS.oldPosition.copy(chassisBody.position);
+		CAR_EXPORT_DATA.position.copy(chassisBody.position);
 		CAR_DYNAMIC_OPTIONS.speed = positionDelta.length();
 
 		// Update forward
@@ -211,10 +215,10 @@ export const carObject: (props?: objectProps) => void = props => {
 		chassisBody.vectorToWorldFrame(localUp, worldUp);
 		if (worldUp.dot(localUp) < 0.05) {
 			if (!chassisBody.material) chassisBody.material = dummyPhysicsMaterial;
-			if (!CAR_DYNAMIC_OPTIONS.isCanRespawn) CAR_DYNAMIC_OPTIONS.isCanRespawn = true;
+			if (!RESPAWN_OPTIONS.isCanRespawn) RESPAWN_OPTIONS.isCanRespawn = true;
 		} else {
 			if (chassisBody.material) chassisBody.material = null;
-			if (CAR_DYNAMIC_OPTIONS.isCanRespawn) CAR_DYNAMIC_OPTIONS.isCanRespawn = false;
+			if (RESPAWN_OPTIONS.isCanRespawn) RESPAWN_OPTIONS.isCanRespawn = false;
 		}
 
 		// update wheels
@@ -309,10 +313,9 @@ export const carObject: (props?: objectProps) => void = props => {
 	addToCallInTickStack(callInTick);
 
 	chassisBody.addEventListener('collide', (ev: any) => {
-		// console.log(ev);
-		// if (!ev?.body?.material) return;
-		// if (ev.body.material.name === "floorMaterial") return;
-		// ev.body.quaternion.x = 0.5;
+		if (ev.body.mass !== 0) return;
+		const relativeVelocity = ev.contact.getImpactVelocityAlongNormal();
+		playSound('carHit', relativeVelocity);
 	});
 
 	const keyPressHandler: (ev: KeyboardEvent, isPressed: boolean) => void = (ev, isPressed) => {

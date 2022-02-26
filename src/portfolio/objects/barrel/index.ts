@@ -6,6 +6,7 @@ import { dummyPhysicsMaterial } from '../../physics';
 // @ts-ignore
 import barrelModelGltf from './models/barrel.gltf';
 import { calInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
+import { playSound } from '../../sounds';
 
 export const barrelObject: (props: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION } = props || {};
@@ -34,6 +35,11 @@ export const barrelObject: (props: objectProps) => void = props => {
 	copyPositions({
 		mesh: barrelContainer,
 		body: barrelBody,
+	});
+
+	barrelBody.addEventListener('collide', (ev: any) => {
+		const relativeVelocity = ev.contact.getImpactVelocityAlongNormal();
+		playSound('barrel', relativeVelocity);
 	});
 
 	physicWorld.addBody(barrelBody);

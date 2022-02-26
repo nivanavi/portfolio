@@ -11,7 +11,7 @@ export type copyPositionType = {
 };
 
 export const copyPositions: (props: copyPositionType) => void = ({ body, mesh, isCopyRotation = true, positionOffset }) => {
-	if (!body || !mesh) return console.log('U try copy position of null', body, mesh);
+	if (!body || !mesh) return;
 
 	mesh.position.x = body.position.x + (positionOffset?.x || 0);
 	mesh.position.y = body.position.y + (positionOffset?.y || 0);
@@ -96,4 +96,15 @@ export const createModelContainer: (props: loadModelType) => THREE.Group = props
 	});
 
 	return container;
+};
+
+export const getUniquePosition = (minRadius: number, levelYOffset: number, positions: THREE.Vector3[]): THREE.Vector3 => {
+	const angle = Math.random() * Math.PI * 2;
+	const radius = minRadius + Math.random() * 15;
+	const x = Math.sin(angle) * radius;
+	const z = Math.cos(angle) * radius;
+	const vector: THREE.Vector3 = new THREE.Vector3(x, levelYOffset, z);
+	const findNear = positions.find(vec => vec.distanceTo(vector) < 4);
+	if (findNear) return getUniquePosition(minRadius, levelYOffset, positions);
+	return vector;
 };

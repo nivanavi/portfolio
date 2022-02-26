@@ -7,6 +7,7 @@ import { calInTickProps, DEFAULT_POSITION, MOST_IMPORTANT_DATA, objectProps } fr
 // @ts-ignore
 // eslint-disable-next-line import/no-unresolved
 import brickModelGltf from './models/brick.gltf';
+import { playSound } from '../../sounds';
 
 type createWallProps = {
 	brickInRows: number;
@@ -45,7 +46,6 @@ export const wallObject: (props?: wallObjectProps) => void = props => {
 				});
 				body.addShape(brickShape);
 				body.allowSleep = true;
-				// body.sleepSpeedLimit = 0.01;
 				body.position.copy(brickPosition);
 				if (!isYDirection) body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, -1, 0), Math.PI * 0.5);
 				const mesh = brickContainer.clone();
@@ -59,13 +59,8 @@ export const wallObject: (props?: wallObjectProps) => void = props => {
 				});
 
 				body.addEventListener('collide', (ev: any) => {
-					// const force: number = ev.contact.getImpactVelocityAlongNormal();
-					// const currentTime = Date.now();
-					// if (currentTime < BRICK_OPTION.lastPlaySound + BRICK_OPTION.soundDelta || force < 0.7) return;
-					// BRICK_OPTION.lastPlaySound = currentTime;
-					// const volume = Math.min(Math.max((force - 0.7) * 0.75, 0.2), 0.85) ** 2;
-					// brickPlayer.volume(volume);
-					// brickPlayer.play();
+					const relativeVelocity = ev.contact.getImpactVelocityAlongNormal();
+					playSound('brick', relativeVelocity);
 				});
 			};
 			const createWall: () => void = () => {

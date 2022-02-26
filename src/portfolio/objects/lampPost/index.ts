@@ -7,6 +7,7 @@ import { dummyPhysicsMaterial } from '../../physics';
 import lampPostModelGltf from './models/lampPost.gltf';
 // @ts-ignore
 import { DEFAULT_POSITION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
+import { playSound } from '../../sounds';
 
 export const lampPostObject: (props?: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION } = props || {};
@@ -58,9 +59,10 @@ export const lampPostObject: (props?: objectProps) => void = props => {
 	};
 
 	lampPostBody.addEventListener('collide', (ev: any) => {
-		if (ev.contact.getImpactVelocityAlongNormal() < 1.2 || LAMP_POST_OPTIONS.isAlreadyBroken) return;
+		const relativeVelocity = ev.contact.getImpactVelocityAlongNormal();
+		if (relativeVelocity < 1.2 || LAMP_POST_OPTIONS.isAlreadyBroken) return;
 		LAMP_POST_OPTIONS.isAlreadyBroken = true;
-		// recorderPlayer.play();
+		playSound('lampBroken', relativeVelocity);
 		brokeLamp();
 	});
 

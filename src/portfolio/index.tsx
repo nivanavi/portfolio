@@ -12,7 +12,8 @@ import { setupPhysics } from './physics';
 import { groundObject } from './objects/ground';
 import { setupLights } from './lights';
 import { carObject } from './objects/car';
-import { windowResizeUtil } from './utils';
+import { getUniquePosition, windowResizeUtil } from './utils';
+import CannonDebugRenderer from '../libs/cannonDebug';
 import { poolObject } from './objects/waterpool';
 import { benchObject } from './objects/bench';
 import { teleportObject } from './objects/teleport';
@@ -31,7 +32,6 @@ import { barrelObject } from './objects/barrel';
 import { ladderObject } from './objects/ladder';
 import { cactusObject, getRandomCactusAndRotate } from './objects/cactuses';
 import { pinObject } from './objects/pin';
-import CannonDebugRenderer from '../libs/cannonDebug';
 import { ballObject } from './objects/ball';
 import { wallObject } from './objects/wall';
 import { fenceObject } from './objects/fence';
@@ -40,6 +40,7 @@ import { gateObject } from './objects/gate';
 import { textObject } from './objects/text';
 
 export const IS_DEVELOP = false;
+let NEED_CREATE_WORLD = true;
 
 export type quaternionType = {
 	vector: CANNON.Vec3;
@@ -106,17 +107,6 @@ export const MOST_IMPORTANT_DATA: mostImportantData = {
 
 const { scene, windowSizes, physicWorld, clock } = MOST_IMPORTANT_DATA;
 
-const getUniquePosition = (minRadius: number, levelYOffset: number, positions: THREE.Vector3[]): THREE.Vector3 => {
-	const angle = Math.random() * Math.PI * 2;
-	const radius = minRadius + Math.random() * 15;
-	const x = Math.sin(angle) * radius;
-	const z = Math.cos(angle) * radius;
-	const vector: THREE.Vector3 = new THREE.Vector3(x, levelYOffset, z);
-	const findNear = positions.find(vec => vec.distanceTo(vector) < 4);
-	if (findNear) return getUniquePosition(minRadius, levelYOffset, positions);
-	return vector;
-};
-
 const level1YOffset: number = 0;
 const level2YOffset: number = 120;
 const level3YOffset: number = 240;
@@ -124,23 +114,25 @@ const level3YOffset: number = 240;
 // const level1YOffset: number = 0;
 // const level2YOffset: number = 16;
 // const level3YOffset: number = 32;
+
 const TEXT: string | undefined = window.location.hash.startsWith('#') ? window.location.hash.replace('#', '') : 'nivanavi_dev';
-export const Portfolio: React.FC = () => {
-	const canvas = useSceneIgniterContext().canvas!;
-	const { renderer } = setupRenderer({ canvas });
-	renderer.shadowMap.enabled = true;
-	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-	const { camera } = setupCameras();
+const cannonDebugRenderer = new CannonDebugRenderer(scene, physicWorld);
+
+const clearWorld = (): void => {
+	physicWorld.bodies = [];
+	scene.clear();
+};
+
+const createWorld = (): void => {
 	const { setLightsFor1Level, setLightsFor2Level, setLightsFor3Level } = setupLights();
-
-	// not important stuff
-	const orbitControl = new OrbitControls(camera, canvas);
-	const cannonDebugRenderer = new CannonDebugRenderer(scene, physicWorld);
-
 	// car
 	carObject({
-		position: new THREE.Vector3(5, level3YOffset, -3),
+		position: new THREE.Vector3(5, level1YOffset, -3),
+		respawnCallBack: () => {
+			clearWorld();
+			NEED_CREATE_WORLD = true;
+		},
 	});
 	setLightsFor1Level(level1YOffset + 15);
 	// level 1
@@ -313,13 +305,27 @@ export const Portfolio: React.FC = () => {
 
 	// text area
 	textObject({ position: new THREE.Vector3(18, level3YOffset, 14), text: TEXT });
+};
+
+export const Portfolio: React.FC = () => {
+	const canvas = useSceneIgniterContext().canvas!;
+	const { renderer } = setupRenderer({ canvas });
+	renderer.shadowMap.enabled = true;
+	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+	const { camera } = setupCameras();
+
+	// not important stuff
+	const orbitControl = new OrbitControls(camera, canvas);
 
 	physicWorld.addEventListener('postStep', () => callInPostStepStack.forEach(call => call()));
-
 	let oldElapsedTime: number;
 	const minDelta: number = 1000 / 70;
 	const timeStep = 1 / 60;
 	const tick = (): void | number => {
+		if (NEED_CREATE_WORLD) {
+			createWorld();
+			NEED_CREATE_WORLD = false;
+		}
 		const elapsedTime = clock.getElapsedTime();
 		const physicDelta = Math.round((elapsedTime - oldElapsedTime) * 1000);
 		const graphicDelta = elapsedTime - oldElapsedTime;

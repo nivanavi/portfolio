@@ -22,7 +22,7 @@ export const logBenchObject: (props?: objectProps) => void = props => {
 	// physic
 	const logBenchShape = new CANNON.Box(new CANNON.Vec3(0.2, 0.12, 0.9));
 	const logBenchBody = new CANNON.Body({
-		mass: 20,
+		mass: 5,
 		material: dummyPhysicsMaterial,
 	});
 	logBenchBody.allowSleep = true;

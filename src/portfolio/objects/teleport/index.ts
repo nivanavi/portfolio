@@ -2,12 +2,13 @@ import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
 import { dummyPhysicsMaterial } from '../../physics';
 import { calInTickProps, MOST_IMPORTANT_DATA } from '../../index';
-import { CAR_OPTIONS } from '../car';
 
 // @ts-ignore
 // eslint-disable-next-line import/no-unresolved
 import teleportModelGltf from './models/teleport.gltf';
 import { createModelContainer } from '../../utils';
+import { playSound } from '../../sounds';
+import { CAR_EXPORT_DATA } from '../car';
 
 // @ts-ignore
 // import recorderSongUrl        from "./sounds/recorderSong.mp3"
@@ -67,10 +68,10 @@ const teleport: (props: oneTeleportProps) => { callInTick: () => void } = ({ ent
 	raycaster.set(rayOrigin, rayDirection);
 
 	const callInTick = (): void => {
-		const intersects = raycaster.intersectObject(CAR_OPTIONS.chassisMesh);
+		const intersects = raycaster.intersectObject(CAR_EXPORT_DATA.chassisMesh);
 		if (intersects.length) {
 			teleportCallback();
-			CAR_OPTIONS.chassisBody.position.set(exit.position.x + 2, exit.position.y + 0.1, exit.position.z);
+			CAR_EXPORT_DATA.chassisBody.position.set(exit.position.x + 2, exit.position.y + 0.1, exit.position.z);
 		}
 	};
 
@@ -88,6 +89,7 @@ export const teleportObject: (props: teleportProps) => void = ({ enter, exit }) 
 
 	const teleportCallback = (): void => {
 		TELEPORT_OPTIONS.lastTeleport = Date.now();
+		playSound('teleport', 10);
 	};
 
 	const { callInTick: callInTickEnter } = teleport({

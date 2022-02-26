@@ -1,12 +1,22 @@
 import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
+import { Howl } from 'howler';
 import { copyPositions, createModelContainer } from '../../utils';
-
+// @ts-ignore
+import recorderSongSound from '../../sounds/recorder/recorderSong.mp3';
 // @ts-ignore
 import recorderModelGltf from './models/recorder.gltf';
 
 import { dummyPhysicsMaterial } from '../../physics';
 import { calInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
+import { CAR_EXPORT_DATA } from '../car';
+
+const recorderPlayer = new Howl({
+	src: [recorderSongSound],
+	html5: true,
+	volume: 0.5,
+	loop: true,
+});
 
 export const RECORDER_OPTIONS = {
 	isPlay: false,
@@ -15,7 +25,7 @@ export const RECORDER_OPTIONS = {
 	toucheDelta: 200,
 };
 
-// const getVolumeByDistance: (distance: number) => number = distance => RECORDER_OPTIONS.maxVolume / distance;
+const getVolumeByDistance: (distance: number) => number = distance => RECORDER_OPTIONS.maxVolume / distance;
 
 export const recorderObject: (props?: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION } = props || {};
@@ -48,15 +58,15 @@ export const recorderObject: (props?: objectProps) => void = props => {
 		RECORDER_OPTIONS.lastTouche = currentTime;
 		RECORDER_OPTIONS.isPlay = !RECORDER_OPTIONS.isPlay;
 
-		// if (RECORDER_OPTIONS.isPlay) return recorderPlayer.play();
-		// return recorderPlayer.stop();
+		if (RECORDER_OPTIONS.isPlay) return recorderPlayer.play();
+		return recorderPlayer.stop();
 	});
 
 	physicWorld.addBody(recorderBody);
 	scene.add(recorderContainer);
 
 	const callInTick: (propsCalInTick: calInTickProps) => void = () => {
-		// recorderPlayer.volume(getVolumeByDistance(recorderBody.position.distanceTo(CAR_DYNAMIC_OPTIONS.oldPosition)));
+		recorderPlayer.volume(getVolumeByDistance(recorderBody.position.distanceTo(CAR_EXPORT_DATA.position)));
 		copyPositions({
 			body: recorderBody,
 			mesh: recorderContainer,

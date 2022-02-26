@@ -6,6 +6,7 @@ import { dummyPhysicsMaterial } from '../../physics';
 // @ts-ignore
 import textModelGltf from './models/font.gltf';
 import { calInTickProps, DEFAULT_POSITION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
+import { playSound } from '../../sounds';
 
 type textObjectType = { text: string } & objectProps;
 
@@ -45,6 +46,11 @@ export const textObject: (props: textObjectType) => void = props => {
 				letters.push({
 					mesh: letterContainer,
 					body,
+				});
+
+				body.addEventListener('collide', (ev: any) => {
+					const relativeVelocity = ev.contact.getImpactVelocityAlongNormal();
+					playSound('brick', relativeVelocity);
 				});
 			};
 			const createText: () => void = () => {

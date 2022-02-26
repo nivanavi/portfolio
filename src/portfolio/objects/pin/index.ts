@@ -6,6 +6,7 @@ import { dummyPhysicsMaterial } from '../../physics';
 // @ts-ignore
 import pinModelGltf from './models/pin.gltf';
 import { calInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
+import { playSound } from '../../sounds';
 
 export const pinObject: (props: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION } = props || {};
@@ -40,6 +41,11 @@ export const pinObject: (props: objectProps) => void = props => {
 	pinBody.quaternion.setFromAxisAngle(quaternion.vector, quaternion.angle);
 
 	updateCOM(pinBody);
+
+	pinBody.addEventListener('collide', (ev: any) => {
+		const relativeVelocity = ev.contact.getImpactVelocityAlongNormal();
+		playSound('pin', relativeVelocity);
+	});
 
 	copyPositions({
 		mesh: pinContainer,
