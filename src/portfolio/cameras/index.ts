@@ -19,16 +19,16 @@ export const CAMERA_OPTIONS = {
 	zoomDistance: 5 + 15 * 0.3,
 };
 
-export const setupCameras: () => { camera: THREE.PerspectiveCamera } = () => {
-	// const { windowSizes, scene, addToCallInTickStack } = MOST_IMPORTANT_DATA;
-	const { windowSizes, scene, addToCallInTickStack } = MOST_IMPORTANT_DATA;
+export const setupCameras: () => { camera: THREE.PerspectiveCamera; loadingCamera: THREE.PerspectiveCamera } = () => {
+	const { windowSizes, addToCallInTickStack } = MOST_IMPORTANT_DATA;
 
 	const camera = new THREE.PerspectiveCamera(50, windowSizes.width / windowSizes.height, 1, 80);
 	camera.up.set(0, 1, 0);
 	camera.position.copy(CAMERA_OPTIONS.angleOfView);
 
-	const hitMesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(500, 500, 1, 1), new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true, visible: false }));
-	scene.add(hitMesh);
+	const loadingCamera = new THREE.PerspectiveCamera(50, windowSizes.width / windowSizes.height, 1, 80);
+	loadingCamera.up.set(0, 1, 0);
+	loadingCamera.position.copy(CAMERA_OPTIONS.angleOfView);
 
 	const callInTickCamera: (props: calInTickProps) => void = () => {
 		// update position for zoom
@@ -37,7 +37,7 @@ export const setupCameras: () => { camera: THREE.PerspectiveCamera } = () => {
 		CAMERA_OPTIONS.positionEased.z += (CAMERA_OPTIONS.positionTarget.z - CAMERA_OPTIONS.positionEased.z) * CAMERA_OPTIONS.easing;
 		// Apply zoom
 		camera.position.copy(CAMERA_OPTIONS.positionEased).add(CAMERA_OPTIONS.angleOfView.clone().normalize().multiplyScalar(CAMERA_OPTIONS.zoomDistance));
-
+		loadingCamera.position.copy(CAMERA_OPTIONS.positionEased).add(CAMERA_OPTIONS.angleOfView.clone().normalize().multiplyScalar(CAMERA_OPTIONS.zoomDistance));
 		CAMERA_OPTIONS.zoomValue += (CAMERA_OPTIONS.zoomTargetValue - CAMERA_OPTIONS.zoomValue) * CAMERA_OPTIONS.zoomEasing;
 		CAMERA_OPTIONS.zoomDistance = CAMERA_OPTIONS.zoomMinDistance + CAMERA_OPTIONS.zoomAmplitude * CAMERA_OPTIONS.zoomValue;
 
@@ -62,5 +62,6 @@ export const setupCameras: () => { camera: THREE.PerspectiveCamera } = () => {
 
 	return {
 		camera,
+		loadingCamera,
 	};
 };

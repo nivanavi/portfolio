@@ -9,13 +9,6 @@ import { calInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DA
 import { waterVertexShader } from './shaders/waterVertexShader';
 import { waterFragmentsShader } from './shaders/waterFragmentsShader';
 
-// const recorderPlayer = new Howl({
-//   src: [lampBrokenSong],
-//   html5: true,
-//   volume: 0.5,
-//   loop: false
-// });
-
 export const poolObject: (props?: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION } = props || {};
 	const { scene, physicWorld, addToCallInTickStack, gltfLoader } = MOST_IMPORTANT_DATA;
@@ -31,7 +24,7 @@ export const poolObject: (props?: objectProps) => void = props => {
 	const waterMaterial = new THREE.ShaderMaterial({
 		uniforms: {
 			uTime: { value: 0 },
-			waterColor: { value: new THREE.Color('#125e44') },
+			upperColor: { value: new THREE.Color('#125e44') },
 			depthColor: { value: new THREE.Color('#09d2c8') },
 			elevationLevel: { value: 0.07 },
 		},
@@ -77,7 +70,6 @@ export const poolObject: (props?: objectProps) => void = props => {
 	poolBody.position.set(position.x, position.y + 0.15, position.z);
 	poolBody.quaternion.setFromAxisAngle(quaternion.vector, quaternion.angle);
 
-	// todo sounds
 	poolBody.addEventListener('collide', (ev: any) => {
 		if (ev.contact.getImpactVelocityAlongNormal() < 1.2 || POOL_OPTIONS.isAlreadyAnimated || !dolphinAnimation) return;
 		POOL_OPTIONS.isAlreadyAnimated = true;

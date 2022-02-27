@@ -1,4 +1,4 @@
-export const waterFragmentsShader = `
+export const loaderFragmentsShader = `
   uniform vec3 upperColor;
   uniform vec3 depthColor;
   

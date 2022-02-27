@@ -1,4 +1,122 @@
+@font-face {
+    font-family: 'JetBrains Mono';
+    src: local('JetBrains Mono'), local('JetBrains Mono'),
+    url('JetBrainsMono-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body * {
+    font-family: JetBrains Mono, sans-serif;
+}
+
 * {
     padding: 0;
     margin: 0;
+}
+
+canvas {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
+.loadingAreaWrapper {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    perspective: 1000px;
+    z-index: 50;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-column-gap: 30px;
+}
+
+.loadingContentWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: -300px;
+    transform-style: preserve-3d;
+    transform: rotateX(20deg) translateZ(200px);
+    height: 100%;
+}
+
+.loadingBarWrapper {
+    position: relative;
+    border: 2px solid white;
+    width: 400px;
+    height: 24px;
+    transition: all 0.3s;
+}
+
+.loadingText {
+    position: absolute;
+    width: 100%;
+    top: 2px;
+    text-align: center;
+    text-transform: uppercase;
+    color: white;
+    z-index: 11;
+}
+.loadingBar {
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    height: 20px;
+    width: 0;
+    background: linear-gradient(0.25turn, #7b4397, #dc2430);
+}
+
+.letsGoButton {
+    background: none;
+    text-transform: uppercase;
+    color: white;
+    width: 400px;
+    border: 2px solid white;
+    padding: 10px 20px;
+    margin-top: 30px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.letsGoButton:hover {
+    color: #4568dc;
+    transform: scale(0.9);
+    border: 2px solid #4568dc;
+}
+
+.letsGoButtonHide {
+    opacity: 0;
+    pointer-events: none;
+}
+.letsGoButtonShow {
+    opacity: 1;
+    pointer-events: unset;
+}
+
+.instruction {
+    display: flex;
+    align-items: center;
+    color: white;
+    margin-left: 50px;
+}
+
+.instruction ul {
+    list-style-type: none;
+}
+
+.rights {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    color: white;
+    margin-right: 50px;
+}
+
+.rights ul {
+    list-style-type: none;
 }

@@ -18,14 +18,14 @@ export const setupLights: () => {
 	scene.add(pointLight);
 	scene.add(ambientLight);
 
-	const setLightsFor1Level: setLightsType = (levelYOffset: number) => {
+	const setLightsFor1Level: setLightsType = levelYOffset => {
 		ambientLight.intensity = 0.5;
 		pointLight.intensity = 0.8;
 		pointLight.distance = 40;
 		pointLight.position.set(0, levelYOffset, -7);
 	};
 
-	const setLightsFor2Level: setLightsType = (levelYOffset: number) => {
+	const setLightsFor2Level: setLightsType = levelYOffset => {
 		ambientLight.intensity = 1;
 		pointLight.intensity = 0.8;
 		pointLight.distance = 60;
