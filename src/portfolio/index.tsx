@@ -39,7 +39,7 @@ import { gateObject } from './objects/gate';
 import { textObject } from './objects/text';
 import { setupFog } from './fog';
 import { loaderObject } from './objects/loader';
-import { unmuteHowler } from './sounds';
+import { muteHowler } from './sounds';
 
 export type quaternionType = {
 	vector: CANNON.Vec3;
@@ -346,11 +346,10 @@ const hideLoading = (): void => {
 	if (!loadingAreaEl) return;
 	loadingAreaEl.style.display = 'none';
 	IS_LOADING = false;
-	unmuteHowler();
 	// ENGINE_PLAYER.play();
 };
 
-export const Portfolio: React.FC = () => {
+export const Portfolio: React.FC = React.memo(() => {
 	const canvas = useSceneIgniterContext().canvas!;
 	const { renderer } = setupRenderer({ canvas });
 	renderer.shadowMap.enabled = true;
@@ -423,39 +422,62 @@ export const Portfolio: React.FC = () => {
 	}, [windowResizeHandler]);
 
 	return null;
-};
+});
 
-export const PortfolioIgniter: React.FC = () => (
-	<SceneIgniterContextProvider>
-		<Portfolio />
-		<div className='loadingAreaWrapper' id='loadingArea'>
-			<div className='instruction'>
-				<ul>
-					<li>Move: W,A,S,D</li>
-					<li>Boost: L.Shift</li>
-					<li>Respawn: R (only when car upside down)</li>
-					<li>W + (Space/S): burnout</li>
-				</ul>
-			</div>
-			<div className='loadingContentWrapper'>
-				<div className='loadingBarWrapper'>
-					<p className='loadingText' id='loadingText'>
-						Loading: 0%
-					</p>
-					<div className='loadingBar' id='loadingBar' />
+export const PortfolioIgniter: React.FC = () => {
+	const [stateMuted, setMuted] = React.useState<boolean>(true);
+
+	const muteSwitch = (): void => {
+		setMuted(state => {
+			muteHowler(!state);
+			return !state;
+		});
+	};
+
+	return (
+		<SceneIgniterContextProvider>
+			<Portfolio />
+			<div className='loadingAreaWrapper' id='loadingArea'>
+				<div className='instruction'>
+					<ul>
+						<li>Move: W,A,S,D</li>
+						<li>Boost: L.Shift</li>
+						<li>Respawn: R (only when car upside down)</li>
+						<li>W + (Space/S): burnout</li>
+					</ul>
 				</div>
-				<button className='letsGoButton letsGoButtonHide' id='letsGoButton' type='button' onClick={hideLoading}>
-					Letsss go
-				</button>
+				<div className='loadingContentWrapper'>
+					<div className='loadingBarWrapper'>
+						<p className='loadingText' id='loadingText'>
+							Loading: 0%
+						</p>
+						<div className='loadingBar' id='loadingBar' />
+					</div>
+					<button className='letsGoButton letsGoButtonHide' id='letsGoButton' type='button' onClick={hideLoading}>
+						Letsss go
+					</button>
+				</div>
+				<div className='rights'>
+					<ul>
+						<li>All rights protected by nivanavi</li>
+						<li>
+							All matches with the real world <br /> or Bruno Simon are not my problem
+						</li>
+					</ul>
+				</div>
 			</div>
-			<div className='rights'>
-				<ul>
-					<li>All rights protected by nivanavi</li>
-					<li>
-						All matches with the real world <br /> or Bruno Simon are not my problem
-					</li>
-				</ul>
-			</div>
-		</div>
-	</SceneIgniterContextProvider>
-);
+			<button
+				type='button'
+				style={{
+					position: 'fixed',
+					right: '20px',
+					top: '20px',
+					zIndex: 12,
+				}}
+				onClick={muteSwitch}
+			>
+				{stateMuted ? 'muted' : 'unmuted'}
+			</button>
+		</SceneIgniterContextProvider>
+	);
+};

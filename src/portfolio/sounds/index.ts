@@ -192,10 +192,9 @@ export const playSound: (soundName: soundTypes, velocity: number) => void = (sou
 };
 
 // @ts-ignore
-Howler.volume(0);
-export const unmuteHowler = (): void => {
-	setTimeout(() => {
-		// @ts-ignore
-		Howler.volume(0.7);
-	}, 500);
+Howler.mute(true);
+
+export const muteHowler: (mute: boolean) => void = mute => {
+	// @ts-ignore
+	Howler.mute(mute);
 };
