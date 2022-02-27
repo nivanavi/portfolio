@@ -39,6 +39,7 @@ import { gateObject } from './objects/gate';
 import { textObject } from './objects/text';
 import { setupFog } from './fog';
 import { loaderObject } from './objects/loader';
+import { unmuteHowler } from './sounds';
 
 export type quaternionType = {
 	vector: CANNON.Vec3;
@@ -333,7 +334,7 @@ loadingManager.onProgress = (src, loaded, total): void => {
 	if (!loadingTextEl || !loadingBarEl) return;
 	const percent: number = Math.floor((loaded * 100) / total);
 	loadingTextEl.textContent = `Loading: ${percent}%`;
-	loadingBarEl.style.width = `calc(${percent}% - 4px)`;
+	loadingBarEl.style.width = `${percent}%`;
 };
 loadingManager.onLoad = (): void => {
 	const letsGoButtonEl = document.getElementById('letsGoButton');
@@ -345,6 +346,8 @@ const hideLoading = (): void => {
 	if (!loadingAreaEl) return;
 	loadingAreaEl.style.display = 'none';
 	IS_LOADING = false;
+	unmuteHowler();
+	// ENGINE_PLAYER.play();
 };
 
 export const Portfolio: React.FC = () => {
@@ -448,7 +451,9 @@ export const PortfolioIgniter: React.FC = () => (
 			<div className='rights'>
 				<ul>
 					<li>All rights protected by nivanavi</li>
-					<li>All matches with the real world or Bruno Simon are random</li>
+					<li>
+						All matches with the real world <br /> or Bruno Simon are not my problem
+					</li>
 				</ul>
 			</div>
 		</div>

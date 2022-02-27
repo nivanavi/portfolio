@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
+import { Howl } from 'howler';
 import { dummyPhysicsMaterial, wheelPhysicsMaterial } from '../../physics';
 import { copyPositions, createModelContainer } from '../../utils';
 // models
@@ -9,6 +10,8 @@ import delorianModel from './models/delorian.gltf';
 import wheelModel from './models/wheel.gltf';
 import { calInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
 import { playSound } from '../../sounds';
+// @ts-ignore
+import engineSound from '../../sounds/engine/engine2.mp3';
 
 type carObjectType = { respawnCallBack?: () => void } & objectProps;
 
@@ -34,6 +37,42 @@ const RESPAWN_OPTIONS = {
 	lastRespawn: 0,
 	respawnDelta: 2000,
 	isCanRespawn: false,
+};
+
+// sounds
+const ENGINE_SOUND_OPTIONS = {
+	progress: 0,
+	progressEasingUp: 0.3,
+	progressEasingDown: 0.15,
+	speedMultiplier: 2.5,
+	accelerationMultiplier: 0.5,
+	rateMin: 0.4,
+	rateMax: 1.4,
+	volumeMin: 0.2,
+	volumeMax: 0.5,
+};
+
+export const ENGINE_PLAYER = new Howl({
+	src: [engineSound],
+	volume: 0,
+	loop: true,
+});
+ENGINE_PLAYER.play();
+
+const setVolumeBySpeed: (speed: number) => void = speed => {
+	let progress = Math.abs(speed) * ENGINE_SOUND_OPTIONS.speedMultiplier + Math.max(0.5, 0) * ENGINE_SOUND_OPTIONS.accelerationMultiplier;
+	progress = Math.min(Math.max(progress, 0), 1);
+
+	ENGINE_SOUND_OPTIONS.progress +=
+		(progress - ENGINE_SOUND_OPTIONS.progress) * (progress > ENGINE_SOUND_OPTIONS.progress ? ENGINE_SOUND_OPTIONS.progressEasingUp : ENGINE_SOUND_OPTIONS.progressEasingDown);
+
+	// Rate
+	const rateAmplitude = ENGINE_SOUND_OPTIONS.rateMax - ENGINE_SOUND_OPTIONS.rateMin;
+	ENGINE_PLAYER.rate(ENGINE_SOUND_OPTIONS.rateMin + rateAmplitude * ENGINE_SOUND_OPTIONS.progress);
+
+	// Volume
+	const volumeAmplitude = ENGINE_SOUND_OPTIONS.volumeMax - ENGINE_SOUND_OPTIONS.volumeMin;
+	ENGINE_PLAYER.volume((ENGINE_SOUND_OPTIONS.volumeMin + volumeAmplitude * ENGINE_SOUND_OPTIONS.progress) * 0.7);
 };
 
 export const carObject: (props?: carObjectType) => void = props => {
@@ -280,6 +319,7 @@ export const carObject: (props?: carObjectType) => void = props => {
 			vehicle.setBrake(0.2, WHEEL_OPTIONS.frontRight);
 			vehicle.setBrake(1, WHEEL_OPTIONS.backLeft);
 			vehicle.setBrake(1, WHEEL_OPTIONS.backRight);
+			setVolumeBySpeed(1);
 			return;
 		}
 		if (CAR_DYNAMIC_OPTIONS.up) {
@@ -296,7 +336,6 @@ export const carObject: (props?: carObjectType) => void = props => {
 		if (CAR_DYNAMIC_OPTIONS.isBurnOut) CAR_DYNAMIC_OPTIONS.isBurnOut = false;
 
 		if (currentTime < CAR_DYNAMIC_OPTIONS.lastStopBurnOut + CAR_DYNAMIC_OPTIONS.stopBurnOutDelta) CAR_DYNAMIC_OPTIONS.accelerating *= 2;
-
 		vehicle.applyEngineForce(CAR_DYNAMIC_OPTIONS.accelerating, WHEEL_OPTIONS.backLeft);
 		vehicle.applyEngineForce(CAR_DYNAMIC_OPTIONS.accelerating, WHEEL_OPTIONS.backRight);
 
@@ -309,6 +348,9 @@ export const carObject: (props?: carObjectType) => void = props => {
 		} else {
 			brake(0);
 		}
+
+		// engine sound volume
+		setVolumeBySpeed(CAR_DYNAMIC_OPTIONS.speed);
 	};
 	addToCallInTickStack(callInTick);
 

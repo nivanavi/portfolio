@@ -8,6 +8,7 @@ import poolModelGltf from './models/fontain.gltf';
 import { calInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
 import { waterVertexShader } from './shaders/waterVertexShader';
 import { waterFragmentsShader } from './shaders/waterFragmentsShader';
+import { playSound } from '../../sounds';
 
 export const poolObject: (props?: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION } = props || {};
@@ -71,9 +72,11 @@ export const poolObject: (props?: objectProps) => void = props => {
 	poolBody.quaternion.setFromAxisAngle(quaternion.vector, quaternion.angle);
 
 	poolBody.addEventListener('collide', (ev: any) => {
-		if (ev.contact.getImpactVelocityAlongNormal() < 1.2 || POOL_OPTIONS.isAlreadyAnimated || !dolphinAnimation) return;
+		const relativeVelocity = ev.contact.getImpactVelocityAlongNormal();
+		if (relativeVelocity < 1.2 || POOL_OPTIONS.isAlreadyAnimated || !dolphinAnimation) return;
 		POOL_OPTIONS.isAlreadyAnimated = true;
 		dolphinAnimation.reset();
+		playSound('dolphin', relativeVelocity);
 		setTimeout(() => {
 			POOL_OPTIONS.isAlreadyAnimated = false;
 		}, 1000);

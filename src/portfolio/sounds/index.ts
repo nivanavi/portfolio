@@ -1,4 +1,4 @@
-import { Howl } from 'howler';
+import { Howl, Howler } from 'howler';
 
 // @ts-ignore
 import brick1Sound from './brick/brick-1.mp3';
@@ -32,8 +32,10 @@ import lampBrokenSound from './lampPost/lampBroken.mp3';
 import heySound from './hey/hey.mp3';
 // @ts-ignore
 import barrelSound from './barrel/barrelSound.mp3';
+// @ts-ignore
+import waterpoolSound from './waterpool/waterpool.mp3';
 
-type soundTypes = 'brick' | 'pin' | 'ball' | 'carHit' | 'teleport' | 'lampBroken' | 'hey' | 'barrel';
+type soundTypes = 'brick' | 'pin' | 'ball' | 'carHit' | 'teleport' | 'lampBroken' | 'hey' | 'barrel' | 'dolphin';
 
 type sounds = {
 	name: soundTypes;
@@ -145,6 +147,18 @@ const sounds: sounds[] = [
 		rateMax: 1,
 		lastTime: 0,
 	},
+	{
+		name: 'dolphin',
+		sounds: [waterpoolSound],
+		minDelta: 100,
+		velocityMin: 0,
+		velocityMultiplier: 0,
+		volumeMin: 0.7,
+		volumeMax: 1,
+		rateMin: 2.8,
+		rateMax: 2.8,
+		lastTime: 0,
+	},
 ];
 
 const soundsWithHowl = sounds.map(sound => ({
@@ -175,4 +189,13 @@ export const playSound: (soundName: soundTypes, velocity: number) => void = (sou
 		// Save last play time
 		soundItem.lastTime = currentTime;
 	}
+};
+
+// @ts-ignore
+Howler.volume(0);
+export const unmuteHowler = (): void => {
+	setTimeout(() => {
+		// @ts-ignore
+		Howler.volume(0.7);
+	}, 500);
 };

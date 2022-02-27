@@ -39,7 +39,7 @@ canvas {
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
-    margin-top: -300px;
+    margin-top: -200px;
     transform-style: preserve-3d;
     transform: rotateX(20deg) translateZ(200px);
     height: 100%;
@@ -64,9 +64,7 @@ canvas {
 }
 .loadingBar {
     position: absolute;
-    left: 2px;
-    top: 2px;
-    height: 20px;
+    height: 24px;
     width: 0;
     background: linear-gradient(0.25turn, #7b4397, #dc2430);
 }
@@ -108,6 +106,9 @@ canvas {
 .instruction ul {
     list-style-type: none;
 }
+.instruction li {
+    margin-bottom: 10px;
+}
 
 .rights {
     display: flex;
@@ -119,4 +120,7 @@ canvas {
 
 .rights ul {
     list-style-type: none;
+}
+.rights li {
+    margin-bottom: 10px;
 }

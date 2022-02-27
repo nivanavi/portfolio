@@ -39,16 +39,6 @@ export const logBenchObject: (props?: objectProps) => void = props => {
 	physicWorld.addBody(logBenchBody);
 	scene.add(logBenchContainer);
 
-	// logBenchBody.addEventListener("collide", (ev: any) => {
-	//   if (ev.contact.getImpactVelocityAlongNormal() < 1.2 || logBench_OPTIONS.isAlreadyAnimated || !dolphinAnimation) return;
-	//   logBench_OPTIONS.isAlreadyAnimated = true;
-	//   dolphinAnimation.paused = false;
-	//   setTimeout(() => {
-	//     dolphinAnimation!.paused = true
-	//     logBench_OPTIONS.isAlreadyAnimated = false;
-	//   }, 683)
-	// })
-
 	const callInTick: (propsCalInTick: calInTickProps) => void = () => {
 		copyPositions({
 			mesh: logBenchContainer,
