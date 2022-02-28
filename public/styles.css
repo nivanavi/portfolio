@@ -124,3 +124,10 @@ canvas {
 .rights li {
     margin-bottom: 10px;
 }
+
+.soundsIndication {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    color: white;
+}

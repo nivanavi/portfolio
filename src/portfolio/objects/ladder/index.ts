@@ -5,7 +5,7 @@ import { dummyPhysicsMaterial } from '../../physics';
 
 // @ts-ignore
 import ladderModelGltf from './models/ladder.gltf';
-import { calInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
+import { callInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
 
 export const ladderObject: (props?: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION } = props || {};
@@ -39,7 +39,7 @@ export const ladderObject: (props?: objectProps) => void = props => {
 	physicWorld.addBody(ladderBody);
 	scene.add(ladderContainer);
 
-	const callInTick: (propsCalInTick: calInTickProps) => void = () => {
+	const callInTick: (propsCalInTick: callInTickProps) => void = () => {
 		copyPositions({
 			mesh: ladderContainer,
 			body: ladderBody,

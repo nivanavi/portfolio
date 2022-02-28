@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import { copyPositions, copyPositionType, createModelContainer } from '../../utils';
 import { dummyPhysicsMaterial } from '../../physics';
-import { calInTickProps, DEFAULT_POSITION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
+import { callInTickProps, DEFAULT_POSITION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
 
 // @ts-ignore
 // eslint-disable-next-line import/no-unresolved
@@ -91,6 +91,6 @@ export const wallObject: (props?: wallObjectProps) => void = props => {
 		},
 	});
 
-	const callInTick: (propsCalInTick: calInTickProps) => void = () => bricks.forEach(brick => copyPositions(brick));
+	const callInTick: (propsCalInTick: callInTickProps) => void = () => bricks.forEach(brick => copyPositions(brick));
 	addToCallInTickStack(callInTick);
 };

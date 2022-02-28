@@ -5,7 +5,7 @@ import { dummyPhysicsMaterial } from '../../physics';
 
 // @ts-ignore
 import pinModelGltf from './models/pin.gltf';
-import { calInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
+import { callInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
 import { playSound } from '../../sounds';
 
 export const pinObject: (props: objectProps) => void = props => {
@@ -55,7 +55,7 @@ export const pinObject: (props: objectProps) => void = props => {
 	physicWorld.addBody(pinBody);
 	scene.add(pinContainer);
 
-	const callInTick: (propsCalInTick: calInTickProps) => void = () => {
+	const callInTick: (propsCalInTick: callInTickProps) => void = () => {
 		copyPositions({
 			mesh: pinContainer,
 			body: pinBody,

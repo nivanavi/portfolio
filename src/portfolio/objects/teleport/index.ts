@@ -1,7 +1,7 @@
 import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
 import { dummyPhysicsMaterial } from '../../physics';
-import { calInTickProps, MOST_IMPORTANT_DATA } from '../../index';
+import { callInTickProps, MOST_IMPORTANT_DATA } from '../../index';
 
 // @ts-ignore
 // eslint-disable-next-line import/no-unresolved
@@ -109,7 +109,7 @@ export const teleportObject: (props: teleportProps) => void = ({ enter, exit }) 
 		},
 	});
 
-	const callInTick: (props: calInTickProps) => void = () => {
+	const callInTick: (props: callInTickProps) => void = () => {
 		const currentTime = Date.now();
 		if (currentTime < TELEPORT_OPTIONS.lastTeleport + TELEPORT_OPTIONS.teleportDelta) return;
 

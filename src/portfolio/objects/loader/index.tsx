@@ -1,12 +1,12 @@
 import * as THREE from 'three';
 // @ts-ignore
-import { calInTickProps, DEFAULT_POSITION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
+import { callInTickProps, DEFAULT_POSITION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
 import { loaderVertexShader } from './shaders/loaderVertexShader';
 import { loaderFragmentsShader } from './shaders/loaderFragmentsShader';
 
 export const loaderObject: (props?: objectProps) => THREE.Group = props => {
 	const { position = DEFAULT_POSITION } = props || {};
-	const { addToCallInTickStack } = MOST_IMPORTANT_DATA;
+	const { addToCallInTickStack, clock } = MOST_IMPORTANT_DATA;
 	const loaderContainer: THREE.Group = new THREE.Group();
 	loaderContainer.name = 'loader';
 	// loader shaders
@@ -27,7 +27,8 @@ export const loaderObject: (props?: objectProps) => THREE.Group = props => {
 	loaderContainer.add(loaderMesh);
 	loaderContainer.position.copy(position);
 
-	const callInTick: (propsCalInTick: calInTickProps) => void = ({ time }) => {
+	const callInTick: (propsCalInTick: callInTickProps) => void = () => {
+		const time = clock.getElapsedTime();
 		loaderMaterial.uniforms.uTime.value = time * 3;
 	};
 	addToCallInTickStack(callInTick);

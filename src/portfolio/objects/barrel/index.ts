@@ -5,7 +5,7 @@ import { dummyPhysicsMaterial } from '../../physics';
 
 // @ts-ignore
 import barrelModelGltf from './models/barrel.gltf';
-import { calInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
+import { callInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
 import { playSound } from '../../sounds';
 
 export const barrelObject: (props: objectProps) => void = props => {
@@ -45,7 +45,7 @@ export const barrelObject: (props: objectProps) => void = props => {
 	physicWorld.addBody(barrelBody);
 	scene.add(barrelContainer);
 
-	const callInTick: (propsCalInTick: calInTickProps) => void = () => {
+	const callInTick: (propsCalInTick: callInTickProps) => void = () => {
 		copyPositions({
 			mesh: barrelContainer,
 			body: barrelBody,

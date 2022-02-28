@@ -155,8 +155,8 @@ const sounds: sounds[] = [
 		velocityMultiplier: 0,
 		volumeMin: 0.7,
 		volumeMax: 1,
-		rateMin: 2.8,
-		rateMax: 2.8,
+		rateMin: 3,
+		rateMax: 3,
 		lastTime: 0,
 	},
 ];

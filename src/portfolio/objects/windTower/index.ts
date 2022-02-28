@@ -8,7 +8,7 @@ import windWheelModelGltf from './models/windWheel.gltf';
 import windArrowModelGltf from './models/windArrow.gltf';
 // @ts-ignore
 import windLegsModelGltf from './models/windLegs.gltf';
-import { calInTickProps, DEFAULT_POSITION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
+import { callInTickProps, DEFAULT_POSITION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
 import { createModelContainer } from '../../utils';
 
 type getRandomWindOptionType = {
@@ -80,7 +80,7 @@ export const windTowerObject: (props?: objectProps) => void = props => {
 		WIND_TOWER_OPTIONS.windAngle = windAngle;
 	}, 15000);
 
-	const callInTick: (propsCallInTick: calInTickProps) => void = () => {
+	const callInTick: (propsCallInTick: callInTickProps) => void = () => {
 		if (WIND_TOWER_OPTIONS.windCurrentAngle < WIND_TOWER_OPTIONS.windAngle) {
 			WIND_TOWER_OPTIONS.windCurrentAngle += WIND_TOWER_OPTIONS.windAngleStep;
 		}

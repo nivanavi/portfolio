@@ -5,7 +5,7 @@ import { dummyPhysicsMaterial } from '../../physics';
 
 // @ts-ignore
 import heyModelGltf from './models/hey.gltf';
-import { calInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
+import { callInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
 import { playSound } from '../../sounds';
 
 export const heyObject: (props?: objectProps) => void = props => {
@@ -45,7 +45,7 @@ export const heyObject: (props?: objectProps) => void = props => {
 	physicWorld.addBody(heyBody);
 	scene.add(heyContainer);
 
-	const callInTick: (propsCalInTick: calInTickProps) => void = () => {
+	const callInTick: (propsCalInTick: callInTickProps) => void = () => {
 		copyPositions({
 			mesh: heyContainer,
 			body: heyBody,

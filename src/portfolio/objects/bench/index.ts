@@ -5,7 +5,7 @@ import { dummyPhysicsMaterial } from '../../physics';
 
 // @ts-ignore
 import benchModelGltf from './models/bench.gltf';
-import { calInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
+import { callInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
 
 export const benchObject: (props?: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION } = props || {};
@@ -39,7 +39,7 @@ export const benchObject: (props?: objectProps) => void = props => {
 	physicWorld.addBody(benchBody);
 	scene.add(benchContainer);
 
-	const callInTick: (propsCalInTick: calInTickProps) => void = () => {
+	const callInTick: (propsCalInTick: callInTickProps) => void = () => {
 		copyPositions({
 			mesh: benchContainer,
 			body: benchBody,

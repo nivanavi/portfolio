@@ -8,7 +8,7 @@ import gateModelGltf from './models/gate.gltf';
 // @ts-ignore
 import gateStandModelGltf from './models/gateStand.gltf';
 
-import { calInTickProps, DEFAULT_POSITION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
+import { callInTickProps, DEFAULT_POSITION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
 
 type gateObjectProps = { isRevers?: boolean } & objectProps;
 
@@ -78,7 +78,7 @@ export const gateObject: (props: gateObjectProps) => void = props => {
 	scene.add(gateContainer);
 	scene.add(gateStandContainer);
 
-	const callInTick: (propsCalInTick: calInTickProps) => void = () => {
+	const callInTick: (propsCalInTick: callInTickProps) => void = () => {
 		copyPositions({
 			mesh: gateContainer,
 			body: gateBody,

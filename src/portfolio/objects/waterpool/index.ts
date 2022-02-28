@@ -5,14 +5,14 @@ import { dummyPhysicsMaterial } from '../../physics';
 
 // @ts-ignore
 import poolModelGltf from './models/fontain.gltf';
-import { calInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
+import { callInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
 import { waterVertexShader } from './shaders/waterVertexShader';
 import { waterFragmentsShader } from './shaders/waterFragmentsShader';
 import { playSound } from '../../sounds';
 
 export const poolObject: (props?: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION } = props || {};
-	const { scene, physicWorld, addToCallInTickStack, gltfLoader } = MOST_IMPORTANT_DATA;
+	const { scene, physicWorld, addToCallInTickStack, gltfLoader, clock } = MOST_IMPORTANT_DATA;
 
 	const POOL_OPTIONS = {
 		isAlreadyAnimated: false,
@@ -89,7 +89,8 @@ export const poolObject: (props?: objectProps) => void = props => {
 	physicWorld.addBody(poolBody);
 	scene.add(poolContainer);
 
-	const callInTick: (propsCalInTick: calInTickProps) => void = ({ graphicDelta, time }) => {
+	const callInTick: (propsCalInTick: callInTickProps) => void = ({ graphicDelta }) => {
+		const time = clock.getElapsedTime();
 		waterMaterial.uniforms.uTime.value = time * 3;
 
 		if (mixer) mixer.update(graphicDelta * 15);

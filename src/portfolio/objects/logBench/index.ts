@@ -5,7 +5,7 @@ import { dummyPhysicsMaterial } from '../../physics';
 
 // @ts-ignore
 import logBenchModelGltf from './models/logBench.gltf';
-import { calInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
+import { callInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
 
 export const logBenchObject: (props?: objectProps) => void = props => {
 	const { position = DEFAULT_POSITION, quaternion = DEFAULT_QUATERNION } = props || {};
@@ -39,7 +39,7 @@ export const logBenchObject: (props?: objectProps) => void = props => {
 	physicWorld.addBody(logBenchBody);
 	scene.add(logBenchContainer);
 
-	const callInTick: (propsCalInTick: calInTickProps) => void = () => {
+	const callInTick: (propsCalInTick: callInTickProps) => void = () => {
 		copyPositions({
 			mesh: logBenchContainer,
 			body: logBenchBody,

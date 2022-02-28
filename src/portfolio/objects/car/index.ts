@@ -8,7 +8,7 @@ import { copyPositions, createModelContainer } from '../../utils';
 import delorianModel from './models/delorian.gltf';
 // @ts-ignore
 import wheelModel from './models/wheel.gltf';
-import { calInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
+import { callInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
 import { playSound } from '../../sounds';
 // @ts-ignore
 import engineSound from '../../sounds/engine/engine2.mp3';
@@ -271,7 +271,7 @@ export const carObject: (props?: carObjectType) => void = props => {
 	addToCallInPostStepStack(callInPostStep);
 
 	let rotation = 0;
-	const callInTick: (propsCalInTick: calInTickProps) => void = ({ physicDelta }) => {
+	const callInTick: (propsCalInTick: callInTickProps) => void = ({ physicDelta }) => {
 		// update
 		copyPositions({ mesh: chassisContainer, body: chassisBody });
 

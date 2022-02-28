@@ -8,7 +8,7 @@ import recorderSongSound from '../../sounds/recorder/recorderSong.mp3';
 import recorderModelGltf from './models/recorder.gltf';
 
 import { dummyPhysicsMaterial } from '../../physics';
-import { calInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
+import { callInTickProps, DEFAULT_POSITION, DEFAULT_QUATERNION, MOST_IMPORTANT_DATA, objectProps } from '../../index';
 import { CAR_EXPORT_DATA } from '../car';
 
 const recorderPlayer = new Howl({
@@ -65,7 +65,7 @@ export const recorderObject: (props?: objectProps) => void = props => {
 	physicWorld.addBody(recorderBody);
 	scene.add(recorderContainer);
 
-	const callInTick: (propsCalInTick: calInTickProps) => void = () => {
+	const callInTick: (propsCalInTick: callInTickProps) => void = () => {
 		recorderPlayer.volume(getVolumeByDistance(recorderBody.position.distanceTo(CAR_EXPORT_DATA.position)));
 		copyPositions({
 			body: recorderBody,

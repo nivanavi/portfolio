@@ -56,12 +56,11 @@ export type windowSizesType = {
 	height: number;
 };
 
-export type calInTickProps = {
+export type callInTickProps = {
 	physicDelta: number;
 	graphicDelta: number;
-	time: number;
 };
-type callInTickType = (props: calInTickProps) => void;
+type callInTickType = (props: callInTickProps) => void;
 type callInPostStepType = () => void;
 
 type mostImportantData = {
@@ -80,7 +79,7 @@ export const DEFAULT_QUATERNION: quaternionType = {
 	vector: new CANNON.Vec3(),
 	angle: 0,
 };
-export const IS_DEVELOP = false;
+const IS_DEVELOP = false;
 let NEED_CREATE_WORLD = true;
 let IS_LOADING = true;
 const TEXT: string | undefined = window.location.hash.startsWith('#') ? window.location.hash.replace('#', '') : 'nivanavi_dev';
@@ -117,6 +116,8 @@ const CANNON_DEBUG_RENDERER = new CannonDebugRenderer(scene, physicWorld);
 const clearWorld = (): void => {
 	physicWorld.bodies = [];
 	scene.clear();
+	callInPostStepStack.splice(0, callInPostStepStack.length);
+	callInTickStack.splice(0, callInTickStack.length);
 };
 const createWorld = (): void => {
 	const { setLightsFor1Level, setLightsFor2Level, setLightsFor3Level } = setupLights();
@@ -354,7 +355,7 @@ export const Portfolio: React.FC = React.memo(() => {
 	const { renderer } = setupRenderer({ canvas });
 	renderer.shadowMap.enabled = true;
 	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-	const { camera, loadingCamera } = setupCameras();
+	const { camera, loadingCamera, callInTickCamera } = setupCameras();
 
 	// loadingScene
 	const loaderModel = loaderObject();
@@ -365,39 +366,37 @@ export const Portfolio: React.FC = React.memo(() => {
 	const orbitControl = new OrbitControls(camera, canvas);
 
 	physicWorld.addEventListener('postStep', () => callInPostStepStack.forEach(call => call()));
-	let oldElapsedTime: number;
-	const minDelta: number = 1000 / 70;
-	const timeStep = 1 / 60;
+	let delta: number = 0;
+	const timeStep = 1 / 70;
 	const tick = (): void | number => {
-		const elapsedTime = clock.getElapsedTime();
-		const physicDelta = Math.round((elapsedTime - oldElapsedTime) * 1000);
-		const graphicDelta = elapsedTime - oldElapsedTime;
-		if (physicDelta < minDelta) return window.requestAnimationFrame(tick);
-
-		// update call in tick stack
-		callInTickStack.forEach(call => call({ physicDelta, graphicDelta, time: elapsedTime }));
-
-		// update physic step
-		if (!oldElapsedTime) physicWorld.step(timeStep);
-		else physicWorld.step(timeStep, physicDelta, 3);
-
+		window.requestAnimationFrame(tick);
+		delta += clock.getDelta();
 		// update other stuff
-		if (IS_DEVELOP) {
-			CANNON_DEBUG_RENDERER.update();
-			orbitControl.update();
-		}
 		if (NEED_CREATE_WORLD) {
 			createWorld();
 			NEED_CREATE_WORLD = false;
 		}
 
-		if (IS_LOADING) renderer.render(loadingScene, loadingCamera);
-		if (!IS_LOADING) renderer.render(scene, camera);
+		if (delta > timeStep) {
+			// update physic step
+			physicWorld.step(1 / 60, 16, 3);
 
-		// update old elapsed time
-		oldElapsedTime = elapsedTime;
+			// update call in tick stack
+			callInTickStack.forEach(call => call({ physicDelta: 16, graphicDelta: timeStep }));
 
-		window.requestAnimationFrame(tick);
+			if (!IS_DEVELOP) {
+				callInTickCamera({ physicDelta: 16, graphicDelta: timeStep });
+			}
+			if (IS_DEVELOP) {
+				CANNON_DEBUG_RENDERER.update();
+				orbitControl.update();
+			}
+			if (IS_LOADING) renderer.render(loadingScene, loadingCamera);
+			if (!IS_LOADING) renderer.render(scene, camera);
+
+			// update old elapsed time
+			delta %= timeStep;
+		}
 	};
 	tick();
 
@@ -427,12 +426,20 @@ export const Portfolio: React.FC = React.memo(() => {
 export const PortfolioIgniter: React.FC = () => {
 	const [stateMuted, setMuted] = React.useState<boolean>(true);
 
-	const muteSwitch = (): void => {
+	const keyPressHandler: (ev: KeyboardEvent) => void = React.useCallback(ev => {
+		if (ev.code !== 'KeyM') return;
 		setMuted(state => {
 			muteHowler(!state);
 			return !state;
 		});
-	};
+	}, []);
+
+	React.useEffect(() => {
+		window.addEventListener('keyup', keyPressHandler);
+		return () => {
+			window.addEventListener('keyup', keyPressHandler);
+		};
+	}, [keyPressHandler]);
 
 	return (
 		<SceneIgniterContextProvider>
@@ -443,7 +450,8 @@ export const PortfolioIgniter: React.FC = () => {
 						<li>Move: W,A,S,D</li>
 						<li>Boost: L.Shift</li>
 						<li>Respawn: R (only when car upside down)</li>
-						<li>W + (Space/S): burnout</li>
+						<li>Burnout: W + (Space/S)</li>
+						<li>Mute/unmute: M</li>
 					</ul>
 				</div>
 				<div className='loadingContentWrapper'>
@@ -466,18 +474,7 @@ export const PortfolioIgniter: React.FC = () => {
 					</ul>
 				</div>
 			</div>
-			<button
-				type='button'
-				style={{
-					position: 'fixed',
-					right: '20px',
-					top: '20px',
-					zIndex: 12,
-				}}
-				onClick={muteSwitch}
-			>
-				{stateMuted ? 'muted' : 'unmuted'}
-			</button>
+			<div className='soundsIndication'>{stateMuted ? 'muted' : 'unmuted'}</div>
 		</SceneIgniterContextProvider>
 	);
 };
