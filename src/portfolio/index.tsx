@@ -93,7 +93,6 @@ const dracoLoader = new DRACOLoader(loadingManager);
 dracoLoader.setDecoderPath('/draco/');
 gltfLoader.setDRACOLoader(dracoLoader);
 
-// todo chech callintick after reload
 const callInTickStack: callInTickType[] = [];
 const callInPostStepStack: callInPostStepType[] = [];
 export const MOST_IMPORTANT_DATA: mostImportantData = {
@@ -303,7 +302,7 @@ const createWorld = (): void => {
 	wallObject({ position: new THREE.Vector3(6.7, LEVEL_3_Y_OFFSET, 18), rows: 4, brickInRows: 5, isYDirection: false });
 	rampObject({ position: new THREE.Vector3(8, LEVEL_3_Y_OFFSET, 12) });
 	// ramp area
-	wallObject({ position: new THREE.Vector3(24, LEVEL_3_Y_OFFSET, 0), rows: 20, brickInRows: 2, isYDirection: true });
+	wallObject({ position: new THREE.Vector3(24, LEVEL_3_Y_OFFSET, 0), rows: 10, brickInRows: 2, isYDirection: true });
 	rampObject({
 		position: new THREE.Vector3(20, LEVEL_3_Y_OFFSET, 0),
 		quaternion: {
@@ -313,8 +312,8 @@ const createWorld = (): void => {
 	});
 
 	// house area
-	wallObject({ position: new THREE.Vector3(7.4, LEVEL_3_Y_OFFSET, -18), rows: 6, brickInRows: 6, isYDirection: true });
-	wallObject({ position: new THREE.Vector3(8, LEVEL_3_Y_OFFSET, -18), rows: 6, brickInRows: 6, isYDirection: false });
+	wallObject({ position: new THREE.Vector3(7.4, LEVEL_3_Y_OFFSET, -18), rows: 4, brickInRows: 5, isYDirection: true });
+	wallObject({ position: new THREE.Vector3(8, LEVEL_3_Y_OFFSET, -18), rows: 4, brickInRows: 5, isYDirection: false });
 
 	// gate area
 	gateObject({ position: new THREE.Vector3(-1, LEVEL_3_Y_OFFSET, 15) });
@@ -376,7 +375,6 @@ export const Portfolio: React.FC = React.memo(() => {
 			createWorld();
 			NEED_CREATE_WORLD = false;
 		}
-
 		if (delta > timeStep) {
 			// update physic step
 			physicWorld.step(1 / 60, 16, 3);

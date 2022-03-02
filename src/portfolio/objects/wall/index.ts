@@ -85,7 +85,7 @@ export const wallObject: (props?: wallObjectProps) => void = props => {
 			setTimeout(() => {
 				bricks.forEach(({ body }) => {
 					if (!body) return;
-					body.sleepSpeedLimit = 0.01;
+					body.sleepSpeedLimit = 0.05;
 				});
 			}, 2000);
 		},

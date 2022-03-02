@@ -71,7 +71,7 @@ const teleport: (props: oneTeleportProps) => { callInTick: () => void } = ({ ent
 		const intersects = raycaster.intersectObject(CAR_EXPORT_DATA.chassisMesh);
 		if (intersects.length) {
 			teleportCallback();
-			CAR_EXPORT_DATA.chassisBody.position.set(exit.position.x + 2, exit.position.y + 0.1, exit.position.z);
+			CAR_EXPORT_DATA.chassisBody.position.set(exit.position.x + 2, exit.position.y + 0.4, exit.position.z);
 		}
 	};
 
